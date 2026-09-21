@@ -1,0 +1,11 @@
+{
+  "name": "useful-skills",
+  "owner": { "name": "Simon Calderon" },
+  "plugins": [
+    {
+      "name": "useful-skills",
+      "source": "./",
+      "description": "Personal collection of Claude Code skills"
+    }
+  ]
+}
