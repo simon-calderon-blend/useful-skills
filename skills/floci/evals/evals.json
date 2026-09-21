@@ -1,0 +1,26 @@
+{
+  "skill_name": "floci",
+  "evals": [
+    {
+      "id": 1,
+      "name": "persistence-lost-on-restart",
+      "prompt": "I run Floci (floci/floci:latest) with a ./data:/app/data volume, but every `docker compose restart` wipes my S3 buckets and DynamoDB tables. What is wrong and what is the exact fix?",
+      "expected_output": "Sets FLOCI_STORAGE_MODE=persistent and FLOCI_STORAGE_PERSISTENT_PATH=/app/data; explains storage defaults to memory.",
+      "assertions": ["mentions FLOCI_STORAGE_MODE: persistent", "mentions FLOCI_STORAGE_PERSISTENT_PATH: /app/data", "does not invent PERSISTENCE=1 or DATA_DIR for the standard image"]
+    },
+    {
+      "id": 2,
+      "name": "multi-container-sqs-and-lambda",
+      "prompt": "My `worker` Compose service creates an SQS queue in the `floci` service via http://floci:4566, but receive_message with the returned QueueUrl fails with 'Could not connect to the endpoint URL'. Invoking a Lambda deployed into Floci fails too. What do I change in docker-compose.yml?",
+      "expected_output": "FLOCI_HOSTNAME=floci, Docker socket mount, FLOCI_SERVICES_DOCKER_NETWORK with an explicitly named network.",
+      "assertions": ["sets FLOCI_HOSTNAME: floci", "mounts /var/run/docker.sock", "sets FLOCI_SERVICES_DOCKER_NETWORK to a network declared with an explicit name", "does not use HOSTNAME_EXTERNAL"]
+    },
+    {
+      "id": 3,
+      "name": "localstack-migration",
+      "prompt": "Rewrite our LocalStack docker-compose.yml (LOCALSTACK_HOST, PERSISTENCE=1, ./data:/var/lib/localstack, init/ready.d) and GitHub Actions job for Floci, and show the Terraform AWS provider block for S3, SQS and DynamoDB.",
+      "expected_output": "latest-compat image, LocalStack vars kept, data path /app/data, init path unchanged, provider with skip_* flags, s3_use_path_style and endpoints for every used service.",
+      "assertions": ["uses floci/floci:latest-compat", "data volume target is /app/data", "init scripts path unchanged", "provider sets s3_use_path_style = true", "endpoints lists s3, sqs and dynamodb"]
+    }
+  ]
+}
