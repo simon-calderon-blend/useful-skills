@@ -1,0 +1,79 @@
+{
+  "skill_name": "blend-documents",
+  "evals": [
+    {
+      "id": 1,
+      "name": "markdown-to-branded-docx",
+      "prompt": "Convierte este markdown en un documento Word con la plantilla de Blend, en español, con portada: front matter con title 'Informe de retención', una tabla de 3 filas y un gráfico de barras con los valores Q1=4.1, Q2=4.6, Q3=5.2.",
+      "expected_output": "Runs scripts/md_to_docx.py (via uv run) with --cover and --lang es on a Markdown file with front matter, a pipe table and a ```chart JSON block; renders the result and reads the pages; reports the output path.",
+      "assertions": [
+        "uses the skill's md_to_docx.py or blend_docx.py rather than hand-writing OOXML or using a generic docx-js script",
+        "caption labels are Figura/Tabla (Spanish)",
+        "renders with scripts/render.sh and looks at the page images before delivering",
+        "does not invent data beyond the values the user gave",
+        "delivers a .docx and does not deliver a PDF or .dotx"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "proposal-with-kpis-and-pricing",
+      "prompt": "Make a Blend proposal for 'Example Corp' about a retention analytics engagement: cover, table of contents, summary with 3 KPI tiles, a timeline table, and a pricing table with a total row. Use placeholder numbers and say they are placeholders.",
+      "expected_output": "Python script using BlendDocument: cover, toc, heading, kpis, table (with total_row=True and right-aligned numeric columns), callout; verifies via render; notes that the table of contents is filled by Word on open.",
+      "assertions": [
+        "uses BlendDocument.cover, toc, kpis and table(total_row=True)",
+        "labels the figures as placeholder or synthetic",
+        "mentions that Word updates the table of contents when the file opens",
+        "does not use cyan 00EDED as a text color",
+        "the final deliverable is a .docx that opens and edits in Word; any PDF or PNG is review-only and not handed over"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "brand-questions-from-template",
+      "prompt": "What fonts, colors, heading sizes and page size does the Blend template use, and which of those did you read from Blend documents versus make up?",
+      "expected_output": "Montserrat body (11 pt) and Montserrat Black headings (H1 16, H2 13, H3 11 pt, navy 003059, read from a real Blend ADR document); navy 003059, cyan 00EDED, slate 304550 and the other theme colors; A4 with 1-inch margins; tables with navy header and D9E2E7 grid. States that the letterhead .dotx itself defines no heading or table styles, and that captions, KPI tiles, callouts and chart colors are derived.",
+      "assertions": [
+        "names Montserrat and Montserrat Black",
+        "gives heading sizes 16, 13 and 11 pt",
+        "gives navy 003059 and cyan 00EDED",
+        "states A4 and 1 inch margins",
+        "distinguishes values measured from Blend documents from derived design choices",
+        "mentions the inverted theme (dk1 is FFFFFF) or that theme colors must not be referenced"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "multi-series-chart-rules",
+      "prompt": "Add a chart to my Blend report comparing revenue for 7 regions over 4 quarters, with revenue and margin on one chart using two y-axes.",
+      "expected_output": "Pushes back on the dual axis (splits into two charts or indexes to a common base) and on 7 series (folds the tail into Other or uses small multiples or a table); uses blend_charts with the fixed palette and a legend.",
+      "assertions": [
+        "does not produce a dual-axis chart",
+        "does not plot more than 5 colored series on one chart",
+        "uses blend_charts functions or the bc.SERIES palette",
+        "adds a numbered caption instead of a title inside the figure"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "edit-existing-doc-not-rebuild",
+      "prompt": "Aquí tengo un .docx ya hecho con la plantilla de Blend; solo cambia el título de la portada y corrige una cifra en la tabla de la página 3.",
+      "expected_output": "Edits the existing file in place (unpack, edit word/document.xml, repack, validate) using the docx skill workflow, and leaves header, footer and styles untouched.",
+      "assertions": [
+        "does not regenerate the whole document from scratch with BlendDocument",
+        "edits word/document.xml or uses an equivalent in-place edit",
+        "validates or renders the edited file afterwards"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "docx-only-deliverable",
+      "prompt": "Genera el informe en Blend y mándamelo en PDF.",
+      "expected_output": "Builds the report as .docx with the skill, verifies it, and delivers the .docx (the skill's rule is that every file is an editable .docx); mentions that a PDF can be exported from Word if still wanted, without making the PDF the deliverable.",
+      "assertions": [
+        "delivers a .docx file",
+        "does not replace the .docx with a PDF as the deliverable",
+        "text styles in the .docx are real Word styles (Heading 1, Heading 2) rather than direct formatting"
+      ]
+    }
+  ]
+}
