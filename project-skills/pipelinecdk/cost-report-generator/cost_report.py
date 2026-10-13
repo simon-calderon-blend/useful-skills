@@ -651,7 +651,7 @@ def check_coverage(detail, v, warn, args):
 def parse_args():
     p = argparse.ArgumentParser(description="Regenerate the cost report .xlsx from the prod CUR (read-only S3).")
     p.add_argument("--start", required=True, help="first day, YYYY-MM-DD (usage start >= 00:00)")
-    p.add_argument("--end", required=True, help="last day inclusive, YYYY-MM-DD (usage start < next day 00:00)")
+    p.add_argument("--end", required=True, help="end, exclusive, YYYY-MM-DD (usage start < 00:00 of this day), as QuickSight 'Fecha Fin'")
     p.add_argument("--profile", default="ADR-PROD-MEDICALAUDIT-SENSITIVE")
     p.add_argument("--region", default="us-east-1")
     p.add_argument("--bucket", default="adr-prod-medicalaudit-datalake")
@@ -680,7 +680,7 @@ def parse_args():
 def main():
     args = parse_args()
     start = datetime.strptime(args.start, "%Y-%m-%d")
-    end_excl = datetime.strptime(args.end, "%Y-%m-%d") + timedelta(days=1)
+    end_excl = datetime.strptime(args.end, "%Y-%m-%d")
     if end_excl <= start:
         sys.exit("ERROR: --end is before --start")
     months, d = [], start.replace(day=1)

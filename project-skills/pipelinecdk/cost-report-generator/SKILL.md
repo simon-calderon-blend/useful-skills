@@ -24,7 +24,7 @@ Do not use it for ad hoc cost questions (use the `aws-billing-and-cost-managemen
 | Flag | Default | Meaning |
 |---|---|---|
 | `--start YYYY-MM-DD` | required | first day (usage start >= 00:00, CUR timestamps are UTC) |
-| `--end YYYY-MM-DD` | required | last day, inclusive (usage start < next day 00:00) |
+| `--end YYYY-MM-DD` | required | end, exclusive (usage start < 00:00 of this day), same as the dashboard "Fecha Fin" |
 | `--profile` | `ADR-PROD-MEDICALAUDIT-SENSITIVE` | AWS SSO profile; never falls back to the default profile |
 | `--region` | `us-east-1` | |
 | `--bucket` / `--prefix` | `adr-prod-medicalaudit-datalake` / `costs/adr-prod-medicalaudit-cost-export-938536499966/data/` | CUR location |
@@ -70,9 +70,11 @@ Licenciamiento = Procesamiento x 0.76; Total = the three. Procesamiento + Plataf
 `rubro_pruebas` (as 276553701208), so B10 = dashboard "Costo Plataforma Test" and H10 = "Costo Plataforma Prod".
 `--trm` and `--licensing` are unchanged; the dashboard's `Target ...` and "Unidades" parameters and the glosas/reclamaciones filters are not modeled.
 
-Known gap: the dashboard reads from 2026-07-25 (fixed in its SQL) up to yesterday (rolling, exclusive end); the skill takes `--start` and an inclusive `--end`.
-To compare against the dashboard, use the same window: its "Fecha Fin" is exclusive, so dashboard 01/08 to 31/08 equals
-`--start 2026-08-01 --end 2026-08-30`. Verified: Procesamiento and Licenciamiento match within 4 COP; Total is 539 COP higher, all of it in Plataforma (193 to 544 COP per line, cause not found; the dashboard may run on a SPICE snapshot older than the CUR rewrite of 2026-09-02).
+Date semantics match the dashboard: `--start` is inclusive and `--end` is exclusive, like its "Fecha Fin". Dashboard 01/08 to 31/08
+is `--start 2026-08-01 --end 2026-08-31`. The dashboard's own SQL reads from 2026-07-25 up to yesterday (rolling), so the skill
+does not reproduce that rolling end; pass explicit dates.
+Verified against the dashboard for August: Procesamiento and Licenciamiento match within 4 COP; Total is 539 COP higher, all of it in Plataforma
+(193 to 544 COP per line, cause not found; the dashboard may run on a SPICE snapshot older than the CUR rewrite of 2026-09-02).
 
 ## Read-only rules (prod is sensitive)
 
@@ -87,7 +89,7 @@ To compare against the dashboard, use the same window: its "Fecha Fin" is exclus
 ```bash
 python3 -m venv /tmp/cr-venv && /tmp/cr-venv/bin/pip install -r requirements.txt   # once
 /tmp/cr-venv/bin/python .claude/skills/cost-report-generator/cost_report.py \
-    --start 2026-07-25 --end 2026-08-27 --output "/path/Reporte Costos - 2026-07-25 a 2026-08-27.xlsx"
+    --start 2026-08-01 --end 2026-08-31 --output "/path/Reporte Costos - 2026-08-01 a 2026-08-31.xlsx"
 ```
 
 Run-time needs: Python 3.10+, `boto3 pandas pyarrow openpyxl`, and LibreOffice (`soffice`) so that the cached
