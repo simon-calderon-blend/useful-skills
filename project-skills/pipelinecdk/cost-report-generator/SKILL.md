@@ -72,7 +72,7 @@ Licenciamiento = Procesamiento x 0.76; Total = the three. Procesamiento + Plataf
 
 Known gap: the dashboard reads from 2026-07-25 (fixed in its SQL) up to yesterday (rolling, exclusive end); the skill takes `--start` and an inclusive `--end`.
 To compare against the dashboard, use the same window: its "Fecha Fin" is exclusive, so dashboard 01/08 to 31/08 equals
-`--start 2026-08-01 --end 2026-08-30`. Verified: Procesamiento, Licenciamiento and Total match within 6 COP (Plataforma within 546 COP, not yet explained).
+`--start 2026-08-01 --end 2026-08-30`. Verified: Procesamiento and Licenciamiento match within 4 COP; Total is 539 COP higher, all of it in Plataforma (193 to 544 COP per line, cause not found; the dashboard may run on a SPICE snapshot older than the CUR rewrite of 2026-09-02).
 
 ## Read-only rules (prod is sensitive)
 
