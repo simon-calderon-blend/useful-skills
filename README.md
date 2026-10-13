@@ -44,3 +44,11 @@ $EDITOR skills/my-skill/SKILL.md
 The `description` in the frontmatter is what Claude uses to decide when to load
 the skill, so say both what it does and when to use it. Keep `SKILL.md` short
 and move long reference material into sibling files it links to.
+
+## Project-scoped skills
+
+`project-skills/<repo>/<skill>/` holds skills meant for one repository only. They are outside `skills/`, so
+`install.sh`, `validate.sh` and the plugin ignore them. Use one by symlinking it into that repo's `.claude/skills/`:
+
+- `project-skills/pipelinecdk/cost-report-generator`: regenerates the AWS cost report .xlsx from the prod CUR
+  (used in `adr-medicalAudit-pipelineCDK`, linked at `.claude/skills/cost-report-generator`).
