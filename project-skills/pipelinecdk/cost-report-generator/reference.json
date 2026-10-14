@@ -29,8 +29,7 @@
    "name": "ADRES - TEST - Shared Resources",
    "ambiente": "Test",
    "conditional": false,
-   "rubro_pruebas": true,
-   "factor": 0.7
+   "rubro_pruebas": true
   },
   "798406098406": {
    "name": "ADRES - PROD - Medical Audit",
