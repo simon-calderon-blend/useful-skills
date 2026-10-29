@@ -29,8 +29,7 @@
    "name": "ADRES - TEST - Shared Resources",
    "ambiente": "Test",
    "conditional": false,
-   "rubro_pruebas": true,
-   "factor": 0.7
+   "rubro_pruebas": true
   },
   "798406098406": {
    "name": "ADRES - PROD - Medical Audit",
@@ -75,6 +74,7 @@
   "AWSSecurityHub": "AWS Security Hub",
   "AWSSupportEnterprise": "AWS Enterprise Support",
   "AWSSystemsManager": "AWS Systems Manager",
+  "AWSXRay": "AWS X-Ray",
   "AmazonApiGateway": "Amazon API Gateway",
   "AmazonAthena": "Amazon Athena",
   "AmazonBedrock": "Amazon Bedrock",
@@ -122,6 +122,7 @@
   "AWS Step Functions": "Integracion y orquestacion",
   "AWS Systems Manager": "Operaciones y gestion",
   "AWS WAF": "Seguridad",
+  "AWS X-Ray": "Observabilidad",
   "AWSEvents": "Integracion y orquestacion",
   "Amazon API Gateway": "Networking",
   "Amazon Athena": "Analitica y BI",
