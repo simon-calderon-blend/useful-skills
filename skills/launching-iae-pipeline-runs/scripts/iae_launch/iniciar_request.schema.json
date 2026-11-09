@@ -1,0 +1,211 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$comment": "Transcrito de adr-medicalAudit-pipelineCDK lib/services/audit-api/models/iniciar-request.model.ts:24-97 (commit 4a0090b9). Draft-04; el modelo del API no tiene additionalProperties:false.",
+  "type": "object",
+  "required": [
+    "idReclamacion",
+    "idSolicitud"
+  ],
+  "properties": {
+    "idSolicitud": {
+      "type": "integer"
+    },
+    "numeroSolicitud": {
+      "oneOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "idReclamacion": {
+      "type": "integer"
+    },
+    "numeroRadicado": {
+      "oneOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "fechaRadicacion": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "numero_factura": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nitEntidad": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nombreEntidad": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "skipDelivery": {
+      "type": "boolean"
+    },
+    "sourcePrefix": {
+      "type": "string"
+    },
+    "level": {
+      "type": "integer"
+    },
+    "soportes": {
+      "type": "object",
+      "required": [
+        "rutaArchivosObligatorios",
+        "rutaArchivosSoportes"
+      ],
+      "properties": {
+        "idSoporte": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nombreFUR": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rutaFUR": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nombreRIPS": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rutaRIPS": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nombreFEV": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rutaFEV": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nombreCUV": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rutaCUV": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nombreFURRG": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rutaFURRG": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rutaArchivosObligatorios": {
+          "type": "string"
+        },
+        "rutaArchivosSoportes": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
