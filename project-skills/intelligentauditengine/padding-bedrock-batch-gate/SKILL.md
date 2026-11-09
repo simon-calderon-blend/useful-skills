@@ -11,10 +11,19 @@ A radicado contributes about 4 to 8 chunks, so a small run waits in DocExtractio
 This skill replaces `scripts/upstream_extraction/fill_spuria_conveyor.py` from the IAE repo. It runs
 `padding-gate`, a self-contained CLI. It never runs in prod.
 
+## Scope
+
+This is a project skill for the IntelligentAuditEngine repo only. Its source lives in the `useful-skills` repo under
+`project-skills/intelligentauditengine/`. The IAE repo uses it through the symlink
+`.claude/skills/padding-bedrock-batch-gate`, which `.gitignore` already covers. Because it is outside `skills/`,
+`install.sh` and the plugin do not install it globally.
+
 ## Run it
 
+From the IntelligentAuditEngine repo root:
+
 ```bash
-G="uv run --project ~/.claude/skills/padding-bedrock-batch-gate/scripts padding-gate"
+G="uv run --project .claude/skills/padding-bedrock-batch-gate/scripts padding-gate"
 $G status  --env test --profile ADR-TEST-MEDICALAUDIT          # read-only, always first
 $G inject  --env test --profile ADR-TEST-MEDICALAUDIT          # dry run: prints the plan
 $G inject  --env test --profile ADR-TEST-MEDICALAUDIT --apply  # writes, after the user says yes

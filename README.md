@@ -52,3 +52,6 @@ and move long reference material into sibling files it links to.
 
 - `project-skills/pipelinecdk/cost-report-generator`: regenerates the AWS cost report .xlsx from the prod CUR
   (used in `adr-medicalAudit-pipelineCDK`, linked at `.claude/skills/cost-report-generator`).
+- `project-skills/intelligentauditengine/padding-bedrock-batch-gate`: pads the doc-extraction conveyor with filler
+  chunks so a small Bedrock Batch job can start in dev/test, and cleans them up once safe
+  (used in `IntelligentAuditEngine`, linked at `.claude/skills/padding-bedrock-batch-gate`).
