@@ -1,0 +1,27 @@
+/* OPTIONAL dark theme (decided 2026-11-10: dark stays optional, never the default).
+   Include this file only when the document asks for dark support: blend_web.py --dark adds it plus a toggle.
+   Pattern taken from the dashboard shares: prefers-color-scheme + explicit [data-theme]. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: var(--blend-black);
+    --surface: var(--blend-ink);
+    --text: var(--blend-paper);
+    --text-muted: #AEB9C4;
+    --heading: var(--blend-white);
+    --accent: var(--blend-link-dark);
+    --hairline: rgba(255, 255, 255, .14);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: var(--blend-black);
+  --surface: var(--blend-ink);
+  --text: var(--blend-paper);
+  --text-muted: #AEB9C4;
+  --heading: var(--blend-white);
+  --accent: var(--blend-link-dark);
+  --hairline: rgba(255, 255, 255, .14);
+}
+
+/* Logo letters turn white on dark (kept here so light-only pages never get a white logo on paper) */
+:root[data-theme="dark"] .blend-logo { color: var(--blend-white); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .blend-logo { color: var(--blend-white); } }

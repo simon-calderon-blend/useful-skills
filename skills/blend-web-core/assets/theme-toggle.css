@@ -1,0 +1,6 @@
+/* Light/dark toggle. Included only when a page is built with dark support. */
+.b-theme-toggle { font: inherit; font-size: .8rem; cursor: pointer; padding: .3rem .8rem; border-radius: 999px;
+  border: 1px solid var(--hairline); background: var(--surface); color: var(--text); }
+.b-theme-toggle:hover { border-color: var(--accent); }
+.b-theme-fixed { position: fixed; left: 1rem; bottom: 1rem; z-index: 50; }
+@media print { .b-theme-toggle { display: none; } }

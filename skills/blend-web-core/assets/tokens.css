@@ -1,0 +1,49 @@
+/* Blend web tokens. Source of truth: Blend share canon (ai-evaluation-workshop,
+   knowledge-work-transformation, blend-spark-harness-engineering) + the official
+   Design System bundle (blend-brb-screen/_ds/.../tokens/colors.css).
+   Navy for WEB is #053057. #003059 is DOCX-only (blend-documents) and must not appear here. */
+:root {
+  /* Brand (8 official + 1 rare accent) */
+  --blend-navy: #053057;        /* "washed blue" */
+  --blend-cyan: #00EDED;        /* neon turquoise: fills, lines, on-dark text. NEVER text on light */
+  --blend-cyan-soft: #A2F3F3;   /* light turquoise */
+  --blend-paper: #F4F3F0;       /* off-white */
+  --blend-slate: #314550;       /* cool gray */
+  --blend-ink: #1A1A1A;
+  --blend-black: #0B0D0E;
+  --blend-white: #FFFFFF;
+  --blend-pink: #FF2D9B;        /* rare accent, decks only */
+
+  /* Derived (from the Design System bundle, so they are traceable) */
+  --blend-teal: #007676;        /* ok / accessible teal text on light */
+  --blend-link: #075089;        /* accent on light (Starlight common.css) */
+  --blend-link-dark: #00C6C6;   /* accent on dark (Starlight common.css) */
+  --blend-mist: #E8EDF0;
+  --state-ok: #007676;
+  --state-warn: #B86A12;
+  --state-bad: #C8412B;
+  --state-info: #11567F;
+
+  /* Semantic (light theme = default) */
+  --bg: var(--blend-paper);
+  --surface: var(--blend-white);
+  --text: var(--blend-ink);
+  --text-muted: var(--blend-slate);
+  --heading: var(--blend-navy);
+  --accent: var(--blend-link);
+  --hairline: rgba(5, 48, 87, .13);
+  --on-brand: var(--blend-white);
+  --on-brand-accent: var(--blend-cyan);
+
+  /* Type: PP Telegraf Regular is bundled in assets/fonts and embedded by blend_web.py (base64).
+     Montserrat is the fallback when the font is not embedded (--font none). */
+  --font: 'PP Telegraf', 'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --fw: 400;                    /* PP Telegraf is used at 400 only */
+
+  /* Shape and rhythm */
+  --radius: 12px;
+  --radius-lg: 14px;
+  --gap: 1rem;
+  --measure: 68ch;
+}
