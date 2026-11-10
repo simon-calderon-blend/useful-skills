@@ -1,0 +1,13 @@
+/* Only included with --dark: the editorial layer paints some surfaces with fixed brand colors; here they follow the dark tokens. */
+:root[data-theme="dark"] .e-topbar { background: var(--surface); }
+:root[data-theme="dark"] .e-topbar .blend-logo, :root[data-theme="dark"] .e-topbar nav a, :root[data-theme="dark"] .e-quote { color: var(--heading); }
+:root[data-theme="dark"] .e-label b, :root[data-theme="dark"] .e-steps li::before { color: var(--accent); }
+:root[data-theme="dark"] .e-label, :root[data-theme="dark"] .e-cobrand .client { color: var(--text-muted); }
+:root[data-theme="dark"] .e-steps li { background: var(--surface); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .e-topbar { background: var(--surface); }
+  :root:not([data-theme="light"]) .e-topbar .blend-logo, :root:not([data-theme="light"]) .e-topbar nav a, :root:not([data-theme="light"]) .e-quote { color: var(--heading); }
+  :root:not([data-theme="light"]) .e-label b, :root:not([data-theme="light"]) .e-steps li::before { color: var(--accent); }
+  :root:not([data-theme="light"]) .e-label, :root:not([data-theme="light"]) .e-cobrand .client { color: var(--text-muted); }
+  :root:not([data-theme="light"]) .e-steps li { background: var(--surface); }
+}

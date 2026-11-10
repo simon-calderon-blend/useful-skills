@@ -1,0 +1,13 @@
+{"kind":"article","lang":"en","title":"Why agents need a map before they move","eyebrow":"Illustrative essay","dek":"A short example of the Blend editorial layout: hero, prose, pull quote, callout and a diagram.","meta":"Illustrative · Blend · 6 min read","nav":true,
+ "cta":{"label":"Talk to Blend","href":"https://www.blend360.com","title":"Want to apply this?","text":"Illustrative closing call to action."},
+ "sections":[
+ {"label":"Thesis","title":"Context is the scarce input","blocks":[
+  {"p":"Illustrative text. Teams that give an agent a clear description of the work before it starts spend less time correcting it afterwards. The pattern is simple: write down the goal, the constraints and the acceptance check."},
+  {"quote":"The agent is only as good as the map it was handed.","cite":"Illustrative pull quote"},
+  {"p":"A second paragraph keeps the measure honest: line length stays between sixty and eighty characters so the eye can return to the next line without effort."},
+  {"callout":"<strong>Takeaway.</strong> Write the acceptance check before the first prompt."}]},
+ {"label":"Mechanism","title":"Three layers, one loop","blocks":[
+  {"p":"The diagram below shows the loop. All numbers and names are illustrative."},
+  {"figure":"<svg viewBox=\"0 0 600 140\" role=\"img\" aria-label=\"Three layers: Spec, Agent, Check, with a feedback arrow\"><g font-family=\"PP Telegraf,Montserrat,Arial,sans-serif\" font-size=\"15\"><rect x=\"20\" y=\"40\" width=\"150\" height=\"60\" rx=\"10\" fill=\"#053057\"/><text x=\"95\" y=\"76\" text-anchor=\"middle\" fill=\"#fff\">Spec</text><rect x=\"225\" y=\"40\" width=\"150\" height=\"60\" rx=\"10\" fill=\"#053057\"/><text x=\"300\" y=\"76\" text-anchor=\"middle\" fill=\"#fff\">Agent</text><rect x=\"430\" y=\"40\" width=\"150\" height=\"60\" rx=\"10\" fill=\"#053057\"/><text x=\"505\" y=\"76\" text-anchor=\"middle\" fill=\"#fff\">Check</text><path d=\"M170 70H225M375 70H430\" stroke=\"#00EDED\" stroke-width=\"3\"/><path d=\"M505 100V125H95V100\" stroke=\"#00EDED\" stroke-width=\"3\" fill=\"none\"/></g></svg>","caption":"Figure 1. Illustrative loop: spec, agent, check."},
+  {"h3":"What changes in practice"},
+  {"ul":["Briefs shrink to one page.","Reviews start from the check, not the diff."]}]}]}

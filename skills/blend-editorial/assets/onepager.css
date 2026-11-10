@@ -1,0 +1,7 @@
+/* One-pager: each .e-sheet is one Letter page when printed. */
+@page { size: 8.5in 11in; margin: 0; }
+@media print {
+  .e-sheet { width: 8.5in; height: 11in; overflow: hidden; break-after: page; page-break-after: always; }
+  .e-topbar { position: static; }
+  .e-hero, .e-cta, .e-steps li, .e-cards .b-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

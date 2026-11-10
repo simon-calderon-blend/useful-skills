@@ -1,0 +1,6 @@
+{"kind":"landing","lang":"en","title":"Evidence-first analytics for operations teams","eyebrow":"Illustrative landing","dek":"Example landing page: a one-line promise, three proof points and a single call to action.","meta":"Illustrative · Blend","illustrative":true,"nav":true,
+ "cta":{"label":"Request a demo","href":"https://www.blend360.com","title":"See it on your data","text":"Illustrative call to action."},
+ "sections":[
+ {"label":"Why","title":"Three reasons teams adopt it","blocks":[{"cards":[["Faster","Illustrative: decisions in days."],["Traceable","Illustrative: every number links to its source."],["Governed","Illustrative: access follows your policies."]]}]},
+ {"label":"Proof","title":"Illustrative results","blocks":[{"kpis":[["-40%","Illustrative cycle time"],["+25%","Illustrative coverage"],["99%","Illustrative accuracy"]]},{"p":"Illustrative sample metrics. Replace with approved client results before sharing."}]},
+ {"label":"Process","title":"From first call to value","blocks":[{"steps":[["Discover","Illustrative."],["Pilot","Illustrative."],["Scale","Illustrative."]]}]}]}

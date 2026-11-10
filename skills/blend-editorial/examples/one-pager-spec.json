@@ -1,0 +1,11 @@
+{"kind":"one-pager","lang":"en","title":"Synthetic Studio for Example Client","eyebrow":"Illustrative one-pager","dek":"A two-page example of the commercial layout with co-branding. All content is illustrative.","meta":"Prepared for Example Client · Illustrative","illustrative":true,"nav":false,
+ "client":{"name":"Example Client","logo":"assets/client-logo-placeholder.svg","alt":"Example Client logo (placeholder)","confidential":true},
+ "cta":{"label":"Book a working session","href":"https://www.blend360.com","title":"Start with a two-week working session","text":"Illustrative offer: agree scope, data access and success measures."},
+ "sheets":[
+ [{"label":"Offer","title":"What you get","blocks":[
+   {"p":"Illustrative copy. A synthetic panel that answers questions in hours instead of weeks."},
+   {"kpis":[["10x","Illustrative speed-up"],["3","Illustrative pilots"],["2 wks","Illustrative time to first result"]]},
+   {"cards":[["Panel","Illustrative synthetic respondents grounded in your data."],["Studio","Illustrative workspace to design and run studies."],["Report","Illustrative evidence-linked readouts."]]}]}],
+ [{"label":"Engagement","title":"How we work together","blocks":[
+   {"steps":[["Frame","Illustrative: agree the question."],["Build","Illustrative: ground the panel."],["Run","Illustrative: field the study."],["Decide","Illustrative: review the readout."]]},
+   {"callout":"<strong>Illustrative.</strong> Figures and names on this page are examples, not client data."}]}]]}
