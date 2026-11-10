@@ -1,0 +1,112 @@
+/* Blend theme for Swagger UI (override layer). Requires blend-web-core tokens.css + components.css
+   and vendor/swagger-ui.css loaded BEFORE this file. Every selector is under .swagger-ui or a b-api-* class.
+   Colors come from tokens; method chips use the palette below (contrast checked in references/method-chips.md). */
+:root {
+  --m-get: var(--blend-navy);          /* white text */
+  --m-post-bg: var(--blend-cyan-soft); /* navy text + navy border: cyan is never text on light */
+  --m-put: #0E6BA8;                    /* white text, 5.7:1, series color of the dashboard shares */
+  --m-delete: #B5290F;                 /* white text, 6.4:1 */
+  --m-other: var(--blend-slate);       /* head, options, trace */
+  --warn-bg: #FBF1E0;
+  --code-bg: var(--blend-black);
+  --code-fg: var(--blend-paper);
+}
+
+/* Status banner and page frame */
+.b-api-band { padding: .8rem clamp(1rem, 4vw, 2.5rem); font-size: .92rem; line-height: 1.5; border-bottom: 1px solid var(--hairline); }
+.b-api-band.current { background: var(--blend-navy); color: var(--blend-white); }
+.b-api-band.current strong { color: var(--blend-cyan); font-weight: 600; }
+.b-api-band.proposed { background: var(--warn-bg); color: var(--blend-ink); border-left: 6px solid var(--state-warn); }
+.b-api-band.proposed strong { color: var(--blend-ink); font-weight: 600; }
+.b-api-band a { color: inherit; }
+.b-api-meta { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; font-size: .85rem; }
+.b-header .b-api-meta { margin-left: auto; }
+.b-api-meta a { color: var(--accent); }
+.b-api-main { max-width: 1240px; margin: 0 auto; padding: 0 clamp(1rem, 4vw, 2.5rem) 3rem; }
+.b-api-note { font-size: .8rem; color: var(--text-muted); padding: .75rem 0 0; }
+
+/* Swagger base */
+.swagger-ui .topbar { display: none; }
+.swagger-ui, .swagger-ui .info li, .swagger-ui .info p, .swagger-ui .info table, .swagger-ui .opblock-tag,
+.swagger-ui .opblock .opblock-summary-description, .swagger-ui .opblock .opblock-section-header h4,
+.swagger-ui .opblock-description-wrapper p, .swagger-ui .responses-inner h4, .swagger-ui .responses-inner h5,
+.swagger-ui table thead tr td, .swagger-ui table thead tr th, .swagger-ui .parameter__name, .swagger-ui .tab li,
+.swagger-ui .btn, .swagger-ui select, .swagger-ui label, .swagger-ui .response-col_status,
+.swagger-ui .model-title, .swagger-ui section.models h4, .swagger-ui .scheme-container .schemes > label {
+  font-family: var(--font); color: var(--text);
+}
+/* elements that Swagger leaves on sans-serif (version stamps, tag descriptions) */
+.swagger-ui .info .title small pre, .swagger-ui .opblock-tag small, .swagger-ui .opblock-tag small .markdown, .swagger-ui .opblock-tag small p { font-family: var(--font); }
+.swagger-ui .wrapper { max-width: none; padding: 0; }
+.swagger-ui .info { margin: 2rem 0 1.25rem; }
+.swagger-ui .info .title { color: #053057; font-family: var(--font); font-weight: var(--fw); font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: -.02em; line-height: 1.15; }
+.swagger-ui .info .title small { background: var(--blend-navy); color: var(--blend-white); border-radius: 999px; font-family: var(--font); top: -4px; }
+.swagger-ui .info .title small.version-stamp { background: var(--blend-slate); }
+.swagger-ui .info a, .swagger-ui .info .base-url { color: var(--accent); }
+.swagger-ui .info .base-url { font-family: var(--font-mono); }
+.swagger-ui .info h1, .swagger-ui .info h2, .swagger-ui .info h3, .swagger-ui .info h4 { color: var(--heading); font-family: var(--font); font-weight: var(--fw); }
+.swagger-ui .info table { border-collapse: collapse; }
+.swagger-ui .info table th { background: var(--blend-navy); color: var(--blend-white); padding: .4rem .6rem; text-align: left; font-weight: var(--fw); }
+.swagger-ui .info table td { border-bottom: 1px solid var(--hairline); padding: .4rem .6rem; }
+.swagger-ui .scheme-container { background: var(--surface); box-shadow: none; border: 1px solid var(--hairline); border-radius: var(--radius); margin: 0 0 1rem; padding: .8rem 1rem; }
+.swagger-ui .opblock-tag { color: var(--heading); border-bottom: 1px solid var(--hairline); font-size: 1.25rem; font-weight: var(--fw); }
+.swagger-ui .opblock-tag small { color: var(--text-muted); }
+.swagger-ui a.nostyle, .swagger-ui .opblock-tag a { color: inherit; }
+.swagger-ui .markdown code, .swagger-ui .renderedMarkdown code { background: rgba(5, 48, 87, .07); color: var(--blend-navy); font-family: var(--font-mono); }
+
+/* Operation blocks: border and fill by method, chip with the Blend palette */
+.swagger-ui .opblock { background: var(--surface); border: 1px solid var(--hairline); border-left-width: 5px; border-radius: var(--radius); box-shadow: none; margin: 0 0 .6rem; }
+.swagger-ui .opblock .opblock-summary { border-bottom: 0; }
+.swagger-ui .opblock .opblock-summary-method { font-family: var(--font); font-weight: 600; border-radius: 6px; min-width: 70px; text-shadow: none; }
+.swagger-ui .opblock .opblock-summary-path, .swagger-ui .opblock .opblock-summary-path__deprecated { font-family: var(--font-mono); color: var(--text); font-size: .95rem; }
+.swagger-ui .opblock .opblock-summary-operation-id { color: var(--text-muted); font-family: var(--font-mono); }
+.swagger-ui .opblock .opblock-section-header { background: rgba(5, 48, 87, .05); box-shadow: none; }
+.swagger-ui .opblock.opblock-get { border-color: var(--m-get); background: rgba(5, 48, 87, .04); }
+.swagger-ui .opblock.opblock-get .opblock-summary-method, .swagger-ui .opblock.opblock-get .tab-header .tab-item.active h4 span::after { background: var(--m-get); color: var(--blend-white); }
+.swagger-ui .opblock.opblock-post { border-color: var(--blend-navy); border-left-color: var(--blend-cyan); background: rgba(162, 243, 243, .22); }
+.swagger-ui .opblock.opblock-post .opblock-summary-method { background: var(--m-post-bg); color: var(--blend-navy); border: 1px solid var(--blend-navy); }
+.swagger-ui .opblock.opblock-put, .swagger-ui .opblock.opblock-patch { border-color: var(--m-put); background: rgba(14, 107, 168, .06); }
+.swagger-ui .opblock.opblock-put .opblock-summary-method, .swagger-ui .opblock.opblock-patch .opblock-summary-method { background: var(--m-put); color: var(--blend-white); }
+.swagger-ui .opblock.opblock-delete { border-color: var(--m-delete); background: rgba(181, 41, 15, .05); }
+.swagger-ui .opblock.opblock-delete .opblock-summary-method { background: var(--m-delete); color: var(--blend-white); }
+.swagger-ui .opblock.opblock-head, .swagger-ui .opblock.opblock-options, .swagger-ui .opblock.opblock-trace { border-color: var(--m-other); background: rgba(49, 69, 80, .05); }
+.swagger-ui .opblock.opblock-head .opblock-summary-method, .swagger-ui .opblock.opblock-options .opblock-summary-method, .swagger-ui .opblock.opblock-trace .opblock-summary-method { background: var(--m-other); color: var(--blend-white); }
+.swagger-ui .opblock.opblock-deprecated { opacity: .7; }
+.swagger-ui .opblock .opblock-summary-control:focus-visible { outline: 2px solid var(--accent); }
+
+/* Buttons, tables, models, code */
+.swagger-ui .btn.authorize { background: var(--blend-navy); color: var(--blend-white); border: 1px solid var(--blend-navy); border-radius: 999px; }
+.swagger-ui .btn.authorize svg { fill: var(--blend-white); }
+.swagger-ui .btn.execute { background: var(--blend-navy); border-color: var(--blend-navy); color: var(--blend-white); }
+.swagger-ui .btn { border-radius: 999px; box-shadow: none; }
+.swagger-ui table thead tr td, .swagger-ui table thead tr th { border-bottom: 1px solid var(--hairline); color: var(--text-muted); }
+.swagger-ui .parameter__name.required::after, .swagger-ui .parameter__name.required span { color: var(--state-bad); }
+.swagger-ui .parameter__type, .swagger-ui .parameter__in, .swagger-ui .prop-type, .swagger-ui .prop-format { color: var(--text-muted); font-family: var(--font-mono); }
+.swagger-ui section.models { border: 1px solid var(--hairline); border-radius: var(--radius); background: var(--surface); }
+.swagger-ui section.models h4 { color: var(--heading); font-weight: var(--fw); }
+.swagger-ui .model-box, .swagger-ui .model { color: var(--text); }
+.swagger-ui .responses-inner { background: transparent; }
+.swagger-ui .highlight-code > .microlight, .swagger-ui .microlight, .swagger-ui .opblock-body pre.microlight { background: var(--code-bg) !important; color: var(--code-fg) !important; font-family: var(--font-mono); border-radius: 8px; }
+.swagger-ui .opblock-body pre.microlight span { color: inherit !important; }
+.swagger-ui .opblock-body pre.microlight .headerline { background: var(--blend-black); color: var(--blend-cyan-soft) !important; }
+.swagger-ui .response-col_status { color: var(--text); }
+.swagger-ui .tab li button.tablinks { font-family: var(--font); color: var(--text-muted); }
+.swagger-ui .tab li.active button.tablinks { color: var(--heading); }
+
+/* Compare shell (only used when --compare-spec is given) */
+.b-api-toggle { display: inline-flex; border: 1px solid var(--blend-navy); border-radius: 999px; overflow: hidden; }
+.b-api-toggle button { font: inherit; font-size: .85rem; padding: .35rem .9rem; border: 0; background: transparent; color: var(--blend-navy); cursor: pointer; }
+.b-api-toggle button[aria-pressed="true"] { background: var(--blend-navy); color: var(--blend-white); }
+.b-api-panes { display: grid; grid-template-columns: 1fr 1fr; gap: 0; height: calc(100vh - 150px); min-height: 480px; }
+.b-api-panes figure { margin: 0; display: flex; flex-direction: column; min-width: 0; border-right: 1px solid var(--hairline); }
+.b-api-panes figcaption { padding: .4rem 1rem; font-size: .8rem; text-transform: uppercase; letter-spacing: .12em; color: var(--text-muted); background: var(--surface); border-bottom: 1px solid var(--hairline); }
+.b-api-panes figure.proposed figcaption { box-shadow: inset 4px 0 0 var(--state-warn); }
+.b-api-panes iframe { flex: 1; width: 100%; border: 0; background: var(--bg); }
+body[data-view="current"] .b-api-panes, body[data-view="proposed"] .b-api-panes { grid-template-columns: 1fr; }
+body[data-view="current"] figure.proposed, body[data-view="proposed"] figure.current { display: none; }
+@media (max-width: 900px) { .b-api-panes { grid-template-columns: 1fr; height: auto; } .b-api-panes iframe { height: 80vh; } }
+@media (max-width: 640px) {
+  .swagger-ui .opblock .opblock-summary-path { font-size: .8rem; word-break: break-all; }
+  .swagger-ui .opblock .opblock-summary-description, .swagger-ui .opblock .opblock-summary-operation-id { display: none; }
+  .b-header .b-api-meta .b-chip, .b-header .b-api-meta a { display: none; } /* keep the theme toggle reachable on mobile */
+}

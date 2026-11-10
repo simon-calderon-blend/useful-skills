@@ -1,0 +1,46 @@
+/* OPTIONAL dark layer for Swagger UI (dark mode stays optional; decided 2026-11-10).
+   Needs tokens-dark.css (flips --bg, --surface, --text...). Both blocks present, as validate.py check 7 requires. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .swagger-ui .info .title { color: var(--blend-white); }
+  :root:not([data-theme="light"]) .swagger-ui .info .title small { background: var(--blend-cyan); color: var(--blend-navy); }
+  :root:not([data-theme="light"]) .swagger-ui .opblock { background: var(--surface); }
+  :root:not([data-theme="light"]) .swagger-ui .opblock .opblock-section-header { background: rgba(255, 255, 255, .06); }
+  :root:not([data-theme="light"]) .swagger-ui input, :root:not([data-theme="light"]) .swagger-ui select, :root:not([data-theme="light"]) .swagger-ui textarea { background: var(--blend-black); color: var(--text); border-color: var(--hairline); }
+  :root:not([data-theme="light"]) .swagger-ui .opblock.opblock-get .opblock-summary-method { background: var(--blend-cyan); color: var(--blend-navy); }
+  :root:not([data-theme="light"]) .swagger-ui .scheme-container, :root:not([data-theme="light"]) .swagger-ui section.models { background: var(--surface); }
+  :root:not([data-theme="light"]) .swagger-ui .model-toggle::after, :root:not([data-theme="light"]) .swagger-ui .arrow { filter: invert(1); }
+  :root:not([data-theme="light"]) .b-api-toggle { border-color: var(--blend-cyan); }
+  :root:not([data-theme="light"]) .b-api-toggle button { color: var(--blend-cyan); }
+  :root:not([data-theme="light"]) .b-api-toggle button[aria-pressed="true"] { background: var(--blend-cyan); color: var(--blend-navy); }
+  :root:not([data-theme="light"]) .b-api-band.proposed { background: #2A2112; color: var(--blend-paper); }
+  :root:not([data-theme="light"]) .b-api-band.proposed strong { color: var(--blend-white); }
+  :root:not([data-theme="light"]) .swagger-ui .markdown code, :root:not([data-theme="light"]) .swagger-ui .renderedMarkdown code { background: rgba(255, 255, 255, .08); color: var(--blend-cyan-soft); }
+  :root:not([data-theme="light"]) .swagger-ui .opblock.opblock-get { background: rgba(0, 237, 237, .05); }
+  :root:not([data-theme="light"]) .swagger-ui .opblock.opblock-post { border-color: var(--hairline); border-left-color: var(--blend-cyan-soft); background: rgba(162, 243, 243, .07); }
+  :root:not([data-theme="light"]) .swagger-ui .opblock.opblock-post .opblock-summary-method { background: transparent; color: var(--blend-cyan-soft); border: 1px solid var(--blend-cyan-soft); }
+  :root:not([data-theme="light"]) .swagger-ui .opblock.opblock-put, :root:not([data-theme="light"]) .swagger-ui .opblock.opblock-patch { background: rgba(14, 107, 168, .14); }
+  :root:not([data-theme="light"]) .swagger-ui .opblock.opblock-delete { background: rgba(181, 41, 15, .14); }
+  :root:not([data-theme="light"]) .swagger-ui .opblock .opblock-section-header h4, :root:not([data-theme="light"]) .swagger-ui .opblock-description-wrapper p, :root:not([data-theme="light"]) .swagger-ui .opblock .opblock-summary-description { color: var(--text); }
+  :root:not([data-theme="light"]) .swagger-ui select { background-color: var(--blend-black); color-scheme: dark; }
+}
+:root[data-theme="dark"] .swagger-ui .info .title { color: var(--blend-white); }
+:root[data-theme="dark"] .swagger-ui .info .title small { background: var(--blend-cyan); color: var(--blend-navy); }
+:root[data-theme="dark"] .swagger-ui .opblock { background: var(--surface); }
+:root[data-theme="dark"] .swagger-ui .opblock .opblock-section-header { background: rgba(255, 255, 255, .06); }
+:root[data-theme="dark"] .swagger-ui input, :root[data-theme="dark"] .swagger-ui select, :root[data-theme="dark"] .swagger-ui textarea { background: var(--blend-black); color: var(--text); border-color: var(--hairline); }
+:root[data-theme="dark"] .swagger-ui .opblock.opblock-get .opblock-summary-method { background: var(--blend-cyan); color: var(--blend-navy); }
+:root[data-theme="dark"] .swagger-ui .scheme-container, :root[data-theme="dark"] .swagger-ui section.models { background: var(--surface); }
+:root[data-theme="dark"] .swagger-ui .model-toggle::after, :root[data-theme="dark"] .swagger-ui .arrow { filter: invert(1); }
+:root[data-theme="dark"] .b-api-toggle { border-color: var(--blend-cyan); }
+:root[data-theme="dark"] .b-api-toggle button { color: var(--blend-cyan); }
+:root[data-theme="dark"] .b-api-toggle button[aria-pressed="true"] { background: var(--blend-cyan); color: var(--blend-navy); }
+:root[data-theme="dark"] .b-api-band.proposed { background: #2A2112; color: var(--blend-paper); }
+:root[data-theme="dark"] .b-api-band.proposed strong { color: var(--blend-white); }
+:root[data-theme="dark"] .swagger-ui .markdown code, :root[data-theme="dark"] .swagger-ui .renderedMarkdown code { background: rgba(255, 255, 255, .08); color: var(--blend-cyan-soft); }
+:root[data-theme="dark"] .swagger-ui .opblock.opblock-get { background: rgba(0, 237, 237, .05); }
+:root[data-theme="dark"] .swagger-ui .opblock.opblock-post { border-color: var(--hairline); border-left-color: var(--blend-cyan-soft); background: rgba(162, 243, 243, .07); }
+:root[data-theme="dark"] .swagger-ui .opblock.opblock-post .opblock-summary-method { background: transparent; color: var(--blend-cyan-soft); border: 1px solid var(--blend-cyan-soft); }
+:root[data-theme="dark"] .swagger-ui .opblock.opblock-put, :root[data-theme="dark"] .swagger-ui .opblock.opblock-patch { background: rgba(14, 107, 168, .14); }
+:root[data-theme="dark"] .swagger-ui .opblock.opblock-delete { background: rgba(181, 41, 15, .14); }
+:root[data-theme="dark"] .swagger-ui .opblock .opblock-section-header h4, :root[data-theme="dark"] .swagger-ui .opblock-description-wrapper p, :root[data-theme="dark"] .swagger-ui .opblock .opblock-summary-description { color: var(--text); }
+:root[data-theme="dark"] .swagger-ui select { background-color: var(--blend-black); color-scheme: dark; }

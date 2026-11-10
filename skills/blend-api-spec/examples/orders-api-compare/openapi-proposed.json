@@ -1,0 +1,595 @@
+{
+ "openapi": "3.0.3",
+ "info": {
+  "title": "Illustrative Orders API",
+  "version": "1.1.0",
+  "description": "**Illustrative.** A made-up API used to show the Blend Swagger UI theme. All identifiers, names and amounts are fictitious.\n\n| Status | Meaning |\n|---|---|\n| `open` | Order accepted, not yet shipped |\n| `shipped` | Handed to the carrier |\n| `cancelled` | Cancelled before shipping |\n\n```bash\ncurl -H 'Authorization: Bearer <token>' https://api.example.com/v1/orders\n```"
+ },
+ "servers": [
+  {
+   "url": "https://api.example.com/v1",
+   "description": "Example server (not real)"
+  }
+ ],
+ "tags": [
+  {
+   "name": "Orders",
+   "description": "Create, read and change orders."
+  },
+  {
+   "name": "Customers",
+   "description": "Read-only customer lookups."
+  }
+ ],
+ "paths": {
+  "/orders": {
+   "get": {
+    "tags": [
+     "Orders"
+    ],
+    "summary": "List orders",
+    "operationId": "listOrders",
+    "parameters": [
+     {
+      "name": "status",
+      "in": "query",
+      "schema": {
+       "$ref": "#/components/schemas/OrderStatus"
+      },
+      "description": "Filter by status."
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "schema": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 100,
+       "default": 20
+      },
+      "example": 20
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "A page of orders.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/Order"
+         }
+        },
+        "example": [
+         {
+          "id": "ord_1001",
+          "customer_id": "cus_42",
+          "status": "open",
+          "total": 59.9,
+          "items": [
+           {
+            "sku": "SKU-RED-01",
+            "quantity": 2
+           }
+          ]
+         }
+        ]
+       }
+      }
+     },
+     "401": {
+      "$ref": "#/components/responses/Unauthorized"
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "Orders"
+    ],
+    "summary": "Create an order",
+    "operationId": "createOrder",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/NewOrder"
+       },
+       "example": {
+        "customer_id": "cus_42",
+        "items": [
+         {
+          "sku": "SKU-RED-01",
+          "quantity": 2
+         }
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Order created.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Order"
+        },
+        "example": {
+         "id": "ord_1002",
+         "customer_id": "cus_42",
+         "status": "open",
+         "total": 59.9,
+         "items": [
+          {
+           "sku": "SKU-RED-01",
+           "quantity": 2
+          }
+         ]
+        }
+       }
+      }
+     },
+     "422": {
+      "$ref": "#/components/responses/Invalid"
+     },
+     "401": {
+      "$ref": "#/components/responses/Unauthorized"
+     }
+    }
+   }
+  },
+  "/orders/{orderId}": {
+   "parameters": [
+    {
+     "name": "orderId",
+     "in": "path",
+     "required": true,
+     "schema": {
+      "type": "string"
+     },
+     "example": "ord_1001"
+    }
+   ],
+   "get": {
+    "tags": [
+     "Orders"
+    ],
+    "summary": "Get one order",
+    "operationId": "getOrder",
+    "responses": {
+     "200": {
+      "description": "The order.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Order"
+        },
+        "example": {
+         "id": "ord_1001",
+         "customer_id": "cus_42",
+         "status": "shipped",
+         "total": 59.9,
+         "items": [
+          {
+           "sku": "SKU-RED-01",
+           "quantity": 2
+          }
+         ]
+        }
+       }
+      }
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "Orders"
+    ],
+    "summary": "Replace the items of an order",
+    "operationId": "replaceOrderItems",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/NewOrder"
+       },
+       "example": {
+        "customer_id": "cus_42",
+        "items": [
+         {
+          "sku": "SKU-BLUE-07",
+          "quantity": 1
+         }
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Updated order.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Order"
+        },
+        "example": {
+         "id": "ord_1001",
+         "customer_id": "cus_42",
+         "status": "open",
+         "total": 24.0,
+         "items": [
+          {
+           "sku": "SKU-BLUE-07",
+           "quantity": 1
+          }
+         ]
+        }
+       }
+      }
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
+     }
+    }
+   },
+   "patch": {
+    "tags": [
+     "Orders"
+    ],
+    "summary": "Change the status of an order",
+    "operationId": "patchOrderStatus",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "required": [
+         "status"
+        ],
+        "properties": {
+         "status": {
+          "$ref": "#/components/schemas/OrderStatus"
+         }
+        }
+       },
+       "example": {
+        "status": "shipped"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Updated order.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Order"
+        },
+        "example": {
+         "id": "ord_1001",
+         "customer_id": "cus_42",
+         "status": "shipped",
+         "total": 59.9,
+         "items": [
+          {
+           "sku": "SKU-RED-01",
+           "quantity": 2
+          }
+         ]
+        }
+       }
+      }
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "Orders"
+    ],
+    "summary": "Delete an order",
+    "operationId": "deleteOrder",
+    "responses": {
+     "204": {
+      "description": "Deleted, no content."
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
+     }
+    }
+   }
+  },
+  "/customers/{customerId}": {
+   "get": {
+    "tags": [
+     "Customers"
+    ],
+    "summary": "Get a customer",
+    "operationId": "getCustomer",
+    "parameters": [
+     {
+      "name": "customerId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      },
+      "example": "cus_42"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "The customer.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Customer"
+        },
+        "example": {
+         "id": "cus_42",
+         "name": "Example Customer",
+         "country": "ZZ"
+        }
+       }
+      }
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
+     }
+    }
+   }
+  },
+  "/orders/{orderId}/cancel": {
+   "post": {
+    "tags": [
+     "Orders"
+    ],
+    "summary": "Cancel an order (proposed)",
+    "operationId": "cancelOrder",
+    "parameters": [
+     {
+      "name": "orderId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      },
+      "example": "ord_1001"
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "reason": {
+          "type": "string"
+         }
+        }
+       },
+       "example": {
+        "reason": "Customer request"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Cancelled order.",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Order"
+        },
+        "example": {
+         "id": "ord_1001",
+         "customer_id": "cus_42",
+         "status": "cancelled",
+         "total": 59.9,
+         "priority": "normal",
+         "items": [
+          {
+           "sku": "SKU-RED-01",
+           "quantity": 2
+          }
+         ]
+        }
+       }
+      }
+     },
+     "404": {
+      "$ref": "#/components/responses/NotFound"
+     }
+    }
+   }
+  }
+ },
+ "components": {
+  "securitySchemes": {
+   "bearerAuth": {
+    "type": "http",
+    "scheme": "bearer",
+    "description": "Send `Authorization: Bearer <token>`. No token is shown here."
+   }
+  },
+  "schemas": {
+   "OrderStatus": {
+    "type": "string",
+    "enum": [
+     "open",
+     "shipped",
+     "cancelled"
+    ],
+    "example": "open"
+   },
+   "OrderItem": {
+    "type": "object",
+    "required": [
+     "sku",
+     "quantity"
+    ],
+    "properties": {
+     "sku": {
+      "type": "string",
+      "example": "SKU-RED-01"
+     },
+     "quantity": {
+      "type": "integer",
+      "minimum": 1,
+      "example": 2
+     }
+    }
+   },
+   "NewOrder": {
+    "type": "object",
+    "required": [
+     "customer_id",
+     "items"
+    ],
+    "properties": {
+     "customer_id": {
+      "type": "string",
+      "example": "cus_42"
+     },
+     "items": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/OrderItem"
+      }
+     }
+    }
+   },
+   "Order": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "example": "ord_1001"
+     },
+     "customer_id": {
+      "type": "string",
+      "example": "cus_42"
+     },
+     "status": {
+      "$ref": "#/components/schemas/OrderStatus"
+     },
+     "total": {
+      "type": "number",
+      "format": "double",
+      "example": 59.9
+     },
+     "items": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/OrderItem"
+      }
+     },
+     "priority": {
+      "type": "string",
+      "enum": [
+       "normal",
+       "express"
+      ],
+      "example": "express",
+      "description": "Proposed field."
+     }
+    }
+   },
+   "Customer": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "example": "cus_42"
+     },
+     "name": {
+      "type": "string",
+      "example": "Example Customer"
+     },
+     "country": {
+      "type": "string",
+      "example": "ZZ"
+     }
+    }
+   },
+   "Error": {
+    "type": "object",
+    "required": [
+     "code",
+     "message"
+    ],
+    "properties": {
+     "code": {
+      "type": "string",
+      "example": "not_found"
+     },
+     "message": {
+      "type": "string",
+      "example": "Order not found"
+     }
+    }
+   }
+  },
+  "responses": {
+   "Unauthorized": {
+    "description": "Missing or invalid credentials.",
+    "content": {
+     "application/json": {
+      "schema": {
+       "$ref": "#/components/schemas/Error"
+      },
+      "example": {
+       "code": "unauthorized",
+       "message": "Missing bearer token"
+      }
+     }
+    }
+   },
+   "NotFound": {
+    "description": "Resource not found.",
+    "content": {
+     "application/json": {
+      "schema": {
+       "$ref": "#/components/schemas/Error"
+      },
+      "example": {
+       "code": "not_found",
+       "message": "Order not found"
+      }
+     }
+    }
+   },
+   "Invalid": {
+    "description": "Validation error.",
+    "content": {
+     "application/json": {
+      "schema": {
+       "$ref": "#/components/schemas/Error"
+      },
+      "example": {
+       "code": "invalid",
+       "message": "items must not be empty"
+      }
+     }
+    }
+   }
+  }
+ },
+ "security": [
+  {
+   "bearerAuth": []
+  }
+ ]
+}
