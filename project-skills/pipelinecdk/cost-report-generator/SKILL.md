@@ -24,7 +24,7 @@ Do not use it for ad hoc cost questions (use the `aws-billing-and-cost-managemen
 | Flag | Default | Meaning |
 |---|---|---|
 | `--start YYYY-MM-DD` | required | first day (usage start >= 00:00, CUR timestamps are UTC) |
-| `--end YYYY-MM-DD` | required | end, exclusive (usage start < 00:00 of this day). The dashboard "Fecha Fin" is inclusive: for 01/08 to 31/08 pass `--end 2026-09-01` |
+| `--end YYYY-MM-DD` | required | last day, inclusive (usage start < next day 00:00), same as the dashboard "Fecha Fin" |
 | `--profile` | `ADR-PROD-MEDICALAUDIT-SENSITIVE` | AWS SSO profile; never falls back to the default profile |
 | `--region` | `us-east-1` | |
 | `--bucket` / `--prefix` | `adr-prod-medicalaudit-datalake` / `costs/adr-prod-medicalaudit-cost-export-938536499966/data/` | CUR location |
@@ -42,28 +42,26 @@ Literals inside `Analisis de Costos` formulas are NOT parameters (scenario/forec
 
 ## Cost rules (source: QuickSight dashboard)
 
-The cost figures follow the rules of the dashboard `adr-prod-medicalaudit-kpis-dashboard` (id `a7f076dc-8fab-4971-a226-2cb25860abda`,
-dataset `adr-prod-medicalaudit-costos`), not the raw CUR cost. Per row, the "Costo Atribuible Auditoria Medica" is `line_item_unblended_cost`
-under these rules, as the dashboard's calculated field defines them (read 2026-10-20). No account gets a multiplier; the only partial
-charges are date and tag conditions:
+The cost figures follow the rules of the dashboard `adr-prod-medicalaudit-kpis-dashboard` (dataset `adr-prod-medicalaudit-costos`),
+not the raw CUR cost. Per row, the "Costo Atribuible Auditoria Medica" is `line_item_unblended_cost` times a factor:
 
 | Account | Rule |
 |---|---|
-| 276553701208 (Test Medical Audit) | full cost only when usage start >= 2026-08-01, else 0 |
-| 329643319012 (Prod Networking), 639994152617 (Prod Logs Archive) | full cost only when tag `user_project_id` = P2847, else 0 |
-| 697030116526 (Test Shared Resources), 938536499966, 798406098406, 895890050455, 640122371010 | full cost |
-| any other account | 0 (the dashboard does not include it) |
+| 276553701208 | full cost only when usage start >= 2026-08-01, else 0 |
+| 938536499966, 798406098406, 895890050455, 640122371010, 697030116526 | full cost |
+| 329643319012, 639994152617 | full cost only when tag `user_project_id` = P2847, else 0 |
 
-The rules live in `reference.json` (`from` and `conditional` per account; a `factor` key would apply a multiplier if the dashboard ever adds one,
-none does today), so they are data, not code. The row filter does not use the
+The rules live in `reference.json` (`factor`, `from` per account), so they are data, not code. The analysis
+`adr-prod-medicalaudit-kpis-analysis-v3` still has 697030116526 x 0.7 and an exclusive end date; the published dashboard does not. The row filter does not use the
 adjusted value: rows with raw cost 0 are dropped, rows that the rules turn into 0 are kept (row count stays 60,304 for the template window).
 
 Which columns are adjusted and which are raw:
+
 - `Detalle_facturado!R` "Costo AWS (USD)" holds the **attributable** cost (adjusted). The template has no second USD column, so the layout was kept
   and the raw CUR cost is not in the workbook. The script prints both totals at the end (`CUR sin ajuste`). Everything downstream is adjusted:
   T/V/W, `Por_cuenta`, `Por_servicio`, `Cuenta_servicio_uso` (USD, COP, licensing, total), `Resumen`, `Analisis de Costos`, `Analisis`.
 - `Detalle_facturado!N` / `Cuenta_servicio_uso!I` "Cantidad reportada por AWS" is the raw usage amount (not adjusted).
-- `Detalle_facturado!X` "Regla de atribución" says which rule applied ("Cuenta directa", "Cuenta directa desde 2026-08-01", "Cuenta condicionada + P2847").
+- `Detalle_facturado!X` "Regla de atribución" says which rule applied ("Cuenta directa", "Cuenta directa desde 2026-08-01", ...).
 - Labels such as "Costo AWS total" (Resumen) keep their template text but now show the attributable cost.
 
 COP side, as in the dashboard (TRM 3655.16): Procesamiento = account 798406098406 with `user_cost_center` = MedicalAudit; Plataforma = the rest;
@@ -73,14 +71,12 @@ Licenciamiento = Procesamiento x 0.76; Total = the three. Procesamiento + Plataf
 `rubro_pruebas` (as 276553701208), so B10 = dashboard "Costo Plataforma Test" and H10 = "Costo Plataforma Prod".
 `--trm` and `--licensing` are unchanged; the dashboard's `Target ...` and "Unidades" parameters and the glosas/reclamaciones filters are not modeled.
 
-Date semantics: `--start` is inclusive and `--end` is exclusive. The dashboard's "Fecha Fin" is inclusive (its range filter uses
-IncludeMaximum), so dashboard 01/08 to 31/08 is `--start 2026-08-01 --end 2026-09-01`. The dashboard's own SQL reads from 2026-07-25 up to
-yesterday (rolling), so the skill does not reproduce that rolling end; pass explicit dates.
-Status 2026-10-20: reconciled with the dashboard for 01/08 to 31/08 (`--start 2026-08-01 --end 2026-09-01`). Script vs dashboard, COP:
-Procesamiento 134.102.655 vs 134.102.660; Plataforma 60.551.747 vs 60.551.430 (Test 25.699.966 vs 25.699.850; Prod 34.851.781 vs 34.851.580);
-Licenciamiento 101.918.018 vs 101.918.021; Total 296.572.420 vs 296.572.111 (residual about 300 COP). The rules are the dashboard's: no factor for
-697030116526; P2847 for 329643319012 and 639994152617; from 2026-08-01 for 276553701208. An earlier gap of about COP 22 M in Procesamiento came from the
-exclusive end date (it left out 31/08, USD 6,315 on account 798406098406) and from CUR versions written before 2026-09-02 11:18, which lack part of August.
+Date semantics match the dashboard: `--start` and `--end` are both inclusive days, like its date filter (`IncludeMaximum`, DAY
+granularity). Dashboard 01/08 to 31/08 is `--start 2026-08-01 --end 2026-08-31`. The dashboard's own SQL reads from 2026-07-25 up to yesterday (rolling), so the skill
+does not reproduce that rolling end; pass explicit dates.
+Expected August 2026 (CUR of 2026-10-14): Procesamiento 134,102,655; Plataforma 60,551,747 (Test 25,699,966, Prod 34,851,781);
+Licenciamiento 101,918,018; Total 296,572,420 COP. The SPICE dataset refreshes daily (incremental, 92-day lookback), so CUR restatements
+reach the dashboard within a day.
 
 ## Read-only rules (prod is sensitive)
 
@@ -115,6 +111,7 @@ resized to the new row count. Cached values are refreshed (Python for the data s
 `Analisis de Costos`, chart caches rewritten). `calcChain` is dropped (Excel rebuilds it).
 
 Derivation of Detalle_facturado (reverse-engineered from the template, 60,304/60,304 rows reproduced; the template's USD used the raw cost, see Cost rules):
+
 - Rows: usage start in window, `line_item_line_item_type` in (Usage, FlatRateSubscription), raw `line_item_unblended_cost` != 0,
   usage account in the 8 accounts of `reference.json`; accounts 329643319012 and 639994152617 only when tag
   `user_project_id` = P2847 ("Cuenta condicionada + P2847").
