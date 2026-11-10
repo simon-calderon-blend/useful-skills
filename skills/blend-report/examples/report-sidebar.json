@@ -1,0 +1,51 @@
+{
+  "variant": "sidebar",
+  "lang": "en",
+  "title": "Batch Pipeline Incident Post-mortem",
+  "eyebrow": "Platform engineering · Post-mortem",
+  "subtitle": "What failed during the nightly batch outage, how it was detected, and what changes so it does not repeat.",
+  "status": "Draft",
+  "date": "2026-11-10",
+  "audience": "internal",
+  "illustrative": true,
+  "source": "Illustrative timeline and figures. Not a real incident.",
+  "footer": "Blend360 · Internal.",
+  "summary": {
+    "verdict": "A schema change shipped without a contract check broke the nightly batch for 6 hours. No data was lost; downstream reports were late.",
+    "text": ["Detection took 95 minutes because the alert watched job exit codes rather than output row counts. Recovery was a rerun after a revert."],
+    "kpis": [
+      {"value": "6 h", "label": "Customer impact"},
+      {"value": "95 min", "label": "Time to detect"},
+      {"value": "0", "label": "Records lost"}
+    ]
+  },
+  "sections": [
+    {"title": "Timeline", "blocks": [
+      {"table": {"caption": "Table 1. Key events, UTC (Illustrative).", "headers": ["Time", "Event"], "rows": [["01:00", "Nightly batch starts with the new schema."], ["01:12", "Transform step writes empty partitions; exit code stays 0."], ["02:35", "Analyst reports missing dashboard data."], ["03:10", "Change identified and reverted."], ["07:00", "Rerun completes; reports refreshed."]]}}
+    ]},
+    {"title": "Root cause", "blocks": [
+      {"p": "The upstream team renamed a column. The transform step read the old name, produced nulls and filtered them out as invalid, so the job succeeded with empty output."},
+      {"code": {"caption": "Transform filter that hid the failure (Illustrative).", "text": "df = df.filter(col(\"order_total\").isNotNull())  # renamed upstream to total_amount"}},
+      {"callout": {"kind": "warning", "title": "Contributing factor", "text": "The runbook had no step to compare output row counts with the previous run."}}
+    ]},
+    {"title": "Findings", "blocks": [
+      {"findings": [
+        {"id": "F-01", "severity": "critical", "title": "No schema contract between producer and consumer", "text": "A breaking rename reached production without any automated check.", "evidence": "The change passed code review and unit tests; none covered the column contract.", "recommendation": "Add a contract test to the producer pipeline."},
+        {"id": "F-02", "severity": "high", "title": "Alerting ignores output volume", "text": "The job succeeded with zero rows, and no alert fired.", "evidence": {"table": {"headers": ["Signal", "Alerting today"], "rows": [["Exit code", "Yes"], ["Run duration", "Yes"], ["Output row count", "No"]]}}, "recommendation": "Alert when row count drops more than 30% against the 7-day median."},
+        {"id": "F-03", "severity": "low", "title": "Rollback was manual but fast", "text": "The revert took 35 minutes once the cause was known.", "evidence": "Revert merged at 03:10 and verified at 03:45."}
+      ]}
+    ]},
+    {"title": "Actions", "blocks": [
+      {"recommendations": [
+        {"title": "Contract test for the orders feed", "priority": "high", "owner": "Producer team"},
+        {"title": "Row-count anomaly alert", "priority": "high", "owner": "Platform team"},
+        {"title": "Add output comparison to the runbook", "priority": "medium", "owner": "On-call lead"}
+      ]}
+    ]}
+  ],
+  "appendices": [
+    {"title": "Detection signals reviewed", "blocks": [
+      {"table": {"headers": ["Signal", "Available", "Used"], "rows": [["Job exit code", "Yes", "Yes"], ["Output row count", "Yes", "No"], ["Partition size", "Yes", "No"]]}}
+    ]}
+  ]
+}

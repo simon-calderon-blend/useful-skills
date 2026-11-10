@@ -1,0 +1,42 @@
+{
+  "variant": "scorecard",
+  "lang": "en",
+  "title": "Data Platform Readiness Scorecard",
+  "eyebrow": "Assessment · One-page scorecard",
+  "subtitle": "Where the platform stands on six readiness dimensions, and the three moves that matter most.",
+  "status": "Final",
+  "date": "2026-11-10",
+  "audience": "client",
+  "illustrative": true,
+  "source": "Illustrative scores. Not a real assessment.",
+  "footer": "Blend360 · Prepared for the client.",
+  "summary": {
+    "verdict": "Overall 3.2 of 5: strong on governance, weak on observability and cost control.",
+    "kpis": [{"value": "3.2 / 5", "label": "Overall score"}, {"value": "2", "label": "Dimensions below 3"}, {"value": "3", "label": "Priority moves"}]
+  },
+  "sections": [
+    {"title": "Scores by dimension", "blocks": [
+      {"score": {"items": [
+        {"label": "Governance", "score": 4.3, "state": "ok", "state_label": "Strong"},
+        {"label": "Security", "score": 3.8, "state": "ok", "state_label": "Strong"},
+        {"label": "Data quality", "score": 3.2, "state": "warn", "state_label": "Watch"},
+        {"label": "Delivery", "score": 3.0, "state": "warn", "state_label": "Watch"},
+        {"label": "Observability", "score": 2.4, "state": "bad", "state_label": "Gap"},
+        {"label": "Cost control", "score": 2.1, "state": "bad", "state_label": "Gap"}
+      ]}}
+    ]},
+    {"title": "Gaps and moves", "blocks": [
+      {"columns": [
+        [{"findings": [
+          {"id": "G-01", "severity": "high", "title": "No cost attribution by team", "text": "Spend cannot be traced to owners.", "evidence": "Tagging coverage is 41% (Illustrative)."},
+          {"id": "G-02", "severity": "medium", "title": "Pipelines lack freshness alerts", "text": "Stale data is found by users.", "evidence": "0 of 14 pipelines alert on freshness (Illustrative)."}
+        ]}],
+        [{"recommendations": [
+          {"title": "Enforce cost tags at deploy time", "priority": "high"},
+          {"title": "Add freshness alerts to tier-1 pipelines", "priority": "medium"},
+          {"title": "Publish a monthly cost report", "priority": "medium"}
+        ]}]
+      ]}
+    ]}
+  ]
+}

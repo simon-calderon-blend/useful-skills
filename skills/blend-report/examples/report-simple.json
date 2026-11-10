@@ -1,0 +1,57 @@
+{
+  "variant": "simple",
+  "lang": "en",
+  "title": "Support Assistant Pilot Evaluation",
+  "eyebrow": "Analytics practice · Evaluation report",
+  "subtitle": "Results of an eight-week pilot of a retrieval-based support assistant, scored against the manual baseline.",
+  "status": "Final",
+  "date": "2026-11-10",
+  "audience": "internal",
+  "illustrative": true,
+  "source": "Illustrative figures. Not real client or engagement data.",
+  "footer": "Blend360 · Internal.",
+  "summary": {
+    "verdict": "The pilot meets its accuracy bar and misses its latency bar. Proceed to a limited rollout once retrieval latency is fixed.",
+    "text": ["Answer accuracy beat the manual baseline on four of five ticket categories. Two high-severity findings concern stale source documents and slow retrieval on long threads."],
+    "kpis": [
+      {"value": "87%", "label": "Answer accuracy", "caption": "Baseline 79%"},
+      {"value": "4.1 s", "label": "Median latency", "caption": "Target 3.0 s"},
+      {"value": "62%", "label": "Deflection rate", "caption": "Target 55%"},
+      {"value": "3", "label": "Open findings", "caption": "2 high, 1 medium"}
+    ]
+  },
+  "sections": [
+    {"title": "Scope and method", "blocks": [
+      {"p": "Illustrative setup: 1,200 tickets across five categories were answered by the assistant and by the manual process. Two reviewers scored each answer against a rubric for correctness and completeness."},
+      {"callout": {"kind": "note", "title": "Scoring", "text": "Accuracy counts an answer as correct only when both reviewers agree. Disagreements (6%) were resolved by a third reviewer."}},
+      {"table": {"caption": "Table 1. Accuracy by ticket category (Illustrative).", "headers": ["Category", "Tickets", "Assistant", "Baseline"], "num": [1, 2, 3],
+        "rows": [["Billing", "310", "91%", "84%"], ["Access", "280", "89%", "80%"], ["Integrations", "240", "84%", "78%"], ["Data quality", "210", "88%", "75%"], ["Legacy", "160", "76%", "79%"]]}}
+    ]},
+    {"title": "Findings", "blocks": [
+      {"findings": [
+        {"id": "F-01", "severity": "high", "title": "Stale source documents cause wrong answers in Legacy", "text": "The Legacy category is the only one where the assistant trails the baseline. Wrong answers cite documents last updated before the 2025 migration.",
+         "evidence": [{"text": "21 of 38 wrong Legacy answers cite a document with a modified date older than 2025-06-01."}, {"code": {"caption": "Query used to count the stale citations (Illustrative).", "text": "SELECT COUNT(*) FROM answers a\nJOIN docs d ON d.id = a.doc_id\nWHERE a.correct = false AND d.modified < '2025-06-01';"}}],
+         "recommendation": "Add a freshness filter and retire documents older than the migration."},
+        {"id": "F-02", "severity": "high", "title": "Retrieval latency misses the target on long threads", "text": "Median latency is 4.1 s against a 3.0 s target; threads above 20 messages average 7.4 s.",
+         "evidence": {"table": {"headers": ["Thread length", "Median latency"], "num": [1], "rows": [["1-5 messages", "2.6 s"], ["6-20 messages", "4.0 s"], ["21+ messages", "7.4 s"]]}},
+         "recommendation": "Summarize long threads before retrieval and cache the summary."},
+        {"id": "F-03", "severity": "medium", "title": "Reviewer disagreement is concentrated in Integrations", "text": "Half of the 6% disagreement comes from the Integrations category, where the rubric does not say how to score partial answers.",
+         "evidence": "72 disagreements in total, 36 of them in Integrations.",
+         "recommendation": "Extend the rubric with a partial-credit rule before the next round."}
+      ]}
+    ]},
+    {"title": "Recommendations", "blocks": [
+      {"callout": {"kind": "key", "title": "Decision requested", "text": "Approve a limited rollout to the Billing and Access queues, conditional on F-02 reaching the 3.0 s target."}},
+      {"recommendations": [
+        {"title": "Fix retrieval latency on long threads", "text": "Summarize before retrieval; re-run the latency benchmark.", "priority": "high", "owner": "Platform team"},
+        {"title": "Retire stale documents", "text": "Apply the freshness filter and review the Legacy corpus.", "priority": "high", "owner": "Content owner"},
+        {"title": "Extend the scoring rubric", "text": "Add the partial-credit rule and re-score Integrations.", "priority": "medium", "owner": "Evaluation lead"}
+      ]}
+    ]}
+  ],
+  "appendices": [
+    {"title": "Scoring rubric", "blocks": [
+      {"table": {"caption": "Table A1. Rubric used by both reviewers (Illustrative).", "headers": ["Score", "Meaning"], "rows": [["Correct", "Answer is accurate and complete."], ["Partial", "Accurate but missing a required step."], ["Wrong", "Inaccurate or unsupported."]]}}
+    ]}
+  ]
+}
