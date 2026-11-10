@@ -1,0 +1,7 @@
+/* Only with --dark (after tokens-dark.css): same pattern as the core, media query plus explicit [data-theme]. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .p-tags li { background: var(--hairline); color: var(--text-muted); }
+  :root:not([data-theme="light"]) .p-nav:hover { background: var(--hairline); }
+}
+:root[data-theme="dark"] .p-tags li { background: var(--hairline); color: var(--text-muted); }
+:root[data-theme="dark"] .p-nav:hover { background: var(--hairline); }

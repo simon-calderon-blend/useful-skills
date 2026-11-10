@@ -1,0 +1,54 @@
+{
+ "title": "Illustrative Resource Hub",
+ "eyebrow": "Blend360 | Example portal",
+ "subtitle": "A sample hub that indexes other Blend Shares by group, type and status. All descriptions are Illustrative, written for this example.",
+ "variant": "sidebar",
+ "lang": "en",
+ "illustrative": true,
+ "footer": "Illustrative example generated with the blend-portal skill. Not a real catalog.",
+ "groups": [
+  {
+   "id": "inshare",
+   "title": "Pages in this share"
+  },
+  {
+   "id": "other",
+   "title": "Other shares"
+  }
+ ],
+ "items": [
+  {
+   "title": "Sample child page one",
+   "file": "pages/one.html",
+   "type": "Page",
+   "status": "Live",
+   "group": "inshare",
+   "description": "Illustrative: opens inside the viewer.",
+   "owner": "Owner A",
+   "tags": [
+    "child"
+   ]
+  },
+  {
+   "title": "Sample child page two",
+   "file": "pages/two.html",
+   "type": "Page",
+   "status": "Draft",
+   "group": "inshare",
+   "description": "Illustrative: second page, deep link #/sample-child-page-two.",
+   "owner": "Owner B",
+   "tags": [
+    "child"
+   ]
+  },
+  {
+   "title": "Spark",
+   "slug": "spark",
+   "type": "Portal",
+   "status": "Live",
+   "group": "other",
+   "description": "Illustrative: another share, opened on its own page.",
+   "owner": "Program team"
+  }
+ ]
+}
