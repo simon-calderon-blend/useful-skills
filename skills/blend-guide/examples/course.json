@@ -1,0 +1,29 @@
+{
+  "mode": "course",
+  "title": "Working with data safely",
+  "lang": "en",
+  "eyebrow": "Course - Illustrative",
+  "storage_key": "blend-course-working-with-data-safely-v1",
+  "minutes": 15,
+  "description": "Illustrative three-module course showing progress tracking and quizzes.",
+  "intro": "Illustrative content. Three short modules, one quiz each. Your progress is saved in this browser only, and the course works without it.",
+  "footer": "Illustrative example generated with blend-guide. Not real training material.",
+  "sections": [
+    {"title": "Know your data", "blocks": [
+      {"p": "Before any analysis, classify the data: public, internal, or restricted. The class decides where it may live and who may see it."},
+      {"callout": {"kind": "note", "title": "Rule of thumb", "text": "When in doubt, treat the data as restricted until someone confirms otherwise."}},
+      {"quiz": {"q": "A file has no label. What do you do first?", "options": ["Use it, since nobody objected", "Treat it as restricted and ask its owner", "Delete it"], "answer": 1, "why": "Unlabelled data is restricted until the owner confirms its class."}}
+    ]},
+    {"title": "Handle it in the open", "blocks": [
+      {"p": "Work in approved locations only. Keep secrets out of notebooks and commits."},
+      {"diagram": {"flow": ["Classify|decide the class", "Store|approved location", "Share|least access"], "caption": "Figure 1. Handling flow (Illustrative)."}},
+      {"code": {"lang": "bash", "text": "echo '.env' >> .gitignore"}},
+      {"quiz": {"q": "Where do API keys belong?", "options": ["In the notebook, for convenience", "In a secrets manager or an ignored env file", "In the commit message"], "answer": 1, "why": "Secrets stay out of anything that is versioned or shared."}}
+    ]},
+    {"title": "Check before you share", "blocks": [
+      {"p": "Before sending results outside the team, check for personal data, small cell counts and client names."},
+      {"list": ["Remove identifiers", "Aggregate small groups", "Ask for a second pair of eyes"]},
+      {"quiz": {"q": "Which output is safest to share?", "options": ["A table of individual records", "An aggregate with no small groups", "A screenshot with client names"], "answer": 1, "why": "Aggregates without small groups avoid re-identification."}}
+    ]}
+  ]
+}

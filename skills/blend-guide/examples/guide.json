@@ -1,0 +1,40 @@
+{
+  "title": "Run the sample pipeline locally",
+  "lang": "en",
+  "eyebrow": "Guide - Illustrative",
+  "description": "Illustrative step-by-step guide showing the blend-guide components.",
+  "intro": "Illustrative content. A short guide that shows numbered steps, copyable code, callouts, a table and a flow diagram. Replace it with the real material.",
+  "footer": "Illustrative example generated with blend-guide. Not real project documentation.",
+  "sections": [
+    {"title": "Before you start", "blocks": [
+      {"p": "You need **Python 3.11** and a terminal. This guide takes about ten minutes."},
+      {"callout": {"kind": "note", "title": "Illustrative", "text": "Names, versions and commands below are placeholders, not a real project."}},
+      {"table": {"caption": "Prerequisites (Illustrative)", "head": ["Tool", "Version", "Check"], "rows": [
+        ["Python", "3.11+", "`python3 --version`"], ["Git", "2.40+", "`git --version`"]]}}
+    ]},
+    {"title": "Set up", "blocks": [
+      {"steps": [
+        {"title": "Clone the repository", "body": "Use the URL your team gave you.", "code": {"lang": "bash", "text": "git clone <repo-url> sample-pipeline\ncd sample-pipeline"}},
+        {"title": "Create the environment", "code": {"lang": "bash", "text": "python3 -m venv .venv\nsource .venv/bin/activate\npip install -r requirements.txt"}},
+        {"title": "Run the checks", "body": "All tests should pass before you change anything.", "code": {"lang": "bash", "text": "pytest -q"}}
+      ]},
+      {"callout": {"kind": "warn", "title": "Heads up", "text": "Never commit the `.env` file. It holds local credentials."}}
+    ]},
+    {"title": "How it works", "blocks": [
+      {"p": "The pipeline has four stages. Each one writes a file the next one reads."},
+      {"diagram": {"flow": ["Extract|read the source files", "Clean|fix types and nulls", "Model|fit and score", "Report|write the summary"], "caption": "Figure 1. Pipeline stages (Illustrative)."}},
+      {"h3": "Configuration"},
+      {"p": "Settings live in `config.yaml`. The keys most people change:"},
+      {"code": {"lang": "yaml", "title": "config.yaml", "text": "input_dir: data/raw\noutput_dir: data/out\nseed: 42"}}
+    ]},
+    {"title": "Troubleshooting", "blocks": [
+      {"table": {"head": ["Symptom", "Likely cause", "Fix"], "rows": [
+        ["`ModuleNotFoundError`", "Environment not active", "Run `source .venv/bin/activate`"],
+        ["Tests fail on first run", "Missing sample data", "Re-run the extract step"]]}},
+      {"callout": {"kind": "bad", "title": "Do not", "text": "Do not run `pip install` outside the virtual environment."}}
+    ]},
+    {"title": "Next steps", "blocks": [
+      {"list": ["Read the architecture notes.", "Pick a starter issue.", "Ask for a review before merging."]}
+    ]}
+  ]
+}

@@ -1,0 +1,109 @@
+/* blend-theme.css: Blend theme for Starlight (family A: ds-best-practices, ai-eng-best-practices, ds-onboarding).
+   Rebuilt from the built common.css of ds-best-practices (Starlight 0.40.0 / Astro 6.4.5): only the Blend
+   layer is kept, the Starlight defaults are not copied. Values are identical to ../blend-web-core/assets/tokens.css
+   (see references/starlight-theme.md for the reconciliation table).
+   Load it through `customCss` in astro.config.mjs. */
+
+/* PP Telegraf Regular. The relative url lets Vite add the Astro `base`, so it resolves under /<slug>/. */
+@font-face {
+  font-family: 'PP Telegraf';
+  src: url('../assets/fonts/PPTelegraf-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Brand tokens: names from the Starlight builds, aliases from blend-web-core --- */
+:root {
+  --blend-neon: #00eded;            /* = blend-web-core --blend-cyan */
+  --blend-washed-blue: #053057;     /* = --blend-navy */
+  --blend-light-turquoise: #a2f3f3; /* = --blend-cyan-soft */
+  --blend-off-white: #f4f3f0;       /* = --blend-paper */
+  --blend-cool-gray: #314550;       /* = --blend-slate */
+
+  --blend-cyan: var(--blend-neon);
+  --blend-navy: var(--blend-washed-blue);
+  --blend-cyan-soft: var(--blend-light-turquoise);
+  --blend-paper: var(--blend-off-white);
+  --blend-slate: var(--blend-cool-gray);
+  --blend-link: #075089;            /* accent on light */
+  --blend-link-dark: #00c6c6;       /* accent on dark */
+
+  /* PP Telegraf is bundled (src/assets/fonts, @font-face above). Decided 2026-11-10 by the user; license not
+     independently verified, the user authorized bundling it. */
+  --sl-font: 'PP Telegraf', system-ui, -apple-system, sans-serif;
+}
+
+/* --- Dark (Starlight default theme; the builds ship it as :root and :root[data-theme=dark]) --- */
+:root,
+:root[data-theme='dark'] {
+  --sl-color-accent-low: #053057;
+  --sl-color-accent: #00c6c6;
+  --sl-color-accent-high: #a2f3f3;
+  --sl-color-white: #f4f3f0;
+  --sl-color-gray-1: #e4e9ef;
+  --sl-color-gray-2: #c1cad5;
+  --sl-color-gray-3: #8a97a6;
+  --sl-color-gray-4: #51606f;
+  --sl-color-gray-5: #2b3a48;
+  --sl-color-gray-6: #16222e;
+  --sl-color-black: #0b1620;
+  --sl-color-bg-nav: #081019;
+  --sl-color-bg-sidebar: #081019;
+  --sl-color-hairline-shade: #1b2a38;
+}
+:root[data-theme='dark'] .sl-markdown-content a:not(:where(.not-content *)) {
+  color: var(--blend-neon);
+}
+
+/* --- Light --- */
+:root[data-theme='light'] {
+  --sl-color-accent-low: #d6f7f7;
+  --sl-color-accent: #075089;
+  --sl-color-accent-high: #042038;
+  --sl-color-white: #0b0d0e;
+  --sl-color-gray-1: #16222e;
+  --sl-color-gray-2: #314550;
+  --sl-color-gray-3: #5a6772;
+  --sl-color-gray-4: #8a97a6;
+  --sl-color-gray-5: #c8cdd2;
+  --sl-color-gray-6: #e9e7e2;
+  --sl-color-gray-7: #f4f3f0;
+  --sl-color-black: #ffffff;
+  --sl-color-bg-nav: #ffffff;
+  --sl-color-bg-sidebar: var(--blend-off-white);
+  --sl-color-hairline-shade: #e3e1da;
+}
+
+/* --- Blend details: 2px neon bar on top, pill hero button, neon selection --- */
+header.header {
+  border-bottom: 1px solid var(--sl-color-hairline-shade);
+  box-shadow: inset 0 2px 0 0 var(--blend-neon);
+}
+.hero a[class*='action'][class*='primary'] {
+  background: var(--blend-neon);
+  color: var(--blend-washed-blue);
+  border-color: var(--blend-neon);
+}
+.hero a[class*='action'][class*='primary']:hover {
+  background: var(--blend-light-turquoise);
+  border-color: var(--blend-light-turquoise);
+}
+::selection {
+  background: var(--blend-neon);
+  color: var(--blend-washed-blue);
+}
+.hero {
+  padding-block: 1.5rem 1rem;
+  gap: clamp(1rem, 4vw, 2.25rem);
+}
+.hero .tagline { font-size: var(--sl-text-lg); max-width: 46ch; margin-top: 0.25rem; }
+.hero .actions { margin-top: 0.75rem; }
+.sl-markdown-content > h2 { margin-top: 2.25rem; }
+
+/* --- Optional: course progress for Starlight (used by the `course` mode snippet in the skill) --- */
+.blend-quiz { border: 1px solid var(--sl-color-hairline-shade); border-radius: 12px; padding: 1rem 1.25rem; margin-block: 1.5rem; }
+.blend-quiz button { display: block; width: 100%; text-align: left; margin-block: .35rem; padding: .55rem .8rem; border-radius: 8px;
+  border: 1px solid var(--sl-color-gray-5); background: transparent; color: var(--sl-color-text); font: inherit; cursor: pointer; }
+.blend-quiz button.right { border-color: var(--sl-color-accent); background: var(--sl-color-accent-low); }
+.blend-quiz button.wrong { border-color: #c8412b; }
