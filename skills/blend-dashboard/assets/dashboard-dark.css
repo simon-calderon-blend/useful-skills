@@ -1,0 +1,10 @@
+/* Dark overrides for the dashboard. Included only when the dashboard asks for dark (off by default).
+   Same dual pattern as blend-web-core/assets/tokens-dark.css: prefers-color-scheme + [data-theme]. */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --chart-one: var(--blend-cyan); --grid: rgba(255,255,255,.14); } }
+:root[data-theme="dark"] { --chart-one: var(--blend-cyan); --grid: rgba(255,255,255,.14); }
+:root[data-theme="dark"] button.b-chip[aria-pressed="true"] { background: var(--blend-cyan); color: var(--blend-navy); border-color: var(--blend-cyan); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) button.b-chip[aria-pressed="true"] { background: var(--blend-cyan); color: var(--blend-navy); border-color: var(--blend-cyan); } }
+:root[data-theme="dark"] .d-btn { border-color: var(--blend-cyan); background: var(--blend-cyan); color: var(--blend-navy); }
+:root[data-theme="dark"] .d-btn.ghost { background: transparent; color: var(--text); border-color: var(--hairline); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .d-btn { border-color: var(--blend-cyan); background: var(--blend-cyan); color: var(--blend-navy); }
+  :root:not([data-theme="light"]) .d-btn.ghost { background: transparent; color: var(--text); border-color: var(--hairline); } }

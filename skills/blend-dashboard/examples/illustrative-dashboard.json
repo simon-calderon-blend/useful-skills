@@ -1,0 +1,798 @@
+{
+ "title": "Sales overview",
+ "subtitle": "Orders and revenue by region and plan",
+ "lang": "en",
+ "updated": "2026-11-10",
+ "source": "synthetic sample generated for this example",
+ "illustrative": true,
+ "mode": "dashboard",
+ "dark": false,
+ "kpis": [
+  {
+   "id": "orders",
+   "label": "Total orders",
+   "agg": "sum",
+   "field": "orders"
+  },
+  {
+   "id": "rev",
+   "label": "Revenue",
+   "agg": "sum",
+   "field": "revenue_usd_k",
+   "decimals": 1,
+   "prefix": "$",
+   "suffix": "k"
+  },
+  {
+   "id": "avg",
+   "label": "Average order batch",
+   "agg": "avg",
+   "field": "orders",
+   "decimals": 1
+  },
+  {
+   "id": "rows",
+   "label": "Records",
+   "agg": "count"
+  },
+  {
+   "id": "reg",
+   "label": "Regions",
+   "agg": "distinct",
+   "field": "region"
+  }
+ ],
+ "columns": [
+  {
+   "key": "month",
+   "label": "Month",
+   "type": "date"
+  },
+  {
+   "key": "region",
+   "label": "Region",
+   "type": "cat"
+  },
+  {
+   "key": "plan",
+   "label": "Plan",
+   "type": "cat"
+  },
+  {
+   "key": "orders",
+   "label": "Orders",
+   "type": "num"
+  },
+  {
+   "key": "revenue_usd_k",
+   "label": "Revenue (USD k)",
+   "type": "num",
+   "decimals": 1
+  }
+ ],
+ "filters": {
+  "chips": [
+   "region",
+   "plan"
+  ],
+  "search": true
+ },
+ "charts": [
+  {
+   "id": "rev-month",
+   "heading": "Revenue by month",
+   "caption": "USD thousands, all regions",
+   "type": "line",
+   "x": "month",
+   "y": {
+    "agg": "sum",
+    "field": "revenue_usd_k"
+   },
+   "series": null,
+   "decimals": 0,
+   "unit": "USD k"
+  },
+  {
+   "id": "orders-region",
+   "heading": "Orders by region",
+   "caption": "Total orders",
+   "type": "hbar",
+   "x": "region",
+   "y": {
+    "agg": "sum",
+    "field": "orders"
+   },
+   "series": null,
+   "decimals": 0,
+   "unit": "orders"
+  },
+  {
+   "id": "rev-plan-region",
+   "heading": "Revenue by plan and region",
+   "caption": "USD thousands",
+   "type": "bar",
+   "x": "plan",
+   "y": {
+    "agg": "sum",
+    "field": "revenue_usd_k"
+   },
+   "series": "region",
+   "decimals": 0,
+   "unit": "USD k"
+  }
+ ],
+ "table": {
+  "page_size": 20,
+  "sort": {
+   "key": "month",
+   "dir": "desc"
+  }
+ },
+ "rows": [
+  {
+   "month": "2026-01",
+   "region": "North",
+   "plan": "Starter",
+   "orders": 97,
+   "revenue_usd_k": 50.4
+  },
+  {
+   "month": "2026-01",
+   "region": "North",
+   "plan": "Plus",
+   "orders": 294,
+   "revenue_usd_k": 15.8
+  },
+  {
+   "month": "2026-01",
+   "region": "North",
+   "plan": "Pro",
+   "orders": 279,
+   "revenue_usd_k": 29.7
+  },
+  {
+   "month": "2026-01",
+   "region": "South",
+   "plan": "Starter",
+   "orders": 234,
+   "revenue_usd_k": 13.0
+  },
+  {
+   "month": "2026-01",
+   "region": "South",
+   "plan": "Plus",
+   "orders": 237,
+   "revenue_usd_k": 11.8
+  },
+  {
+   "month": "2026-01",
+   "region": "South",
+   "plan": "Pro",
+   "orders": 134,
+   "revenue_usd_k": 77.5
+  },
+  {
+   "month": "2026-01",
+   "region": "East",
+   "plan": "Starter",
+   "orders": 51,
+   "revenue_usd_k": 71.4
+  },
+  {
+   "month": "2026-01",
+   "region": "East",
+   "plan": "Plus",
+   "orders": 133,
+   "revenue_usd_k": 10.4
+  },
+  {
+   "month": "2026-01",
+   "region": "West",
+   "plan": "Starter",
+   "orders": 93,
+   "revenue_usd_k": 67.2
+  },
+  {
+   "month": "2026-01",
+   "region": "West",
+   "plan": "Plus",
+   "orders": 306,
+   "revenue_usd_k": 98.9
+  },
+  {
+   "month": "2026-01",
+   "region": "West",
+   "plan": "Pro",
+   "orders": 317,
+   "revenue_usd_k": 70.7
+  },
+  {
+   "month": "2026-02",
+   "region": "North",
+   "plan": "Starter",
+   "orders": 69,
+   "revenue_usd_k": 68.0
+  },
+  {
+   "month": "2026-02",
+   "region": "North",
+   "plan": "Plus",
+   "orders": 50,
+   "revenue_usd_k": 76.2
+  },
+  {
+   "month": "2026-02",
+   "region": "North",
+   "plan": "Pro",
+   "orders": 292,
+   "revenue_usd_k": 54.2
+  },
+  {
+   "month": "2026-02",
+   "region": "South",
+   "plan": "Starter",
+   "orders": 319,
+   "revenue_usd_k": 111.2
+  },
+  {
+   "month": "2026-02",
+   "region": "South",
+   "plan": "Plus",
+   "orders": 147,
+   "revenue_usd_k": 96.4
+  },
+  {
+   "month": "2026-02",
+   "region": "East",
+   "plan": "Starter",
+   "orders": 314,
+   "revenue_usd_k": 39.5
+  },
+  {
+   "month": "2026-02",
+   "region": "East",
+   "plan": "Plus",
+   "orders": 195,
+   "revenue_usd_k": 88.9
+  },
+  {
+   "month": "2026-02",
+   "region": "East",
+   "plan": "Pro",
+   "orders": 57,
+   "revenue_usd_k": 18.6
+  },
+  {
+   "month": "2026-02",
+   "region": "West",
+   "plan": "Starter",
+   "orders": 195,
+   "revenue_usd_k": 22.5
+  },
+  {
+   "month": "2026-02",
+   "region": "West",
+   "plan": "Plus",
+   "orders": 40,
+   "revenue_usd_k": 115.6
+  },
+  {
+   "month": "2026-02",
+   "region": "West",
+   "plan": "Pro",
+   "orders": 305,
+   "revenue_usd_k": 70.9
+  },
+  {
+   "month": "2026-03",
+   "region": "North",
+   "plan": "Plus",
+   "orders": 375,
+   "revenue_usd_k": 45.3
+  },
+  {
+   "month": "2026-03",
+   "region": "North",
+   "plan": "Pro",
+   "orders": 253,
+   "revenue_usd_k": 12.9
+  },
+  {
+   "month": "2026-03",
+   "region": "South",
+   "plan": "Starter",
+   "orders": 158,
+   "revenue_usd_k": 59.5
+  },
+  {
+   "month": "2026-03",
+   "region": "South",
+   "plan": "Pro",
+   "orders": 379,
+   "revenue_usd_k": 40.6
+  },
+  {
+   "month": "2026-03",
+   "region": "East",
+   "plan": "Starter",
+   "orders": 368,
+   "revenue_usd_k": 99.5
+  },
+  {
+   "month": "2026-03",
+   "region": "East",
+   "plan": "Plus",
+   "orders": 217,
+   "revenue_usd_k": 107.0
+  },
+  {
+   "month": "2026-03",
+   "region": "East",
+   "plan": "Pro",
+   "orders": 256,
+   "revenue_usd_k": 45.9
+  },
+  {
+   "month": "2026-03",
+   "region": "West",
+   "plan": "Plus",
+   "orders": 131,
+   "revenue_usd_k": 93.3
+  },
+  {
+   "month": "2026-03",
+   "region": "West",
+   "plan": "Pro",
+   "orders": 146,
+   "revenue_usd_k": 50.8
+  },
+  {
+   "month": "2026-04",
+   "region": "North",
+   "plan": "Plus",
+   "orders": 105,
+   "revenue_usd_k": 56.7
+  },
+  {
+   "month": "2026-04",
+   "region": "North",
+   "plan": "Pro",
+   "orders": 90,
+   "revenue_usd_k": 99.2
+  },
+  {
+   "month": "2026-04",
+   "region": "South",
+   "plan": "Plus",
+   "orders": 232,
+   "revenue_usd_k": 118.4
+  },
+  {
+   "month": "2026-04",
+   "region": "East",
+   "plan": "Starter",
+   "orders": 138,
+   "revenue_usd_k": 22.4
+  },
+  {
+   "month": "2026-04",
+   "region": "East",
+   "plan": "Plus",
+   "orders": 138,
+   "revenue_usd_k": 80.7
+  },
+  {
+   "month": "2026-04",
+   "region": "East",
+   "plan": "Pro",
+   "orders": 321,
+   "revenue_usd_k": 26.0
+  },
+  {
+   "month": "2026-04",
+   "region": "West",
+   "plan": "Starter",
+   "orders": 94,
+   "revenue_usd_k": 53.2
+  },
+  {
+   "month": "2026-04",
+   "region": "West",
+   "plan": "Plus",
+   "orders": 309,
+   "revenue_usd_k": 41.6
+  },
+  {
+   "month": "2026-04",
+   "region": "West",
+   "plan": "Pro",
+   "orders": 283,
+   "revenue_usd_k": 114.3
+  },
+  {
+   "month": "2026-05",
+   "region": "North",
+   "plan": "Pro",
+   "orders": 368,
+   "revenue_usd_k": 96.8
+  },
+  {
+   "month": "2026-05",
+   "region": "South",
+   "plan": "Starter",
+   "orders": 224,
+   "revenue_usd_k": 50.3
+  },
+  {
+   "month": "2026-05",
+   "region": "South",
+   "plan": "Plus",
+   "orders": 225,
+   "revenue_usd_k": 12.2
+  },
+  {
+   "month": "2026-05",
+   "region": "South",
+   "plan": "Pro",
+   "orders": 126,
+   "revenue_usd_k": 55.7
+  },
+  {
+   "month": "2026-05",
+   "region": "East",
+   "plan": "Starter",
+   "orders": 327,
+   "revenue_usd_k": 11.0
+  },
+  {
+   "month": "2026-05",
+   "region": "East",
+   "plan": "Plus",
+   "orders": 97,
+   "revenue_usd_k": 66.7
+  },
+  {
+   "month": "2026-05",
+   "region": "West",
+   "plan": "Plus",
+   "orders": 126,
+   "revenue_usd_k": 75.6
+  },
+  {
+   "month": "2026-05",
+   "region": "West",
+   "plan": "Pro",
+   "orders": 149,
+   "revenue_usd_k": 114.9
+  },
+  {
+   "month": "2026-06",
+   "region": "North",
+   "plan": "Plus",
+   "orders": 79,
+   "revenue_usd_k": 102.6
+  },
+  {
+   "month": "2026-06",
+   "region": "South",
+   "plan": "Starter",
+   "orders": 267,
+   "revenue_usd_k": 40.9
+  },
+  {
+   "month": "2026-06",
+   "region": "South",
+   "plan": "Plus",
+   "orders": 195,
+   "revenue_usd_k": 90.1
+  },
+  {
+   "month": "2026-06",
+   "region": "South",
+   "plan": "Pro",
+   "orders": 374,
+   "revenue_usd_k": 23.6
+  },
+  {
+   "month": "2026-06",
+   "region": "East",
+   "plan": "Starter",
+   "orders": 290,
+   "revenue_usd_k": 46.6
+  },
+  {
+   "month": "2026-06",
+   "region": "West",
+   "plan": "Plus",
+   "orders": 349,
+   "revenue_usd_k": 104.3
+  },
+  {
+   "month": "2026-07",
+   "region": "North",
+   "plan": "Starter",
+   "orders": 207,
+   "revenue_usd_k": 109.4
+  },
+  {
+   "month": "2026-07",
+   "region": "North",
+   "plan": "Plus",
+   "orders": 134,
+   "revenue_usd_k": 66.2
+  },
+  {
+   "month": "2026-07",
+   "region": "South",
+   "plan": "Starter",
+   "orders": 134,
+   "revenue_usd_k": 75.5
+  },
+  {
+   "month": "2026-07",
+   "region": "East",
+   "plan": "Starter",
+   "orders": 142,
+   "revenue_usd_k": 99.1
+  },
+  {
+   "month": "2026-07",
+   "region": "East",
+   "plan": "Pro",
+   "orders": 285,
+   "revenue_usd_k": 61.7
+  },
+  {
+   "month": "2026-08",
+   "region": "North",
+   "plan": "Starter",
+   "orders": 119,
+   "revenue_usd_k": 84.6
+  },
+  {
+   "month": "2026-08",
+   "region": "North",
+   "plan": "Pro",
+   "orders": 390,
+   "revenue_usd_k": 118.6
+  },
+  {
+   "month": "2026-08",
+   "region": "South",
+   "plan": "Plus",
+   "orders": 132,
+   "revenue_usd_k": 16.7
+  },
+  {
+   "month": "2026-08",
+   "region": "South",
+   "plan": "Pro",
+   "orders": 192,
+   "revenue_usd_k": 28.5
+  },
+  {
+   "month": "2026-08",
+   "region": "West",
+   "plan": "Starter",
+   "orders": 354,
+   "revenue_usd_k": 44.6
+  },
+  {
+   "month": "2026-09",
+   "region": "North",
+   "plan": "Starter",
+   "orders": 218,
+   "revenue_usd_k": 95.0
+  },
+  {
+   "month": "2026-09",
+   "region": "North",
+   "plan": "Pro",
+   "orders": 111,
+   "revenue_usd_k": 54.9
+  },
+  {
+   "month": "2026-09",
+   "region": "South",
+   "plan": "Plus",
+   "orders": 389,
+   "revenue_usd_k": 50.5
+  },
+  {
+   "month": "2026-09",
+   "region": "South",
+   "plan": "Pro",
+   "orders": 63,
+   "revenue_usd_k": 88.4
+  },
+  {
+   "month": "2026-09",
+   "region": "East",
+   "plan": "Starter",
+   "orders": 85,
+   "revenue_usd_k": 8.2
+  },
+  {
+   "month": "2026-09",
+   "region": "East",
+   "plan": "Plus",
+   "orders": 258,
+   "revenue_usd_k": 97.7
+  },
+  {
+   "month": "2026-09",
+   "region": "East",
+   "plan": "Pro",
+   "orders": 325,
+   "revenue_usd_k": 117.7
+  },
+  {
+   "month": "2026-09",
+   "region": "West",
+   "plan": "Plus",
+   "orders": 300,
+   "revenue_usd_k": 68.1
+  },
+  {
+   "month": "2026-09",
+   "region": "West",
+   "plan": "Pro",
+   "orders": 391,
+   "revenue_usd_k": 79.7
+  },
+  {
+   "month": "2026-10",
+   "region": "North",
+   "plan": "Starter",
+   "orders": 91,
+   "revenue_usd_k": 54.9
+  },
+  {
+   "month": "2026-10",
+   "region": "South",
+   "plan": "Starter",
+   "orders": 148,
+   "revenue_usd_k": 29.5
+  },
+  {
+   "month": "2026-10",
+   "region": "South",
+   "plan": "Plus",
+   "orders": 320,
+   "revenue_usd_k": 42.5
+  },
+  {
+   "month": "2026-10",
+   "region": "South",
+   "plan": "Pro",
+   "orders": 87,
+   "revenue_usd_k": 12.0
+  },
+  {
+   "month": "2026-10",
+   "region": "West",
+   "plan": "Plus",
+   "orders": 276,
+   "revenue_usd_k": 20.0
+  },
+  {
+   "month": "2026-10",
+   "region": "West",
+   "plan": "Pro",
+   "orders": 281,
+   "revenue_usd_k": 7.2
+  },
+  {
+   "month": "2026-11",
+   "region": "North",
+   "plan": "Starter",
+   "orders": 113,
+   "revenue_usd_k": 75.0
+  },
+  {
+   "month": "2026-11",
+   "region": "North",
+   "plan": "Pro",
+   "orders": 92,
+   "revenue_usd_k": 59.5
+  },
+  {
+   "month": "2026-11",
+   "region": "South",
+   "plan": "Plus",
+   "orders": 186,
+   "revenue_usd_k": 83.5
+  },
+  {
+   "month": "2026-11",
+   "region": "South",
+   "plan": "Pro",
+   "orders": 267,
+   "revenue_usd_k": 95.2
+  },
+  {
+   "month": "2026-11",
+   "region": "East",
+   "plan": "Starter",
+   "orders": 306,
+   "revenue_usd_k": 11.5
+  },
+  {
+   "month": "2026-11",
+   "region": "East",
+   "plan": "Plus",
+   "orders": 41,
+   "revenue_usd_k": 93.8
+  },
+  {
+   "month": "2026-11",
+   "region": "East",
+   "plan": "Pro",
+   "orders": 307,
+   "revenue_usd_k": 8.2
+  },
+  {
+   "month": "2026-11",
+   "region": "West",
+   "plan": "Plus",
+   "orders": 186,
+   "revenue_usd_k": 75.4
+  },
+  {
+   "month": "2026-11",
+   "region": "West",
+   "plan": "Pro",
+   "orders": 282,
+   "revenue_usd_k": 27.9
+  },
+  {
+   "month": "2026-12",
+   "region": "North",
+   "plan": "Starter",
+   "orders": 280,
+   "revenue_usd_k": 66.3
+  },
+  {
+   "month": "2026-12",
+   "region": "North",
+   "plan": "Plus",
+   "orders": 146,
+   "revenue_usd_k": 85.4
+  },
+  {
+   "month": "2026-12",
+   "region": "South",
+   "plan": "Plus",
+   "orders": 306,
+   "revenue_usd_k": 107.7
+  },
+  {
+   "month": "2026-12",
+   "region": "South",
+   "plan": "Pro",
+   "orders": 249,
+   "revenue_usd_k": 20.8
+  },
+  {
+   "month": "2026-12",
+   "region": "East",
+   "plan": "Starter",
+   "orders": 246,
+   "revenue_usd_k": 41.3
+  },
+  {
+   "month": "2026-12",
+   "region": "East",
+   "plan": "Pro",
+   "orders": 128,
+   "revenue_usd_k": 82.0
+  },
+  {
+   "month": "2026-12",
+   "region": "West",
+   "plan": "Pro",
+   "orders": 386,
+   "revenue_usd_k": 79.0
+  }
+ ]
+}

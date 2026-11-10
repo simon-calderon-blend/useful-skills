@@ -1,0 +1,56 @@
+/* Dashboard-specific styles. Loaded after blend-web-core tokens.css + components.css.
+   Series palette: the same five validated hues as blend-documents/references/charts.md
+   (blue, teal, amber, violet, red; cyan/navy are brand, not series, see SKILL.md). */
+:root {
+  --s1: #2F6FA3; --s2: #00A3A3; --s3: #E39B2D; --s4: #8E6BBF; --s5: #C8524B;
+  --chart-one: var(--blend-navy);   /* single series: navy on light, cyan on dark */
+  --grid: rgba(5, 48, 87, .13);
+  --wrap: 1240px;
+}
+
+.d-wrap { max-width: var(--wrap); margin: 0 auto; padding: clamp(1.2rem, 3vw, 2.2rem) clamp(1rem, 4vw, 2.5rem) 3rem; }
+.d-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: .8rem 2rem; margin-bottom: 1.4rem; }
+.d-head h1 { font-size: clamp(1.7rem, 3.5vw, 2.4rem); margin: .2rem 0 .3rem; }
+.d-head p { margin: 0; color: var(--text-muted); }
+.d-badge { display: inline-block; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; padding: .15rem .6rem;
+  border-radius: 999px; border: 1px solid var(--state-warn); color: var(--state-warn); margin-left: .5rem; vertical-align: middle; }
+.d-theme { font: inherit; font-size: .8rem; background: var(--surface); color: var(--text); border: 1px solid var(--hairline); border-radius: 999px; padding: .3rem .9rem; cursor: pointer; }
+
+.b-kpi { text-align: left; }
+.b-kpi .n { display: block; font-size: .75rem; color: var(--text-muted); margin-top: .2rem; }
+.d-sec { margin-top: 1.6rem; }
+.d-sec > h2 { font-size: 1.25rem; margin: 0 0 .7rem; }
+
+/* Toolbar: chips, search, actions */
+.d-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; margin: 1.4rem 0 1rem; }
+.d-chips { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
+.d-chips .lbl { font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted); margin-right: .2rem; }
+button.b-chip { font: inherit; font-size: .8rem; background: var(--surface); cursor: pointer; }
+button.b-chip[aria-pressed="true"] { background: var(--blend-navy); color: var(--blend-white); border-color: var(--blend-navy); }
+.d-search { font: inherit; font-size: .9rem; padding: .4rem .8rem; border-radius: 999px; border: 1px solid var(--hairline); background: var(--surface); color: var(--text); min-width: 14rem; }
+.d-actions { margin-left: auto; display: flex; gap: .5rem; align-items: center; font-size: .85rem; color: var(--text-muted); }
+.d-btn { font: inherit; font-size: .85rem; padding: .4rem 1rem; border-radius: 999px; border: 1px solid var(--blend-navy); background: var(--blend-navy); color: var(--blend-white); cursor: pointer; }
+.d-btn.ghost { background: transparent; color: var(--heading); border-color: var(--hairline); }
+
+/* Charts */
+.d-charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: var(--gap); }
+.d-chart h3 { font-size: 1rem; margin: 0 0 .15rem; }
+.d-chart .cap { font-size: .8rem; color: var(--text-muted); margin: 0 0 .6rem; }
+.d-legend { display: flex; flex-wrap: wrap; gap: .3rem 1rem; font-size: .8rem; color: var(--text-muted); margin-bottom: .4rem; }
+.d-legend i { display: inline-block; width: .7rem; height: .7rem; border-radius: 2px; margin-right: .35rem; vertical-align: -1px; }
+.d-chart svg { width: 100%; height: auto; display: block; }
+.d-chart svg text { fill: var(--text-muted); font-family: var(--font); font-size: 11px; }
+.d-chart svg .grid { stroke: var(--grid); stroke-width: 1; }
+.d-chart .tgl { float: right; font-size: .75rem; }
+.d-empty { color: var(--text-muted); padding: 2rem 0; text-align: center; }
+
+/* Table */
+.d-table th[data-key] { cursor: pointer; white-space: nowrap; user-select: none; }
+.d-table th[aria-sort="ascending"]::after { content: " \25B2"; font-size: .7em; }
+.d-table th[aria-sort="descending"]::after { content: " \25BC"; font-size: .7em; }
+.d-table-wrap { max-height: 70vh; overflow: auto; border: 1px solid var(--hairline); border-radius: var(--radius); background: var(--surface); }
+.d-table-wrap .b-table th { position: sticky; top: 0; z-index: 1; }
+.d-meta { font-size: .8rem; color: var(--text-muted); margin: .6rem 0; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+.d-note { font-size: .8rem; color: var(--text-muted); margin-top: 1.5rem; }
+@media (max-width: 560px) { .d-search { min-width: 0; width: 100%; } .d-actions { margin-left: 0; } }
+.b-kpi .v { font-size: clamp(1.45rem, 6vw, 2rem); overflow-wrap: anywhere; }
