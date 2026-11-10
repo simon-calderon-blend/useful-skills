@@ -1,0 +1,21 @@
+{
+  "title": "Illustrative: Evaluation-driven delivery",
+  "subtitle": "Example deck generated with blend-presentations",
+  "author": "Blend360",
+  "date": "2026-11",
+  "lang": "en",
+  "slides": [
+    {"type": "cover", "eyebrow": "Illustrative deck", "title": "Evaluation-driven delivery", "subtitle": "How a team ships AI features with measurable quality gates.",
+     "notes": "Welcome. This deck is a template example; all figures are illustrative."},
+    {"type": "section", "eyebrow": "Part one", "title": "Why measure before shipping",
+     "notes": "Set up the problem: demos hide variance."},
+    {"type": "content", "eyebrow": "Context", "title": "Quality gates turn opinions into numbers",
+     "points": ["Define the task and the failure modes first", "Score every change against a fixed evaluation set", "Block releases that regress a gate"],
+     "kpis": [{"value": "42", "label": "evaluation cases"}, {"value": "3", "label": "quality gates"}, {"value": "-18%", "label": "regressions per release"}],
+     "illustrative": true, "notes": "Walk the three bullets, then land the KPI strip. Numbers are made up."},
+    {"type": "quote", "quote": "If you cannot score it, you cannot ship it with confidence.", "author": "Illustrative quote",
+     "notes": "Pause here for a beat."},
+    {"type": "closing", "eyebrow": "Next step", "title": "Start with one gate", "subtitle": "Pick the riskiest behavior and write ten cases for it.", "contact": "Illustrative contact",
+     "notes": "Close with the ask."}
+  ]
+}

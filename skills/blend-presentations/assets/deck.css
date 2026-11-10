@@ -1,0 +1,80 @@
+/* blend-presentations: deck DOM layout. Requires blend-web-core tokens.css + components.css.
+   Light slides by default (paper); cover/section/closing use the navy stage (.dark: cyan text is allowed there).
+   Co-branding lives in --client-* (set by build_deck.py from the spec); it never replaces a Blend token. */
+html, body { height: 100%; overflow: hidden; }
+body { background: var(--blend-navy); }
+.deck { position: fixed; inset: 0; overflow: hidden; background: var(--bg); --ease: cubic-bezier(.22, .7, .2, 1); }
+.slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(3.5rem, 8vh, 5rem) clamp(1.25rem, 7vw, 6rem) clamp(3rem, 7vh, 4rem); overflow: hidden;
+  background: var(--bg); color: var(--text); opacity: 0; visibility: hidden; transform: translateY(8px);
+  transition: opacity .45s var(--ease), transform .45s var(--ease), visibility 0s .45s; }
+.slide.active { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; z-index: 1; }
+.slide.dark { background: var(--blend-navy); color: var(--blend-paper); }
+.slide.dark h1, .slide.dark h2, .slide.dark h3 { color: var(--blend-white); }
+.slide.dark .accent, .slide.dark .b-eyebrow { color: var(--blend-cyan); }
+.slide .b-eyebrow { margin: 0 0 1rem; }
+.slide h1 { font-size: clamp(2.1rem, 6.4vw, 5.2rem); margin: 0 0 1rem; }
+.slide h2 { font-size: clamp(1.6rem, 4vw, 3.1rem); margin: 0 0 1.1rem; max-width: 22ch; }
+.slide .lede { font-size: clamp(1rem, 1.9vw, 1.6rem); line-height: 1.4; max-width: 38ch; margin: 0; color: var(--text-muted); }
+.slide.dark .lede { color: var(--blend-cyan-soft); }
+.slide .meta { margin-top: 2rem; font-size: .9rem; color: var(--text-muted); }
+.slide.dark .meta { color: var(--blend-paper); }
+.slide .client-tag { display: inline-block; margin-top: 1.25rem; padding: .25rem .8rem; border-radius: 999px; font-size: .78rem;
+  border: 1px solid var(--client-accent, var(--blend-cyan)); color: inherit; }
+
+/* Section slide: huge number + title */
+.slide.s-section .num { font-size: clamp(4rem, 14vw, 11rem); line-height: 1; color: var(--blend-cyan); margin: 0 0 .5rem; }
+.slide.s-section h2 { color: var(--blend-white); max-width: 18ch; margin: 0; }
+
+/* Content slide: bullets + KPI strip */
+.slide .points { list-style: none; margin: 0 0 1.5rem; padding: 0; max-width: 52ch; display: grid; gap: .6rem;
+  font-size: clamp(.95rem, 1.6vw, 1.25rem); line-height: 1.4; }
+.slide .points li { padding-left: 1.2rem; position: relative; }
+.slide .points li::before { content: ""; position: absolute; left: 0; top: .6em; width: .5rem; height: .5rem; border-radius: 50%; background: var(--blend-cyan); }
+.slide .kpi-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; max-width: 60rem; margin-top: .5rem; }
+.slide .kpi-strip .b-card { border-top: 4px solid var(--blend-cyan); }
+.slide .kpi-strip .v { font-size: clamp(1.6rem, 3.4vw, 2.6rem); }
+.slide .illus { margin-top: 1rem; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); }
+
+/* Quote slide */
+.slide.s-quote blockquote { margin: 0; max-width: 28ch; font-size: clamp(1.5rem, 4.2vw, 3.2rem); line-height: 1.2; color: var(--blend-navy); }
+.slide.s-quote blockquote::before { content: ""; display: block; width: 4rem; height: 4px; background: var(--blend-cyan); margin-bottom: 1.5rem; }
+.slide.s-quote cite { display: block; margin-top: 1.5rem; font-style: normal; font-size: .95rem; color: var(--text-muted); }
+
+/* Chrome: logo, counter, progress, notes */
+.deck-logo { position: fixed; top: 1.4rem; right: clamp(1rem, 3vw, 2.25rem); z-index: 20; height: 24px; color: var(--blend-navy); transition: color .3s; }
+.deck-logo svg { height: 100%; width: auto; display: block; }
+.on-dark .deck-logo { color: var(--blend-white); }
+.deck-hud { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between;
+  padding: .6rem clamp(1rem, 3vw, 2.25rem); font-size: .8rem; color: var(--blend-slate); pointer-events: none; }
+body.on-dark .deck-hud { color: var(--blend-paper); }
+.deck-hud button { pointer-events: auto; font: inherit; color: inherit; background: none; border: 1px solid currentColor; border-radius: 999px; padding: .15rem .7rem; cursor: pointer; }
+.deck-hud .counter { font-variant-numeric: tabular-nums; letter-spacing: .08em; }
+/* core theme toggle (--dark): move it to the top-left so it never covers the prev button or counter */
+.b-theme-fixed { top: 1rem; bottom: auto; left: clamp(1rem, 3vw, 2.25rem); }
+/* dark theme (--dark only: tokens-dark.css decides the page colors): readable HUD on the dark content slides */
+@media (prefers-color-scheme: dark) { html:root:not([data-theme="light"]) .deck-hud { color: var(--blend-paper); } }
+:root[data-theme="dark"] .deck-hud { color: var(--blend-paper); }
+.deck-progress { position: fixed; left: 0; bottom: 0; height: 3px; width: 0; background: var(--blend-cyan); z-index: 21; transition: width .45s var(--ease); }
+.deck-notes { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; max-height: 38vh; overflow: auto; padding: 1rem clamp(1rem, 4vw, 3rem) 2.4rem;
+  background: var(--blend-black); color: var(--blend-paper); font-size: .95rem; line-height: 1.5; border-top: 2px solid var(--blend-cyan); }
+.deck-notes[hidden] { display: none; }
+.deck-notes.dark .b-eyebrow { color: var(--blend-cyan); margin: 0 0 .4rem; }
+.slide .notes { display: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (max-width: 640px) {
+  .slide { justify-content: flex-start; padding-top: 4.5rem; overflow-y: auto; }
+  .slide h2 { max-width: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .slide, .deck-progress, .deck-logo { transition: none !important; transform: none !important; }
+}
+@media print {
+  @page { size: 1280px 720px; margin: 0; }
+  html, body { height: auto; overflow: visible; background: #fff; }
+  .deck { position: static; overflow: visible; }
+  .slide { position: relative; width: 1280px; height: 720px; opacity: 1 !important; visibility: visible !important; transform: none !important;
+    page-break-after: always; break-after: page; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .deck-logo, .deck-hud, .deck-progress, .deck-notes { display: none !important; }
+}
