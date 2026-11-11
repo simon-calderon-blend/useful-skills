@@ -1,0 +1,152 @@
+{
+ "_comment": "EJEMPLO ILUSTRATIVO: recursos, IDs y conteos inventados; solo los datos públicos (CVE, versiones de la capa de AWS, fuentes) son reales. Copia este archivo, reemplaza todo y arma la pagina con scripts/build_page.py. Los textos aceptan HTML simple. dev.kind: crit|ok|warn. Sin ARNs completos ni numeros de cuenta: abrevia (…:layer:Nombre:262) y di 'prod'/'dev'.",
+ "title": "Triage CVE-2026-39821",
+ "eyebrow": "Ilustrativo · Amazon Inspector · cuenta prod · us-east-1",
+ "headline": "CVE-2026-39821 en go/stdlib: una capa, tres hallazgos",
+ "lede": "Los 3 hallazgos tienen la misma causa: la capa pública de AWS <strong>AppConfig Agent Lambda extension</strong> fijada en <code>:262</code>, compilada con Go 1.26.5. La versión está fijada en <strong>2 repos distintos</strong>, así que son 2 arreglos.",
+ "stats": [
+  {
+   "label": "Severidad",
+   "value": "<span class=\"b-chip bad\">CRITICAL</span> CVSS 9.6",
+   "note": "AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:N"
+  },
+  {
+   "label": "¿Corregido en dev?",
+   "value": "<span class=\"b-chip warn\">Parcial</span>",
+   "note": "Repo A no; repo B ya en código, sin desplegar"
+  },
+  {
+   "label": "Causa raíz",
+   "value": "Capa AppConfig <code>:262</code>",
+   "note": "<code>extensions/AppConfigAgent</code> = go1.26.5; corregido en ≥ 1.26.6"
+  },
+  {
+   "label": "Arreglos",
+   "value": "2",
+   "note": "Uno por repo dueño de la capa fijada"
+  }
+ ],
+ "findings": [
+  {
+   "n": 1,
+   "id": "1a2b3c4d5e6f7a8b…",
+   "resource": "servicio-a-handler",
+   "dev": {
+    "kind": "crit",
+    "label": "No corregido",
+    "note": "9f8e7d6c5b4a… ACTIVE"
+   },
+   "fix": "F1"
+  },
+  {
+   "n": 2,
+   "id": "2b3c4d5e6f7a8b9c…",
+   "idNote": "El ID llegó truncado (<code>…/2b</code>); empatado por prefijo, CVE y cuenta",
+   "resource": "servicio-b-worker",
+   "dev": {
+    "kind": "ok",
+    "label": "Corregido en código",
+    "note": "develop ya tiene :289; falta desplegar"
+   },
+   "fix": "F2"
+  },
+  {
+   "n": 3,
+   "id": "3c4d5e6f7a8b9c0d…",
+   "resource": "servicio-b-scheduler",
+   "dev": {
+    "kind": "ok",
+    "label": "Corregido en código",
+    "note": "develop ya tiene :289; falta desplegar"
+   },
+   "fix": "F2"
+  }
+ ],
+ "findingsNote": "Las 3 son Lambdas arm64. El paquete vulnerable está en la capa de AppConfig, no en nuestro código. servicio-a fija la capa en el repo A y servicio-b en el repo B.",
+ "evidence": {
+  "title": "Evidencia: versión de Go dentro de cada capa",
+  "columns": [
+   "Capa (us-east-1, arm64)",
+   "Versión agente",
+   "Publicada",
+   "Go del binario",
+   "Estado"
+  ],
+  "rows": [
+   [
+    "<span class=\"mono\">AWS-AppConfig-Extension-Arm64:262</span>",
+    "2.0.20159",
+    "2026-07-13",
+    "<span class=\"mono\">go1.26.5</span>",
+    "<span class=\"b-chip bad\">Vulnerable</span> en uso hoy"
+   ],
+   [
+    "<span class=\"mono\">AWS-AppConfig-Extension-Arm64:289</span>",
+    "2.0.27899",
+    "2026-10-23",
+    "<span class=\"mono\">go1.26.10</span>",
+    "<span class=\"b-chip ok\">Corregida</span> última documentada"
+   ],
+   [
+    "<span class=\"mono\">AWS-AppConfig-Extension-Arm64:298</span>",
+    "sin documentar",
+    "más reciente",
+    "<span class=\"mono\">go1.27.3</span>",
+    "<span class=\"b-chip warn\">Corregida</span> aún no en la doc"
+   ]
+  ],
+  "note": "El Go de cada binario se leyó con <code>go version -m</code> sobre las capas públicas descargadas con <code>GetLayerVersionByArn</code>, sin ejecutar el binario."
+ },
+ "fixes": [
+  {
+   "id": "F1",
+   "title": "Repo A: actualizar la capa AppConfig Agent a 2.0.27899",
+   "covers": "Hallazgo 1 y su equivalente en dev.",
+   "what": "Cambiar el ARN fijado en <code>lib/constructs/appconfig-agent-extension.ts</code>: arm64 <code>:262 → :289</code> y x86_64 <code>:262 → :356</code>.",
+   "diff": [
+    [
+     "-",
+     "    arm64: '…:layer:AWS-AppConfig-Extension-Arm64:262',"
+    ],
+    [
+     "+",
+     "    arm64: '…:layer:AWS-AppConfig-Extension-Arm64:289',"
+    ]
+   ],
+   "why": [
+    "<code>:289</code> trae go1.26.10, por encima del 1.26.6 que fija GO-2026-5026.",
+    "Es la versión que la documentación de AWS lista como actual; AWS recomienda actualizar periódicamente.",
+    "Se prefiere a <code>:298</code> porque esta aún no aparece en la documentación ni en las notas de versión.",
+    "Se prefiere a <code>{{resolve:ssm:…/latest}}</code> porque así la versión sigue fija y revisable en un PR."
+   ],
+   "rollout": [
+    "PR a la rama base del repo A con sus tests.",
+    "Deploy a dev: invocar servicio-a y confirmar que lee AppConfig en <code>localhost:2772</code>; Inspector pasa el hallazgo de dev a CLOSED.",
+    "Promover por el pipeline. En prod no se toca nada a mano.",
+    "Confirmar que el hallazgo de prod queda en CLOSED."
+   ],
+   "risk": "Bajo. Es un salto menor del agente (2.0.20159 → 2.0.27899); las variables <code>AWS_APPCONFIG_EXTENSION_*</code> y los permisos IAM no cambian."
+  },
+  {
+   "id": "F2",
+   "title": "Repo B: desplegar el cambio que ya está en develop",
+   "covers": "Hallazgos 2 y 3 y sus equivalentes en dev.",
+   "what": "El repo B ya fijó <code>:289</code> en <code>infra/modules/worker/main.tf</code>; falta desplegarlo. No hay cambio de código.",
+   "diff": [],
+   "why": [
+    "El código ya tiene la versión corregida; solo falta que llegue a dev y a prod por el pipeline."
+   ],
+   "rollout": [
+    "Desplegar el repo B a dev y verificar que Inspector cierra los hallazgos.",
+    "Promover a prod por el pipeline."
+   ],
+   "risk": "Bajo. Es el mismo cambio que F1."
+  }
+ ],
+ "escalation": [],
+ "sources": [
+  "Base de vulnerabilidades de Go, GO-2026-5026: stdlib corregido en <strong>1.25.13, 1.26.6 y 1.27.0-rc.3</strong>. <a href=\"https://pkg.go.dev/vuln/GO-2026-5026\">pkg.go.dev/vuln/GO-2026-5026</a>",
+  "NVD, CVE-2026-39821: CVSS 3.1 de 9.6. <a href=\"https://nvd.nist.gov/vuln/detail/CVE-2026-39821\">nvd.nist.gov/vuln/detail/CVE-2026-39821</a>",
+  "AWS AppConfig, versiones de la extensión para Lambda. <a href=\"https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-integration-lambda-extensions-versions.html\">docs.aws.amazon.com/appconfig</a>"
+ ]
+}

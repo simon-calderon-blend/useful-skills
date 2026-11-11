@@ -1,0 +1,190 @@
+<title>@@TITLE@@</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Plantilla de triage con estilo Blend (blend-web-core 0a937bc, embebido en esta skill).
+   build_page.py reemplaza @@BLEND_CSS@@ con font-face + tokens.css + components.css (solo modo claro).
+   Layout: banda navy con el titular, luego una columna de lectura: resumen, hallazgos, evidencia,
+   arreglos con decisión Sí/No, escalamiento y fuentes. Peso 400 en todo (regla Blend). */
+@@BLEND_CSS@@
+/* Solo modo claro, decisión del usuario: la página no sigue el tema oscuro del visor. */
+:root { --code-bg: var(--blend-mist); --pressed-no: var(--state-bad); color-scheme: light; }
+
+[hidden] { display: none !important; }
+body { font-size: 15px; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 11; background: var(--bg); }
+.b-header { top: env(safe-area-inset-top, 0px); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.b-header .tag { font-size: .78rem; color: var(--text-muted); }
+.gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.in { max-width: 1040px; margin: 0 auto; }
+.b-hero { padding-block: clamp(1.75rem, 5vw, 3.25rem); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.b-hero .in { display: flex; flex-direction: column; gap: .6rem; }
+.b-hero h1 { margin: 0; font-size: clamp(1.6rem, 3.6vw, 2.5rem); text-wrap: balance; }
+.b-hero .b-eyebrow { color: var(--blend-cyan-soft); }
+.b-hero p { margin: 0; max-width: 72ch; color: var(--blend-white); }
+.b-hero strong { color: var(--blend-cyan); }
+.b-hero code { background: rgba(255,255,255,.12); color: var(--blend-white); }
+
+main.in { padding-block: 28px 56px; display: flex; flex-direction: column; gap: 32px; }
+section { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+h2 { margin: 0; font-size: 1.35rem; text-wrap: balance; }
+h3 { margin: 0; font-size: 1.05rem; text-wrap: balance; }
+p { margin: 0; max-width: var(--measure); }
+strong, b { font-weight: var(--fw); color: var(--heading); }
+code, .mono { font-family: var(--font-mono); font-size: .84em; }
+code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+.note { font-size: .86rem; color: var(--text-muted); }
+.b-chip { white-space: nowrap; }
+
+.b-kpis .b-card { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.b-kpi .v { font-size: 1.35rem; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.b-kpi .l { text-transform: uppercase; letter-spacing: .1em; }
+.b-kpi .note { overflow-wrap: anywhere; }
+
+.b-table-wrap { background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius); }
+.b-table th { font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; }
+.b-table td { vertical-align: top; font-variant-numeric: tabular-nums; }
+.b-table tr:last-child td { border-bottom: 0; }
+
+.fix { display: flex; flex-direction: column; gap: 14px; }
+.fix-head { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline; justify-content: space-between; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.grid2 > div { min-width: 0; }
+ul { margin: 4px 0 0; padding-left: 20px; } li { margin: 3px 0; }
+pre { margin: 0; background: var(--code-bg); border-radius: 8px; padding: 10px 12px; overflow-x: auto; font-family: var(--font-mono); font-size: .8rem; line-height: 1.55; }
+.add { color: var(--state-ok); } .del { color: var(--state-bad); }
+
+.decide { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; border-top: 1px solid var(--hairline); padding-top: 14px; }
+.decide textarea { flex: 1 1 260px; min-width: 0; min-height: 40px; font: inherit; font-size: .9rem; padding: 8px 10px; border: 1px solid var(--hairline); border-radius: var(--radius); background: var(--bg); color: var(--text); resize: vertical; }
+.decide button { font: inherit; padding: .5rem 1.15rem; border-radius: 999px; border: 1px solid var(--hairline); background: var(--surface); color: var(--text); cursor: pointer; }
+.decide button:hover:not(:disabled) { border-color: var(--accent); }
+.decide button.yes[aria-pressed="true"] { background: var(--blend-cyan); color: var(--blend-navy); border-color: var(--blend-cyan); }
+.decide button.no[aria-pressed="true"] { background: var(--pressed-no); color: var(--blend-white); border-color: var(--pressed-no); }
+.decide button:disabled { opacity: .5; cursor: not-allowed; }
+.status { font-size: .82rem; color: var(--text-muted); }
+.src li { overflow-wrap: anywhere; }
+.b-footer { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+</style>
+
+<header class="b-header"><span aria-label="Blend">@@LOGO@@</span><span class="tag">Triage de seguridad</span></header>
+
+<section class="b-hero" aria-label="Titular">
+  <div class="in">
+    <span class="b-eyebrow" id="eyebrow"></span>
+    <h1 id="h1"></h1>
+    <p id="lede"></p>
+  </div>
+</section>
+
+<div class="gutter">
+<main class="in">
+  <section aria-label="Resumen"><div class="b-kpis" id="stats"></div></section>
+
+  <section>
+    <h2>Hallazgos</h2>
+    <div class="b-table-wrap"><table class="b-table">
+      <thead><tr><th>#</th><th>Hallazgo (prod)</th><th>Recurso prod</th><th>Estado en dev</th><th>Arreglo</th></tr></thead>
+      <tbody id="findings"></tbody>
+    </table></div>
+    <p class="note" id="findingsNote"></p>
+  </section>
+
+  <section id="evidenceSec">
+    <h2 id="evidenceTitle"></h2>
+    <div class="b-table-wrap"><table class="b-table"><thead><tr id="evidenceHead"></tr></thead><tbody id="evidenceBody"></tbody></table></div>
+    <p class="note" id="evidenceNote"></p>
+  </section>
+
+  <section>
+    <h2>Arreglos propuestos</h2>
+    <div id="fixes" style="display:flex;flex-direction:column;gap:16px"></div>
+  </section>
+
+  <section id="escalationSec" hidden>
+    <h2>Escalamiento de revisión de PR</h2>
+    <div id="escalation" style="display:flex;flex-direction:column;gap:12px"></div>
+  </section>
+
+  <section>
+    <h2>Fuentes</h2>
+    <ul class="src" id="sources"></ul>
+  </section>
+</main>
+</div>
+<footer class="b-footer">Blend360 · Triage de hallazgos de seguridad · uso interno</footer>
+
+<script>
+const REPORT = /*@@REPORT@@*/null;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+const chip = k => "b-chip " + ({ crit: "bad", bad: "bad", ok: "ok", warn: "warn" }[k] || "");
+$("eyebrow").innerHTML = REPORT.eyebrow;
+$("h1").innerHTML = REPORT.headline || REPORT.title;
+$("lede").innerHTML = REPORT.lede;
+$("stats").innerHTML = REPORT.stats.map(s => `<div class="b-card b-kpi"><span class="l">${s.label}</span><span class="v">${s.value}</span><span class="note">${s.note || ""}</span></div>`).join("");
+$("findings").innerHTML = REPORT.findings.map(f => `<tr><td>${f.n}</td><td class="mono">${f.id}${f.idNote ? `<br><span class="note">${f.idNote}</span>` : ""}</td><td class="mono">${f.resource}</td><td><span class="${chip(f.dev.kind)}">${f.dev.label}</span>${f.dev.note ? `<br><span class="note mono">${f.dev.note}</span>` : ""}</td><td>${f.fix}</td></tr>`).join("");
+$("findingsNote").innerHTML = REPORT.findingsNote || "";
+if (REPORT.evidence) {
+  $("evidenceTitle").innerHTML = REPORT.evidence.title;
+  $("evidenceHead").innerHTML = REPORT.evidence.columns.map(c => `<th>${c}</th>`).join("");
+  $("evidenceBody").innerHTML = REPORT.evidence.rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("");
+  $("evidenceNote").innerHTML = REPORT.evidence.note || "";
+} else { $("evidenceSec").hidden = true; }
+$("sources").innerHTML = REPORT.sources.map(s => `<li>${s}</li>`).join("");
+if ((REPORT.escalation || []).length) {
+  $("escalationSec").hidden = false;
+  $("escalation").innerHTML = REPORT.escalation.map(e => `<div class="b-callout warn"><h3>PR #${e.pr} · ${e.bot}</h3><p>${e.comment}</p><p class="note">${e.classification} · ${e.evidence}</p><p class="note">Qué se intentó: ${e.tried}</p><ul>${e.options.map(o => `<li>${o}</li>`).join("")}</ul><p>Recomendación: ${e.recommendation}</p></div>`).join("");
+}
+
+$("fixes").innerHTML = REPORT.fixes.map(f => `
+  <article class="b-card fix" id="fix-${f.id}">
+    <div class="fix-head"><h3>${f.id} · ${f.title}</h3><span class="b-chip" data-badge>Pendiente</span></div>
+    <p><strong>Cubre:</strong> ${f.covers}</p>
+    <p>${f.what}</p>
+    ${f.diff && f.diff.length ? `<pre>${f.diff.map(([s, l]) => `<span class="${s === "+" ? "add" : s === "-" ? "del" : ""}">${s}${esc(l)}</span>`).join("\n")}</pre>` : ""}
+    <div class="grid2">
+      <div><span class="b-eyebrow">Por qué esta opción</span><ul>${f.why.map(x => `<li>${x}</li>`).join("")}</ul></div>
+      <div><span class="b-eyebrow">Cómo se aplica y se verifica</span><ul>${f.rollout.map(x => `<li>${x}</li>`).join("")}</ul></div>
+    </div>
+    <p class="note"><strong>Riesgo:</strong> ${f.risk}</p>
+    <div class="decide">
+      <button class="yes" id="yes-${f.id}" aria-pressed="false" disabled>Sí, aplicar</button>
+      <button class="no" id="no-${f.id}" aria-pressed="false" disabled>No</button>
+      <textarea id="note-${f.id}" placeholder="Comentario opcional" disabled></textarea>
+      <span class="status" id="st-${f.id}">Conectando…</span>
+    </div>
+  </article>`).join("");
+
+function paint(id, d) {
+  $("yes-" + id).setAttribute("aria-pressed", d?.decision === "si");
+  $("no-" + id).setAttribute("aria-pressed", d?.decision === "no");
+  const badge = document.querySelector(`#fix-${id} [data-badge]`);
+  badge.className = d?.decision === "si" ? "b-chip ok" : d?.decision === "no" ? "b-chip bad" : "b-chip";
+  badge.textContent = d?.decision === "si" ? "Aprobado" : d?.decision === "no" ? "Rechazado" : "Pendiente";
+  const note = $("note-" + id);
+  if (d?.nota !== undefined && document.activeElement !== note) note.value = d.nota;
+}
+
+(async () => {
+  const setAll = msg => REPORT.fixes.forEach(f => $("st-" + f.id).textContent = msg);
+  const timer = setTimeout(() => setAll("No se pudo conectar; dile tu decisión a Claude en el chat."), 10000);
+  const db = await claude.use("db");
+  if (!db) { clearTimeout(timer); setAll("Sin guardado aquí; dile tu decisión a Claude en el chat."); return; }
+  REPORT.fixes.forEach(f => {
+    const ref = db.doc("decisiones/" + f.id);
+    const st = $("st-" + f.id);
+    const els = ["yes-", "no-", "note-"].map(p => $(p + f.id));
+    ref.onSnapshot(s => {
+      clearTimeout(timer); els.forEach(e => e.disabled = false);
+      const d = s.exists ? s.data() : null; paint(f.id, d);
+      st.textContent = d?.at ? "Guardado " + new Date(d.at).toLocaleString() : "Sin decisión";
+    }, () => { st.textContent = "No se pudo leer la decisión guardada."; });
+    const save = async decision => {
+      st.textContent = "Guardando…";
+      try { await ref.set({ decision, nota: els[2].value.trim(), at: new Date().toISOString() }); }
+      catch (e) { st.textContent = e?.code === "permission_denied" ? "No tienes permiso para decidir aquí." : "No se guardó; intenta de nuevo."; }
+    };
+    els[0].onclick = () => save("si"); els[1].onclick = () => save("no");
+  });
+})();
+</script>
