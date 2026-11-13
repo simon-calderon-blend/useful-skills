@@ -54,58 +54,177 @@
   --radius: 12px;
   --radius-lg: 14px;
   --gap: 1rem;
-  --measure: 68ch;
-}
-/* Shared Blend web components. Requires tokens.css. Plain CSS, no dependencies. */
-*, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
-body { margin: 0; background: var(--bg); color: var(--text); font: var(--fw) 1rem/1.65 var(--font); }
-h1, h2, h3 { color: var(--heading); font-weight: var(--fw); line-height: 1.15; letter-spacing: -.01em; }
-h1 { font-size: clamp(2rem, 5vw, 3.4rem); letter-spacing: -.02em; }
-a { color: var(--accent); }
-img, svg { max-width: 100%; }
+  --measure: 48ch;              /* about 72 characters: the 0 of PP Telegraf is 1.5x its average letter, so 68ch was 104 */
 
-.b-eyebrow { font-size: .75rem; text-transform: uppercase; letter-spacing: .14em; color: var(--text-muted); }
+  /* ---- Design-system tokens (layout, not brand). See references/design-principles.md ---- */
+  /* Spacing: one scale on a 4px base. No spacing value outside it. */
+  --s-1: .25rem; --s-2: .5rem; --s-3: .75rem; --s-4: 1rem; --s-5: 1.5rem;
+  --s-6: 2rem; --s-7: 3rem; --s-8: 4rem; --s-9: 6rem;
+  /* Widths: every page uses one of these, so the left line is the same from header to footer. */
+  --w-page: 72rem;              /* documents, portals, landings */
+  --w-wide: 80rem;              /* dashboards, API reference, sidebar layouts */
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  /* Type roles, ratio 1.2 from a 16px body. Weight stays 400: hierarchy is size, space and tone. */
+  --t-micro: .75rem;            /* 12px floor: chips, table meta */
+  --t-small: .875rem;           /* captions, labels, secondary */
+  --t-body: 1rem;
+  --t-lead: 1.2rem;             /* standfirst, card title, h3 */
+  --t-h2: 1.728rem;
+  --t-h1: 2.488rem;
+  --t-figure: 2.074rem;         /* KPI value: never larger than the h1 */
+  --t-display: clamp(2.2rem, 1.3rem + 3.6vw, 3.6rem);  /* persuade pages only (landing, one-pager, hero) */
+  /* Motion: three durations, one curve. Only transform, opacity and colour move. */
+  --dur-1: 120ms;               /* press, feedback */
+  --dur-2: 220ms;               /* hover, menu, indicator */
+  --dur-3: 420ms;               /* panel, progress */
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  /* Controls */
+  --tap: 2.75rem;               /* 44px hit target */
+  --radius-sm: 6px;             /* inner radius = outer radius - padding */
+  --focus: var(--accent);       /* navy surfaces set --focus: var(--blend-cyan) */
+  /* Tinted wells, derived from the state tokens (no new hex). State colours are fills and borders,
+     never small text on light: warn is 4.1:1 on white, bad 4.5:1 on paper. */
+  --tint-note: color-mix(in srgb, var(--blend-cyan-soft) 30%, var(--surface));
+  --tint-key: color-mix(in srgb, var(--blend-navy) 7%, var(--surface));
+  --tint-ok: color-mix(in srgb, var(--state-ok) 9%, var(--surface));
+  --tint-warn: color-mix(in srgb, var(--state-warn) 16%, var(--surface));
+  --tint-bad: color-mix(in srgb, var(--state-bad) 13%, var(--surface));
+  --tint-info: color-mix(in srgb, var(--state-info) 8%, var(--surface));
+}
+/* Shared Blend web components. Requires tokens.css. Plain CSS, no dependencies.
+   Design rules behind these choices: references/design-principles.md. */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scrollbar-color: color-mix(in srgb, var(--heading) 35%, transparent) transparent; }
+body { margin: 0; background: var(--bg); color: var(--text); font: var(--fw) var(--t-body)/1.65 var(--font);
+  caret-color: var(--accent); accent-color: var(--blend-navy); text-wrap: pretty; overflow-wrap: break-word; }
+::selection { background: var(--blend-cyan-soft); color: var(--blend-navy); }
+
+/* Headings: weight is always 400, so hierarchy is size, space and colour. A heading belongs to what
+   follows it: twice the space above as below. */
+h1, h2, h3 { color: var(--heading); font-weight: var(--fw); line-height: 1.15; letter-spacing: -.01em; text-wrap: balance; }
+h1 { font-size: clamp(2rem, 1.5rem + 2vw, var(--t-h1)); letter-spacing: -.02em; max-width: 24ch; margin: 0 0 var(--s-4); }
+h2 { font-size: clamp(1.44rem, 1.2rem + 1vw, var(--t-h2)); max-width: 32ch; margin: var(--s-7) 0 var(--s-4); }
+h3 { font-size: var(--t-lead); line-height: 1.3; max-width: 44ch; margin: var(--s-6) 0 var(--s-2); }
+p { margin: 0 0 var(--s-4); }
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: .18em; }
+img, svg { max-width: 100%; }
+/* The brand face has one weight. Emphasis is tone (navy), never a browser-synthesised bold. */
+body { font-synthesis: none; }
+:where(strong, b, th) { font-weight: var(--fw); }
+:where(strong, b) { color: var(--heading); }
+:where(.b-hero, .b-band, [class*="-hero"], [class*="-cta"], [class*="-band"], th, pre) :where(strong, b) { color: inherit; }
+::placeholder { color: var(--text-muted); opacity: 1; }
+
+/* One eyebrow per page (masthead or hero). Every other small label is .b-label: sentence case, no tracking. */
+.b-eyebrow { font-size: var(--t-micro); text-transform: uppercase; letter-spacing: .14em; color: var(--text-muted); }
+.b-label { font-size: var(--t-small); color: var(--text-muted); }
 .b-prose { max-width: var(--measure); }
+.b-num, .b-kpi .v, .b-table td.num, .b-table th.num { font-variant-numeric: tabular-nums; }
+.b-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.b-skip { position: absolute; left: var(--s-4); top: var(--s-2); z-index: 100; padding: var(--s-2) var(--s-4); background: var(--blend-navy);
+  color: var(--blend-white); border-radius: var(--radius-sm); transform: translateY(-200%); }
+.b-skip:focus { transform: none; }
 
 /* Header with logo */
-.b-header { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between;
-  padding: .75rem clamp(1rem, 4vw, 2.5rem); background: var(--bg); border-bottom: 1px solid var(--hairline); }
-.b-header .blend-logo { height: 22px; width: auto; color: var(--blend-navy); }
+.b-header { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: var(--s-4);
+  padding: var(--s-3) var(--gutter); background: var(--bg); border-bottom: 1px solid var(--hairline); }
+.b-header .blend-logo { height: 22px; width: auto; color: var(--blend-navy); display: block; }
 
-/* Hero and CTA band (navy, cyan accent text is allowed here: dark background) */
-.b-hero, .b-band { background: var(--blend-navy); color: var(--blend-white); padding: clamp(2rem, 6vw, 5rem) clamp(1rem, 4vw, 2.5rem); }
+/* Hero and CTA band: the navy region. Cyan is text only here; secondary text is soft cyan, never grey or opacity. */
+.b-hero, .b-band { --focus: var(--blend-cyan); --kpi-rule: color-mix(in srgb, var(--blend-cyan-soft) 35%, transparent); background: var(--blend-navy); color: var(--blend-white);
+  padding: clamp(2rem, 6vw, 5rem) var(--gutter); }
 .b-hero h1, .b-band h2 { color: var(--blend-cyan); }
-.b-btn { display: inline-block; padding: .7rem 1.2rem; border-radius: 999px; background: var(--blend-cyan); color: var(--blend-navy);
-  text-decoration: none; font-weight: var(--fw); }
+.b-hero ::selection, .b-band ::selection { background: var(--blend-cyan); color: var(--blend-navy); }
 
-/* Cards, KPI tiles, callouts, chips, tables */
-.b-card { background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; }
-.b-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--gap); }
-.b-kpi .v { display: block; font-size: 2rem; color: var(--heading); line-height: 1.1; }
-.b-kpi .l { font-size: .8rem; color: var(--text-muted); }
-.b-callout { border-left: 4px solid var(--blend-cyan); background: var(--surface); padding: .8rem 1rem; border-radius: 0 var(--radius) var(--radius) 0; }
-.b-callout.warn { border-color: var(--state-warn); }
-.b-callout.bad { border-color: var(--state-bad); }
-.b-chip { display: inline-block; padding: .15rem .6rem; border-radius: 999px; font-size: .75rem; border: 1px solid var(--hairline); color: var(--text-muted); }
-.b-chip.ok { color: var(--state-ok); border-color: currentColor; }
-.b-chip.warn { color: var(--state-warn); border-color: currentColor; }
-.b-chip.bad { color: var(--state-bad); border-color: currentColor; }
-.b-table { width: 100%; border-collapse: collapse; font-size: .92rem; }
-.b-table th { background: var(--blend-navy); color: var(--blend-white); text-align: left; padding: .55rem .7rem; font-weight: var(--fw); }
-.b-table td { padding: .5rem .7rem; border-bottom: 1px solid var(--hairline); }
-.b-table td.num, .b-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+/* Buttons. One filled .b-btn per view: the primary action. Everything else is .secondary or a link.
+   Pill radius is for controls (buttons, chips, search), not for containers. */
+.b-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--s-2); min-height: var(--tap); padding: var(--s-2) var(--s-5);
+  border-radius: 999px; border: 1px solid transparent; background: var(--blend-cyan); color: var(--blend-navy); font: inherit; line-height: 1.2;
+  text-decoration: none; white-space: nowrap; cursor: pointer;
+  transition: background-color var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease), color var(--dur-2) var(--ease), transform var(--dur-1) var(--ease); }
+.b-btn.secondary { background: transparent; color: var(--heading); border-color: color-mix(in srgb, var(--heading) 45%, transparent); }
+.b-hero .b-btn.secondary, .b-band .b-btn.secondary { color: var(--blend-white); border-color: var(--blend-cyan-soft); }
+@media (hover: hover) {
+  .b-btn:hover { background: color-mix(in srgb, var(--blend-cyan) 84%, var(--blend-navy)); }
+  .b-btn.secondary:hover { background: color-mix(in srgb, var(--heading) 8%, transparent); border-color: var(--heading); }
+  .b-hero .b-btn.secondary:hover, .b-band .b-btn.secondary:hover { background: color-mix(in srgb, var(--blend-white) 12%, transparent); border-color: var(--blend-white); }
+}
+.b-btn:active { transform: translateY(1px); }
+.b-btn:disabled, .b-btn[aria-disabled="true"] { opacity: .55; cursor: not-allowed; transform: none; }
+
+/* Containers: space first, then a hairline, then a tinted well, then a card. Never a card inside a card. */
+.b-card { background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-lg); padding: var(--s-5); min-width: 0; }
+/* carded KPI (decks): compact, so existing slides keep their height */
+.b-card.b-kpi { padding: var(--s-4) var(--s-5); }
+.b-card.b-kpi .l { margin-top: 0; }
+.b-well { background: var(--tint-key); border-radius: var(--radius); padding: var(--s-4) var(--s-5); min-width: 0; }
+
+/* KPI figures: a row parted by hairlines, not a strip of identical cards. Each figure carries its unit
+   in .v, what it counts in .l and a qualifier (target, baseline, period) in .c. */
+.b-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--s-5) var(--gap); }
+.b-kpis:not(:has(> .b-card)) { gap: var(--s-5) 0; margin-left: calc(var(--s-5) * -1); clip-path: inset(0 0 0 var(--s-5)); }
+.b-kpis > .b-kpi:not(.b-card) { padding: 0 var(--s-5); box-shadow: -1px 0 0 var(--kpi-rule, var(--hairline)); min-width: 0; }
+/* phone: an odd count would strand one figure on the last row, so the row becomes a list */
+@media (max-width: 40rem) {
+  .b-kpis:not(:has(> .b-card)):has(> .b-kpi:nth-child(odd):last-child) { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .b-kpis:has(> .b-kpi:nth-child(odd):last-child) > .b-kpi:not(.b-card) { box-shadow: none; padding-block: var(--s-3); border-top: 1px solid var(--kpi-rule, var(--hairline)); }
+  .b-kpis:has(> .b-kpi:nth-child(odd):last-child) > .b-kpi:not(.b-card):first-child { border-top: 0; padding-top: 0; }
+}
+.b-kpi .v { display: block; font-size: clamp(1.6rem, 1.2rem + 1.6vw, var(--t-figure)); color: var(--heading); line-height: 1.1; white-space: nowrap; }
+.b-kpi .l { display: block; font-size: var(--t-small); color: var(--text); margin-top: var(--s-1); }
+.b-kpi .c { display: block; font-size: var(--t-micro); color: var(--text-muted); margin-top: var(--s-1); }
+
+/* Callouts: a tinted well with a worded title, no side stripe. The kind is said in words, not by colour alone. */
+.b-callout { background: var(--tint-key); border-radius: var(--radius); padding: var(--s-4) var(--s-5); min-width: 0; }
+.b-callout.key { background: var(--tint-note); }   /* the one that asks for something gets the accent tint */
+.b-callout.warn { background: var(--tint-warn); }
+.b-callout.bad { background: var(--tint-bad); }
+.b-callout .t { display: block; color: var(--heading); margin-bottom: var(--s-1); }
+.b-callout.warn .t::before, .b-callout.bad .t::before { content: ""; display: inline-block; width: .5em; height: .5em; border-radius: 50%; margin-right: .5em; vertical-align: .1em; background: var(--state-warn); }
+.b-callout.bad .t::before { background: var(--state-bad); }
+.b-callout > :last-child { margin-bottom: 0; }
+
+/* Chips: status in words, with the state colour as dot and border (state colours fail AA as small text). */
+.b-chip { display: inline-flex; align-items: center; gap: .4em; padding: .15rem .6rem; border-radius: 999px; font-size: var(--t-micro); line-height: 1.5;
+  border: 1px solid var(--hairline); color: var(--text-muted); white-space: nowrap; }
+.b-chip.ok, .b-chip.warn, .b-chip.bad, .b-chip.info { color: var(--text); }
+.b-chip.ok::before, .b-chip.warn::before, .b-chip.bad::before, .b-chip.info::before { content: ""; width: .5em; height: .5em; border-radius: 50%; background: currentColor; flex: none; }
+.b-chip.ok { border-color: var(--state-ok); } .b-chip.ok::before { background: var(--state-ok); }
+.b-chip.warn { border-color: var(--state-warn); } .b-chip.warn::before { background: var(--state-warn); }
+.b-chip.bad { border-color: var(--state-bad); } .b-chip.bad::before { background: var(--state-bad); }
+.b-chip.info { border-color: var(--state-info); } .b-chip.info::before { background: var(--state-info); }
+button.b-chip { font: inherit; font-size: var(--t-small); min-height: 2.25rem; background: var(--surface); color: var(--text); cursor: pointer;
+  border-color: color-mix(in srgb, var(--heading) 35%, transparent);   /* controls carry a firmer edge than static chips */
+  transition: background-color var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease), color var(--dur-2) var(--ease); }
+button.b-chip[aria-pressed="true"] { background: var(--blend-navy); color: var(--blend-white); border-color: var(--blend-navy); }
+@media (hover: hover) { button.b-chip:hover { border-color: var(--heading); } }
+@media (pointer: coarse) { button.b-chip { min-height: var(--tap); padding-inline: var(--s-4); } }
+
+/* Tables: navy head, horizontal rules only, numbers right and tabular, first column is the row's name. */
+.b-table { width: 100%; border-collapse: collapse; font-size: var(--t-small); }
+.b-table th { background: var(--blend-navy); color: var(--blend-white); text-align: left; padding: var(--s-2) var(--s-3); font-weight: var(--fw); white-space: nowrap; }
+.b-table td { padding: var(--s-2) var(--s-3); border-bottom: 1px solid var(--hairline); vertical-align: top; }
+.b-table tbody td:first-child { color: var(--heading); }
+.b-table td.num, .b-table th.num { text-align: right; white-space: nowrap; }
+.b-table caption { caption-side: top; text-align: left; font-size: var(--t-small); color: var(--text-muted); padding: 0 0 var(--s-2); }
 .b-table-wrap { overflow-x: auto; }
 
-.b-footer { padding: 1.5rem clamp(1rem, 4vw, 2.5rem); color: var(--text-muted); font-size: .8rem; border-top: 1px solid var(--hairline); }
+.b-footer { padding: var(--s-5) var(--gutter); color: var(--text-muted); font-size: var(--t-small); border-top: 1px solid var(--hairline); }
 
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
-@media print { .b-header { position: static; } body { background: #fff; } .b-hero, .b-band { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+/* Focus: instant, 2px, never animated. Navy regions switch --focus to cyan (the link blue is 1.6:1 on navy). */
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+/* Reduced motion: movement goes, colour and state changes stay. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; scroll-behavior: auto !important;
+    transition-property: color, background-color, border-color, outline-color, opacity !important; }
+}
+@media print { .b-header { position: static; } .b-skip { display: none; } body { background: #fff; }
+  .b-hero, .b-band, .b-table th, .b-callout, .b-well { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
 
 </style>
 </head>
 <body>
+<a class="b-skip" href="#main">Skip to content</a>
 <header class="b-header"><a href="./" aria-label="Blend"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 572 110" fill="none" role="img" aria-label="Blend" class="blend-logo">
 <path d="M0 90.2812V25.1138H48.9904C64.5239 25.1138 70.3146 32.0074 70.3146 41.3827C70.3146 48.552 66.2703 53.8831 59.2848 56.4567C67.4652 58.3869 74.0831 62.9826 74.0831 72.5417C74.0831 83.2957 67.1895 90.2812 53.1265 90.2812H0ZM12.3165 81.0898H49.2661C56.895 81.0898 61.307 78.1485 61.307 71.163C61.307 63.626 55.4244 61.4201 49.2661 61.4201H12.3165V81.0898ZM12.3165 53.5154H45.5896C52.2074 53.5154 58.0899 51.2176 58.0899 43.7725C58.0899 37.1546 53.6781 34.3053 45.5896 34.3053H12.3165V53.5154Z" fill="currentColor"></path>
 <path d="M79.532 90.2812V16.7496H91.6647V90.2812H79.532Z" fill="currentColor"></path>
@@ -117,7 +236,6 @@ img, svg { max-width: 100%; }
 <path d="M558.983 12.7754V-0.000427246H561.181L565.183 10.6133H565.219L569.221 -0.000427246H571.419V12.7754H569.811V2.26885H569.775L565.916 12.7754H564.486L560.627 2.26885H560.591V12.7754H558.983Z" fill="currentColor"></path>
 </svg>
 </a></header>
-<main style="max-width:60ch;margin:0 auto;padding:2rem 1.2rem"><p class="b-eyebrow">Illustrative</p><h1>Sample child page two</h1><p>A second sample page, reachable with the #/slug deep link. Illustrative content.</p></main>
-
+<main id="main" style="max-width:var(--w-page);margin:0 auto;padding:var(--s-7) var(--gutter)"><p class="b-eyebrow">Illustrative</p><h1>Sample child page two</h1><p class="b-prose">This page lives in the same share and loads inside the hub iframe. Illustrative content.</p></main>
 </body>
 </html>

@@ -110,15 +110,17 @@ def status_chip(it):
 
 
 def actions(it, embed=False):
-    label = f' aria-label="Open {E(it["title"], quote=True)}"'
+    """Secondary links only: a resource is opened through its title (card) or the first link here (table detail)."""
+    out = []
     if embed:
-        out = [f'<a class="b-btn p-btn" href="#/{E(it["id"], quote=True)}"{label}>Open here</a>',
-               f'<a class="b-btn p-btn ghost" href="{E(it["href"], quote=True)}" target="_blank" rel="noopener" aria-label="Open {E(it["title"], quote=True)} in a new tab">New tab</a>']
-    else:
-        out = [f'<a class="b-btn p-btn" href="{E(it["href"], quote=True)}"{label}>Open</a>']
+        out.append(f'<a href="{E(it["href"], quote=True)}" target="_blank" rel="noopener" aria-label="Open {E(it["title"], quote=True)} in a new tab">Open in a new tab</a>')
     for a in it.get("actions", []):
-        out.append(f'<a class="b-btn p-btn ghost" href="{E(a["url"], quote=True)}">{E(a["label"])}</a>')
-    return '<div class="p-actions">' + "".join(out) + "</div>"
+        out.append(f'<a href="{E(a["url"], quote=True)}">{E(a["label"])}</a>')
+    return '<div class="p-actions">' + "".join(out) + "</div>" if out else ""
+
+
+def open_href(it, embed=False):
+    return f'#/{E(it["id"], quote=True)}' if embed else E(it["href"], quote=True)
 
 
 def meta(it):
@@ -133,7 +135,7 @@ def card(it, embed=False):
     badge = f'<span class="p-badge">{E(it["type"])}</span>' if it.get("type") else "<span></span>"
     return (f'<article class="b-card p-card" {attrs(it)} data-counted>'
             f'<div class="p-card-top">{badge}{status_chip(it)}</div>'
-            f'<h3 class="p-card-title">{E(it["title"])}</h3>'
+            f'<h3 class="p-card-title"><a href="{open_href(it, embed)}">{E(it["title"])}</a></h3>'
             f'<p class="p-card-desc">{E(it.get("description", ""))}</p>{tags}{meta(it)}{actions(it, embed)}</article>')
 
 
@@ -146,13 +148,14 @@ def table(g, items, embed=False):
         tags = f'<ul class="p-tags">{tags}</ul>' if tags else ""
         rows.append(
             f'<tbody class="p-row" {attrs(it)} data-counted>'
-            f'<tr class="p-r1"><td data-label="Resource"><strong class="p-t-title">{E(it["title"])}</strong>'
+            f'<tr class="p-r1"><td data-label="Resource"><a class="p-t-title" href="{open_href(it, embed)}">{E(it["title"])}</a>'
             f'<span class="p-t-desc">{E(it.get("description", ""))}</span></td>'
             f'<td data-label="Type">{E(it.get("type", ""))}</td><td data-label="Status">{status_chip(it)}</td>'
             f'<td data-label="Owner">{E(it.get("owner", ""))}</td>'
             f'<td class="p-togcell"><button type="button" class="p-toggle" aria-expanded="false" aria-controls="{E(d, quote=True)}">Details<span class="p-sr"> for {E(it["title"])}</span></button></td></tr>'
             f'<tr class="p-detail" id="{E(d, quote=True)}" hidden><td colspan="5"><div class="p-detail-in">'
-            f'<p>{E(detail)}</p>{tags}{meta(it)}{actions(it, embed)}</div></td></tr></tbody>')
+            f'<p>{E(detail)}</p>{tags}{meta(it)}<div class="p-actions"><a class="b-btn secondary p-btn" href="{open_href(it, embed)}">Open {E(it["title"])}</a></div>'
+            f'{actions(it, embed)}</div></td></tr></tbody>')
     return ('<div class="b-table-wrap"><table class="b-table p-table">'
             f'<caption class="p-sr">{E(g["title"])}</caption>'
             '<thead><tr><th scope="col">Resource</th><th scope="col">Type</th><th scope="col">Status</th><th scope="col">Owner</th>'
@@ -168,10 +171,10 @@ def group_body(g, items, embed=False):
 def section(n, g, items, embed=False, extra="", hidden=False):
     gid = E(g["id"], quote=True)
     desc = f'<p class="p-gdesc">{E(g["description"])}</p>' if g.get("description") else ""
-    head = (f'<header class="p-sec-head"><span class="p-num">{n:02d}</span><h2 id="h-{gid}">{E(g["title"])}</h2>'
+    head = (f'<header class="p-sec-head"><h2 id="h-{gid}">{E(g["title"])}</h2>'
             f'<span class="p-count"><span data-count>{len(items)}</span> listed</span></header>')
     return (f'<section class="p-group" id="g-{gid}" data-group="{gid}" aria-labelledby="h-{gid}"{extra}{" hidden" if hidden else ""}>'
-            f'{head}{desc}{group_body(g, items, embed)}<p class="p-none" hidden>No resources match the current search or filters.</p></section>')
+            f'{head}{desc}{group_body(g, items, embed)}<p class="p-none" hidden>Nothing in this group matches the search or filters. Clear the filters above or try a shorter word.</p></section>')
 
 
 def hero(m, items):
@@ -181,10 +184,10 @@ def hero(m, items):
         live = sum(1 for i in items if chip_class(i.get("status", "")) == "ok")
         if live: stats.append({"value": live, "label": "live"})
     st = "".join(f'<li><span class="v">{E(str(s["value"]))}</span><span class="l">{E(s["label"])}</span></li>' for s in stats)
-    ill = '<p class="p-sub" style="margin-top:1rem"><strong>Illustrative.</strong> Sample content generated by blend-portal; not a real catalog.</p>' if m.get("illustrative") else ""
+    ill = '<p class="p-ill"><span class="e">Illustrative</span>Sample content generated by blend-portal; not a real catalog.</p>' if m.get("illustrative") else ""
     return (f'<section class="b-hero p-hero"><div class="p-wrap"><div class="b-eyebrow">{E(m.get("eyebrow", "Blend360"))}</div>'
             f'<h1>{E(m["title"])}</h1>' + (f'<p class="p-sub">{E(m["subtitle"])}</p>' if m.get("subtitle") else "") +
-            f'{ill}<ul class="p-stats" aria-label="Portal summary">{st}</ul></div></section>')
+            f'<div class="p-foot"><ul class="p-stats" aria-label="Portal summary">{st}</ul>{ill}</div></div></section>')
 
 
 def toolbar(items):
@@ -206,6 +209,10 @@ def footer(m):
     return f'<footer class="b-footer">{E(t)}</footer>'
 
 
+ALLNONE = ('<p class="p-none p-allnone" id="p-allnone" hidden>No resource matches the search and filters.'
+           '<button type="button" class="p-clear" data-clear>Clear filters</button></p>')
+
+
 def by_group(m):
     out = []
     for g in m["groups"]:
@@ -221,9 +228,9 @@ def render(m, variant, dark=False):
     if variant == "anchors":
         nav = "".join(f'<a href="#g-{E(g["id"], quote=True)}" data-navfor="{E(g["id"], quote=True)}">{E(g["title"])}<span class="p-n" data-tabcount="{E(g["id"], quote=True)}">{len(its)}</span></a>'
                       for g, its in groups)
-        body = (f'<main data-portal data-variant="anchors" data-title="{title}">{hero(m, items)}'
+        body = (f'<main id="main" data-portal data-variant="anchors" data-title="{title}">{hero(m, items)}'
                 f'<nav class="p-subnav" aria-label="Sections"><div class="p-wrap">{nav}</div></nav>'
-                f'<div class="p-wrap">{tools}{"".join(section(n, g, its) for n, (g, its) in enumerate(groups, 1))}</div></main>{footer(m)}')
+                f'<div class="p-wrap">{tools}{"".join(section(n, g, its) for n, (g, its) in enumerate(groups, 1))}{ALLNONE}</div></main>{footer(m)}')
     else:  # tabs
         tabs, panels = [], []
         for n, (g, its) in enumerate(groups, 1):
@@ -233,7 +240,7 @@ def render(m, variant, dark=False):
                         f'<span class="p-n" data-tabcount="{gid}">{len(its)}</span></button>')
             panels.append(f'<div role="tabpanel" class="p-panel" id="panel-{gid}" aria-labelledby="tab-{gid}" tabindex="0"{"" if first else " hidden"}>'
                           f'{section(n, g, its)}</div>')
-        body = (f'<main data-portal data-variant="tabs" data-title="{title}">{hero(m, items)}<div class="p-wrap">{tools}</div>'
+        body = (f'<main id="main" data-portal data-variant="tabs" data-title="{title}">{hero(m, items)}<div class="p-wrap">{tools}</div>'
                 f'<div class="p-tabs-bar"><div class="p-wrap"><div role="tablist" aria-label="Groups">{"".join(tabs)}</div></div></div>'
                 f'<div class="p-wrap">{"".join(panels)}</div></main>{footer(m)}'
                 '<noscript><style>[role="tabpanel"][hidden]{display:block !important}</style></noscript>')
@@ -249,18 +256,18 @@ def render_sidebar(m, groups, title):
             n += 1
             embed = "file" in it
             nav.append(f'<a class="p-nav" href="#/{E(it["id"], quote=True)}" data-id="{E(it["id"], quote=True)}" data-title="{E(it["title"], quote=True)}" '
-                       f'data-href="{E(it["href"], quote=True)}" data-embed="{1 if embed else 0}" {attrs(it)}><span class="p-num">{n:02d}</span><span>{E(it["title"])}</span></a>')
+                       f'data-href="{E(it["href"], quote=True)}" data-embed="{1 if embed else 0}" {attrs(it)}><span>{E(it["title"])}</span></a>')
     secs = "".join(section(k, g, its, embed=True) for k, (g, its) in enumerate(groups, 1))
     return (f'<div data-portal data-variant="sidebar" data-title="{title}" class="p-shell">'
             f'<aside class="p-side" id="p-side" aria-label="Resources"><h2>{E(m["title"])}</h2><nav aria-label="Resources">{"".join(nav)}</nav></aside>'
             '<div class="p-scrim" id="p-scrim"></div>'
             '<div class="p-main"><div class="p-topbar"><button type="button" class="p-menu" id="p-menu" aria-controls="p-side" aria-expanded="false">Menu</button>'
             '<div class="p-crumb" id="p-crumb">Overview</div>'
-            '<a class="b-btn p-btn ghost" id="p-newtab" href="#" target="_blank" rel="noopener" hidden>Open in new tab</a></div>'
-            f'<div class="p-stage"><main class="p-home" id="p-home">{hero(m, items)}<div class="p-wrap">{toolbar(items)}{secs}</div>{footer(m)}</main>'
+            '<a class="b-btn secondary p-btn" id="p-newtab" href="#" target="_blank" rel="noopener" hidden>Open in a new tab</a></div>'
+            f'<div class="p-stage"><main class="p-home" id="p-home">{hero(m, items)}<div class="p-wrap">{toolbar(items)}{secs}{ALLNONE}</div>{footer(m)}</main>'
             '<iframe id="p-frame" title="Resource viewer" hidden></iframe>'
             '<div class="p-linkout" id="p-linkout" hidden><h2 id="p-outtitle"></h2><p>This resource is a separate share and is opened on its own page.</p>'
-            '<a class="b-btn p-btn" id="p-outlink" href="#">Open</a></div></div></div></div>')
+            '<a class="b-btn p-btn" id="p-outlink" href="#">Open the resource</a></div></div></div></div>')
 
 
 def build(manifest_path, out, variant=None, dark=False, check_files=True):

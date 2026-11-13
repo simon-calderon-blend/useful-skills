@@ -3,7 +3,8 @@
 
 Usage: build_dashboard.py SPEC.json OUT.html [--dark]
 SPEC fields (see SKILL.md): title, subtitle, lang, updated, source, illustrative, dark, mode
-("dashboard" | "table"), columns, rows | csv, kpis, filters, charts, table.
+("dashboard" | "table"), columns, rows | csv, kpis (each may carry "note": the qualifier under the label), filters,
+charts, table, headings {"charts": "...", "table": "..."} (section headings that say what is shown).
 Rows come from spec["rows"] (list of objects) or spec["csv"] (path relative to the spec; header row required).
 Reuses blend-web-core (tokens, components, logo, PP Telegraf embedded by default) through blend_web.build. Stdlib only.
 """
@@ -129,22 +130,14 @@ def render(spec, base, dark=False):
     blob = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
 
     parts = []
-    badge = '<span class="d-badge">Illustrative</span>' if spec.get("illustrative") else ""
+    badge = '<span class="b-chip info">Illustrative</span>' if spec.get("illustrative") else ""
     theme = '<button class="d-theme" id="d-theme" type="button">Light / dark</button>' if dark else ""
     sub = f"<p>{e(spec['subtitle'])}</p>" if spec.get("subtitle") else ""
-    upd = f'<p class="b-eyebrow">Updated {e(spec["updated"])}</p>' if spec.get("updated") else ""
-    parts.append(f'<main class="d-wrap"><div class="d-head"><div>{upd}<h1>{e(spec["title"])}{badge}</h1>{sub}</div>{theme}</div>')
-
-    if spec.get("kpis"):
-        t = []
-        for k in spec["kpis"]:
-            dec, pre, suf = k.get("decimals", 0), k.get("prefix", ""), k.get("suffix", "")
-            v = fmt(agg(rows, k["agg"], k.get("field")), dec, pre, suf)
-            note = f'<span class="n">{e(k["note"])}</span>' if k.get("note") else ""
-            t.append(f'<div class="b-card b-kpi" data-kpi="{e(k["id"])}" data-agg="{k["agg"]}" data-field="{e(k.get("field", ""))}" '
-                     f'data-decimals="{dec}" data-prefix="{e(pre)}" data-suffix="{e(suf)}"><span class="v">{e(v)}</span>'
-                     f'<span class="l">{e(k["label"])}</span>{note}</div>')
-        parts.append('<section class="b-kpis" aria-label="Key figures">' + "".join(t) + "</section>")
+    upd = f'<span>Updated {e(spec["updated"])}</span>' if spec.get("updated") else ""
+    updl = f'<p class="d-upd">{upd}{badge}</p>' if upd or badge else ""
+    # own header: logo left, theme toggle right ({{LOGO}} tells blend_web.build not to add a second header)
+    parts.append(f'<header class="b-header"><a href="./" aria-label="Blend">{{{{LOGO}}}}</a>{theme}</header>')
+    parts.append(f'<main class="d-wrap" id="main"><div class="d-head"><h1>{e(spec["title"])}</h1>{sub}{updl}</div>')
 
     flt = spec.get("filters", {})
     bar = []
@@ -156,15 +149,30 @@ def render(spec, base, dark=False):
     if flt.get("search", True):
         bar.append('<input class="d-search" id="d-search" type="search" placeholder="Search rows" aria-label="Search rows">')
     bar.append('<div class="d-actions"><span id="d-count"></span><button type="button" class="d-btn" id="d-csv">Export CSV</button></div>')
-    parts.append('<div class="d-bar">' + "".join(bar) + "</div>")
+    parts.append('<div class="d-bar">' + "".join(bar) + "</div>")   # filters sit above everything they change
+
+
+    if spec.get("kpis"):
+        t = []
+        for k in spec["kpis"]:
+            dec, pre, suf = k.get("decimals", 0), k.get("prefix", ""), k.get("suffix", "")
+            v = fmt(agg(rows, k["agg"], k.get("field")), dec, pre, suf)
+            note = f'<span class="c">{e(k["note"])}</span>' if k.get("note") else ""
+            t.append(f'<div class="b-kpi" data-kpi="{e(k["id"])}" data-agg="{k["agg"]}" data-field="{e(k.get("field", ""))}" '
+                     f'data-decimals="{dec}" data-prefix="{e(pre)}" data-suffix="{e(suf)}"><span class="v">{e(v)}</span>'
+                     f'<span class="l">{e(k["label"])}</span>{note}</div>')
+        parts.append('<section class="b-kpis" aria-label="Key figures">' + "".join(t) + "</section>")
+    parts.append('<p class="d-scope" id="d-scope" aria-live="polite"></p>')
 
     if mode == "dashboard" and spec.get("charts"):
         cards = []
-        for c in spec["charts"]:
+        lead = len(spec["charts"]) > 1 and len(spec["charts"]) % 2 == 1  # odd count: the first chart spans the row
+        for i, c in enumerate(spec["charts"]):
             cap = f'<p class="cap">{e(c["caption"])}</p>' if c.get("caption") else ""
-            cards.append(f'<article class="b-card d-chart" id="chart-{e(c["id"])}"><button type="button" class="d-btn ghost tgl" aria-pressed="false">Show as table</button>'
+            cards.append(f'<article class="b-card d-chart{" d-lead" if lead and i == 0 else ""}" id="chart-{e(c["id"])}"><button type="button" class="d-btn ghost tgl" aria-pressed="false">Show as table</button>'
                          f'<h3>{e(c["heading"])}</h3>{cap}<div class="d-legend"></div><div class="plot"></div><div class="alt" hidden></div></article>')
-        parts.append('<section class="d-sec"><h2>Charts</h2><div class="d-charts">' + "".join(cards) + "</div></section>")
+        ch_h = (spec.get("headings") or {}).get("charts")  # say what the charts show; without it the h2 is for screen readers only
+        parts.append(f'<section class="d-sec"><h2{"" if ch_h else " class=b-sr"}>{e(ch_h or "Charts")}</h2><div class="d-charts">' + "".join(cards) + "</div></section>")
 
     tcfg = spec.get("table", {})
     sk, sd = (tcfg.get("sort") or {}).get("key"), (tcfg.get("sort") or {}).get("dir", "asc")
@@ -177,7 +185,8 @@ def render(spec, base, dark=False):
         return f"<td>{e(v)}</td>"
     head = "".join(f'<th data-key="{e(c["key"])}" tabindex="0" aria-sort="none"{" class=num" if c["type"] == "num" else ""}>{e(c["label"])}</th>' for c in cols)
     body = "".join("<tr>" + "".join(td(c, r[c["key"]]) for c in cols) + "</tr>" for r in first[:ps])
-    parts.append(f'<section class="d-sec"><h2>{"Data" if mode == "dashboard" else "Table"}</h2><div class="d-table-wrap"><table class="b-table d-table" id="d-table">'
+    tb_h = (spec.get("headings") or {}).get("table")
+    parts.append(f'<section class="d-sec"><h2{"" if tb_h else " class=b-sr"}>{e(tb_h or "Data table")}</h2><div class="d-table-wrap"><table class="b-table d-table" id="d-table">'
                  f'<thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>'
                  f'<div class="d-meta"><button type="button" class="d-btn ghost" id="d-more" hidden>Show more</button></div></section>')
     src = f"Source: {e(spec['source'])}. " if spec.get("source") else ""

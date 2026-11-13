@@ -22,10 +22,27 @@ Defined in `assets/tokens.css` (light, default) and `assets/tokens-dark.css` (op
 No share defines an ok/warn/bad palette of its own; the states above come from the Design System bundle and
 are the only derived values. Accepted 2026-11-10: there is no official guide for state colors.
 
+## Layout, type and motion tokens (not brand)
+
+Added 2026-11-13. They carry no colour or typeface, so they do not change the brand; they make every skill use
+the same rhythm. Rules for using them: [design-principles.md](design-principles.md).
+
+| Group | Tokens | Values |
+|---|---|---|
+| Measure | `--measure` | 48ch (was 68ch; measured at 104 characters per line in PP Telegraf, now about 72) |
+| Spacing | `--s-1` … `--s-9` | 4, 8, 12, 16, 24, 32, 48, 64, 96 px |
+| Widths | `--w-page`, `--w-wide`, `--gutter` | 72rem, 80rem, `clamp(1rem, 4vw, 2.5rem)` |
+| Type roles | `--t-micro`, `--t-small`, `--t-body`, `--t-lead`, `--t-h2`, `--t-h1`, `--t-figure`, `--t-display` | 12, 14, 16, 19, 28, 40, 33 px; display is fluid 35 to 58 px |
+| Motion | `--dur-1`, `--dur-2`, `--dur-3`, `--ease` | 120, 220, 420 ms; `cubic-bezier(.2,.8,.2,1)` |
+| Controls | `--tap`, `--radius-sm`, `--focus` | 44px, 6px, `--accent` (cyan inside navy regions) |
+| Tints | `--tint-note`, `--tint-key`, `--tint-ok`, `--tint-warn`, `--tint-bad`, `--tint-info` | `color-mix()` of a brand or state token into `--surface`; no new hex |
+
 ## Contrast (computed, WCAG)
 
 Navy on paper 11.6:1, ink on paper 15.9:1, slate on paper 8.9:1, white on navy 13.4:1, cyan on navy 8.8:1,
 cyan on white 1.5:1 (never as text).
+State colours as text: ok 5.5:1 on white, info 7.9:1, bad 4.9:1 on white but 4.5:1 on paper, warn 4.1:1 on white and
+3.7:1 on paper. So chips set the status word in ink and use the state colour for the dot and border.
 
 ## Dark theme (optional)
 

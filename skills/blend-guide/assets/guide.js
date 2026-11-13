@@ -14,26 +14,33 @@
 
   /*THEME*/
 
+  /* phones: the contents start collapsed so the title is the first thing read (open without JS) */
+  var tocd = $('.g-toc details'); if (tocd && window.matchMedia && matchMedia('(max-width: 59.99rem)').matches) tocd.removeAttribute('open');
+
   /* copy buttons */
   $$('.g-code .copy').forEach(function (b) {
     b.addEventListener('click', function () {
       var txt = $('pre', b.closest('.g-code')).innerText;
-      var ok = function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1500); };
+      var ok = function () { b.textContent = 'Copied'; b.setAttribute('data-done', ''); setTimeout(function () { b.textContent = 'Copy'; b.removeAttribute('data-done'); }, 2000); };
       if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(ok, function () {}); }
       else { var ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select();
         try { document.execCommand('copy'); ok(); } catch (e) {} document.body.removeChild(ta); }
     });
   });
 
-  /* scrollspy */
+  /* where am I: the last section whose top has passed a quarter of the viewport; the first at load, the last at the bottom */
   var links = $$('.g-toc a[href^="#"]');
-  if ('IntersectionObserver' in window && links.length) {
-    var map = {}; links.forEach(function (a) { map[a.getAttribute('href').slice(1)] = a; });
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) { if (e.isIntersecting && map[e.target.id]) {
-        links.forEach(function (a) { a.classList.remove('active'); }); map[e.target.id].classList.add('active'); } });
-    }, { rootMargin: '-10% 0px -80% 0px' });
-    Object.keys(map).forEach(function (id) { var el = document.getElementById(id); if (el) io.observe(el); });
+  var targets = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); });
+  function spy() {
+    var line = window.innerHeight * 0.25, cur = 0;
+    targets.forEach(function (t, i) { if (t && t.getBoundingClientRect().top <= line) cur = i; });
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) cur = links.length - 1;
+    links.forEach(function (a, i) { a.classList.toggle('active', i === cur); if (i === cur) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current'); });
+  }
+  if (links.length) {
+    var tick = false;
+    window.addEventListener('scroll', function () { if (!tick) { tick = true; requestAnimationFrame(function () { tick = false; spy(); }); } }, { passive: true });
+    window.addEventListener('resize', spy); spy();
   }
 
   /* course: quizzes + progress */
@@ -48,7 +55,7 @@
       var li = $('.g-toc [data-for="' + m.id + '"]'); if (li) li.classList.toggle('done', d);
       var mk = $('.g-modmark', m); if (mk) { mk.textContent = d ? 'Done' : ''; mk.className = 'g-modmark b-chip' + (d ? ' ok' : ''); mk.hidden = !d; }
     });
-    var f = $('.g-progress .fill'); if (f) f.style.width = (mods.length ? 100 * n / mods.length : 0) + '%';
+    var f = $('.g-progress .fill'); if (f) f.style.transform = 'scaleX(' + (mods.length ? n / mods.length : 0) + ')';
     var s = $('.g-progress small'); if (s) s.textContent = n + ' of ' + mods.length + ' modules completed';
   }
   $$('[data-quiz]').forEach(function (host) {

@@ -103,3 +103,15 @@ exit code: 0
 - **welcome (single page, FAIL):** it is a landing page, not a document guide. Font stack starts from Montserrat (check 2: FAIL), no 572x110 logo (check 4), and its links point to other shares (`/discovery`, `/upload`...), so G2 cannot resolve them standalone. It has more than 3 sections without a TOC (G3) and one `<pre>` without language (G4).
 - **Examples:** both pass every check; only check 9 is SKIP. The guide example is built light, the course example with `--dark` (G6a now reports the course key, not the core theme key).
 - **Source project** (`assets/starlight`): G5 and G5b pass; the core validator is skipped because there is no HTML yet.
+
+## Design pass 2026-11-13
+
+The runs above predate the design pass and show 10 core checks. The core validator now has check 11 "craft"
+(warnings only) and the examples were regenerated. Results on the regenerated examples:
+
+| Target | Exit | FAIL | WARN | Warnings |
+|---|---|---|---|---|
+| `guide/` | 0 | 0 | 0 | none |
+| `course/` | 0 | 0 | 0 | none |
+
+The canonical shares were not re-run; expect check 11 to warn on them (side stripes, uppercase labels, text under 12px).

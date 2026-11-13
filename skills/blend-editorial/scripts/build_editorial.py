@@ -5,7 +5,7 @@ Usage: build_editorial.py SPEC.json OUT.html [--dark]
 Spec keys: kind (article|one-pager|landing), lang, title, eyebrow, dek, meta, description,
   nav (bool), cta {label, href, title, text}, client {name, logo (file path, optional), alt, confidential},
   illustrative (bool), footer, sections [{label, title, blocks:[...]}]  (one-pager: sheets [{sections}] ).
-Blocks: {p}, {h3}, {ul:[..]}, {quote, cite}, {callout}, {kpis:[[value,label]..]}, {cards:[[title,text]..]},
+Blocks: {p}, {h3}, {ul:[..]}, {quote, cite}, {callout}, {kpis:[[value,label,qualifier?]..]}, {cards:[[title,text]..]},
   {steps:[[title,text]..]}, {figure:"<svg>", caption}, {table:{head:[..], rows:[[..]]}}.
 Reuses ../../blend-web-core (tokens, components, logo, blend_web.build).
 """
@@ -29,11 +29,12 @@ def block(b):
         return f'<blockquote class="e-quote">{e(b["quote"])}{c}</blockquote>'
     if "callout" in b: return f'<div class="b-callout">{b["callout"]}</div>'
     if "kpis" in b:
-        return '<div class="b-kpis">' + "".join(f'<div class="b-card b-kpi"><span class="v">{e(v)}</span><span class="l">{e(l)}</span></div>' for v, l in b["kpis"]) + "</div>"
+        return '<div class="b-kpis">' + "".join(f'<div class="b-kpi"><span class="v">{e(k[0])}</span><span class="l">{e(k[1])}</span>'
+                                               + (f'<span class="c">{e(k[2])}</span>' if len(k) > 2 else "") + "</div>" for k in b["kpis"]) + "</div>"
     if "cards" in b:
-        return '<div class="e-cards">' + "".join(f'<div class="b-card"><h3>{e(t)}</h3><p>{x}</p></div>' for t, x in b["cards"]) + "</div>"
+        return '<div class="e-cards">' + "".join(f'<div><h3>{e(t)}</h3><p>{x}</p></div>' for t, x in b["cards"]) + "</div>"
     if "steps" in b:
-        return '<ol class="e-steps">' + "".join(f"<li><strong>{e(t)}</strong><br>{x}</li>" for t, x in b["steps"]) + "</ol>"
+        return '<ol class="e-steps">' + "".join(f"<li><strong>{e(t)}</strong><span>{x}</span></li>" for t, x in b["steps"]) + "</ol>"
     if "figure" in b:
         cap = f"<figcaption>{b['caption']}</figcaption>" if b.get("caption") else ""
         return f'<figure class="e-figure">{b["figure"]}{cap}</figure>'
@@ -46,8 +47,8 @@ def block(b):
 
 def section(s, n):
     sid = s.get("id") or f"s{n}"
-    return (f'<section class="e-section" id="{sid}"><p class="e-label"><b>{n:02d}</b> {e(s.get("label", ""))}</p>'
-            f'<h2>{e(s["title"])}</h2><div class="e-prose">' + "".join(block(b) for b in s["blocks"]) + "</div></section>")
+    # "label" feeds the topbar nav only: no eyebrow and no 01/02 above the heading (the h2 announces itself)
+    return (f'<section class="e-section" id="{sid}"><h2>{e(s["title"])}</h2><div class="e-prose">' + "".join(block(b) for b in s["blocks"]) + "</div></section>")
 
 
 def cobrand(spec, logo):
@@ -72,10 +73,13 @@ def build(spec, dark=False):
         nav = "<nav aria-label=\"Sections\">" + "".join(f'<a href="#{s.get("id") or "s%d" % i}">{e(s.get("label", s["title"]))}</a>' for i, s in enumerate(secs, 1)) + "</nav>"
     top = f'<header class="e-topbar">{cobrand(spec, logo)}{nav}</header>'
     cta = spec.get("cta")
-    actions = f'<div class="actions"><a class="e-btn" href="{e(cta["href"])}">{e(cta["label"])}</a></div>' if cta and kind != "article" else ""
-    pill = '<p><span class="e-pill">Illustrative</span></p>' if spec.get("illustrative") else ""
-    hero = (f'<div class="e-hero"><div><p class="b-eyebrow">{e(spec.get("eyebrow", ""))}</p><h1>{e(spec["title"])}</h1>'
-            f'<p class="dek">{e(spec.get("dek", ""))}</p><p class="meta">{e(spec.get("meta", ""))}</p>{pill}{actions}</div></div>')
+    actions = f'<div class="actions"><a class="b-btn e-btn" href="{e(cta["href"])}">{e(cta["label"])}</a></div>' if cta and kind != "article" else ""
+    pill = ' <span class="e-pill">Illustrative</span>' if spec.get("illustrative") else ""
+    eyebrow = f'<p class="b-eyebrow">{e(spec["eyebrow"])}</p>' if spec.get("eyebrow") else ""  # optional: the page's one eyebrow
+    dek = f'<p class="dek">{e(spec["dek"])}</p>' if spec.get("dek") else ""
+    meta = f'<span>{e(spec["meta"])}</span>' if spec.get("meta") else ""
+    metap = f'<p class="meta">{meta}{pill}</p>' if meta or pill else ""
+    hero = f'<div class="e-hero"><div>{eyebrow}<h1>{e(spec["title"])}</h1>{dek}{actions}{metap}</div></div>'
     if kind == "one-pager":
         sheets = spec.get("sheets") or [secs]
         n = 0; out = []
@@ -88,16 +92,13 @@ def build(spec, dark=False):
                        f'<div class="e-sheet" data-page="{i + 1}">{first}<main class="e-main">{inner}</main></div>')
         main = "".join(out)
     else:
-        main = '<main class="e-main">' + "".join(section(s, i) for i, s in enumerate(secs, 1)) + "</main>"
+        main = '<main class="e-main" id="main">' + "".join(section(s, i) for i, s in enumerate(secs, 1)) + "</main>"
     band = ""
-    if cta and kind != "article":
-        band = (f'<div class="e-cta"><h2>{e(cta.get("title", cta["label"]))}</h2><p>{e(cta.get("text", ""))}</p>'
-                f'<a class="e-btn" href="{e(cta["href"])}">{e(cta["label"])}</a></div>')
-    elif cta:
-        band = (f'<div class="e-cta"><h2>{e(cta.get("title", cta["label"]))}</h2><p>{e(cta.get("text", ""))}</p>'
-                f'<a class="e-btn" href="{e(cta["href"])}">{e(cta["label"])}</a></div>')
+    if cta:  # the closing band repeats the page's single action, in the same words
+        band = (f'<div class="e-cta"><div><h2>{e(cta.get("title", cta["label"]))}</h2><p>{e(cta.get("text", ""))}</p></div>'
+                f'<a class="b-btn e-btn" href="{e(cta["href"])}">{e(cta["label"])}</a></div>')
     conf = " · Confidential" if (spec.get("client") or {}).get("confidential") else ""
-    foot = f'<footer class="e-footer"><span>{e(spec.get("footer", "© 2026 Blend Analytics Ltd."))}{conf}</span><span>blend360.com</span></footer>'
+    foot = f'<footer class="e-footer"><span>{e(spec.get("footer", "© 2026 Blend Analytics Ltd."))}{conf}</span><a href="https://www.blend360.com">blend360.com</a></footer>'
     if kind == "one-pager":
         body = main.replace("@@LAST@@", band + foot + "</div>")  # CTA and footer stay on the last sheet
     else:

@@ -34,7 +34,19 @@ Copy `assets/starlight/` (theme, config, package.json, symbol logos, favicon) an
 
 ## Components and tokens
 
-From the core: `--blend-*` tokens, `.b-header`, `.b-callout`, `.b-table`, `.b-card`, `.b-kpi`, `.b-chip`. Own (`assets/guide.css`, `guide.js`, `theme.js`): `.g-layout`, `.g-toc`, `.g-steps`, `.g-code`, `.g-flow`, `.g-quiz`, `.g-hero`, `.g-progress`. Cyan is never text on light backgrounds (hero and code blocks are dark).
+From the core: `--blend-*` tokens, `.b-header`, `.b-callout`, `.b-table`, `.b-card`, `.b-kpi`, `.b-chip`. Own (`assets/guide.css`, `guide.js`, `theme.js`): `.g-layout`, `.g-toc`, `.g-steps`, `.g-code`, `.g-flow`, `.g-quiz`, `.g-hero`, `.g-progress`. Cyan is never text on light backgrounds (hero and code blocks are dark). Header, rail, column and footer share one left line (`--g-pad`); callouts and quizzes are tinted wells, not striped or nested cards.
+
+## Design checklist (before delivery)
+
+A guide is a Read page. Run the core [delivery checklist](../blend-web-core/references/delivery-checklist.md), then:
+
+- [ ] The first screen shows where the reader is (contents rail), the title and a lede that says what they will be able to do.
+- [ ] `steps` only for a real sequence (the number leads each row); parallel points are a `list` or a `table`.
+- [ ] Every code block has a language or file name and copies cleanly; Copy answers "Copied" in place.
+- [ ] Callout titles say the kind in words (Note, Warning, Do not); at most one callout per screen.
+- [ ] One eyebrow (above the h1, or in the course hero); course modules are numbered in the heading, not with a label above it.
+- [ ] Tables scroll inside their wrapper at 390 px; the contents collapse to a disclosure, nothing is hidden.
+- [ ] Course: the page reads top to bottom with JavaScript off; progress only animates `transform`.
 
 ## Reference shares
 

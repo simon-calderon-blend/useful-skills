@@ -1,37 +1,117 @@
 {
-  "title": "Illustrative Resource Hub",
-  "eyebrow": "Blend360 | Example portal",
-  "subtitle": "A sample hub that indexes other Blend Shares by group, type and status. All descriptions are Illustrative, written for this example.",
-  "variant": "tabs",
-  "lang": "en",
-  "illustrative": true,
-  "footer": "Illustrative example generated with the blend-portal skill. Not a real catalog.",
-  "groups": [
-    {"id": "programs", "title": "Programs", "description": "Landing pages that gather material for a whole initiative."},
-    {"id": "tools", "title": "Tools and catalogs", "description": "Interactive pages people open to get something done."},
-    {"id": "tracker", "title": "Work in flight", "layout": "table", "description": "A table view: expand a row for the detail."}
-  ],
-  "items": [
-    {"title": "Spark", "slug": "spark", "type": "Portal", "status": "Live", "group": "programs",
-     "description": "Illustrative: entry point of a program with a hero, numbered sections and a catalog.",
-     "tags": ["program", "catalog"], "owner": "Program team", "updated": "2026-11"},
-    {"title": "AI Native Program Hub", "slug": "ai-native-program-hub", "type": "Portal", "status": "Live", "group": "programs",
-     "description": "Illustrative: a hub of resource cards with filters, search and partner tags.",
-     "tags": ["hub", "filters"], "owner": "Enablement", "updated": "2026-10"},
-    {"title": "Skill Marketplace", "slug": "skill-marketplace", "type": "Catalog", "status": "Live", "group": "tools",
-     "description": "Illustrative: a catalog driven by a catalog.json file with a small app.js.",
-     "tags": ["catalog", "plugins"], "owner": "Platform team", "updated": "2026-11"},
-    {"title": "Sales Portal", "slug": "synthetic-personas-sales-portal", "type": "Portal", "status": "Beta", "group": "tools",
-     "description": "Illustrative: grouped items, each with its own actions such as open or download.",
-     "tags": ["sales", "items"], "owner": "Sales enablement", "updated": "2026-09",
-     "actions": [{"label": "Read the guide", "url": "https://share.blend360.com/spark/"}]},
-    {"title": "Illustrative pilot", "slug": "spark", "type": "Portal", "status": "Draft", "group": "tracker",
-     "description": "Placeholder row that links back to a real share.",
-     "detail": "Illustrative detail text: scope, next step and who to ask. The row expands and collapses with the button.",
-     "tags": ["pilot"], "owner": "Owner A"},
-    {"title": "Illustrative archive", "slug": "ai-native-program-hub", "type": "Hub", "status": "Deprecated", "group": "tracker",
-     "description": "Placeholder row showing a bad state chip.",
-     "detail": "Illustrative detail text for a retired resource, with the reason and where to go instead.",
-     "tags": ["archive"], "owner": "Owner B"}
-  ]
+ "title": "Illustrative Resource Hub",
+ "eyebrow": "Blend360 | Example portal",
+ "subtitle": "Where the team's programs, tools and work in flight live, grouped and searchable.",
+ "variant": "tabs",
+ "lang": "en",
+ "illustrative": true,
+ "footer": "Illustrative example generated with the blend-portal skill. Not a real catalog.",
+ "groups": [
+  {
+   "id": "programs",
+   "title": "Programs",
+   "description": "Landing pages that gather material for a whole initiative."
+  },
+  {
+   "id": "tools",
+   "title": "Tools and catalogs",
+   "description": "Interactive pages people open to get something done."
+  },
+  {
+   "id": "tracker",
+   "title": "Work in flight",
+   "layout": "table",
+   "description": "Pilots and retired work, with owner and next step."
+  }
+ ],
+ "items": [
+  {
+   "title": "Spark",
+   "slug": "spark",
+   "type": "Portal",
+   "status": "Live",
+   "group": "programs",
+   "description": "Illustrative: entry point of a program with a hero, numbered sections and a catalog.",
+   "tags": [
+    "program",
+    "catalog"
+   ],
+   "owner": "Program team",
+   "updated": "2026-11"
+  },
+  {
+   "title": "AI Native Program Hub",
+   "slug": "ai-native-program-hub",
+   "type": "Portal",
+   "status": "Live",
+   "group": "programs",
+   "description": "Illustrative: a hub of resource cards with filters, search and partner tags.",
+   "tags": [
+    "hub",
+    "filters"
+   ],
+   "owner": "Enablement",
+   "updated": "2026-10"
+  },
+  {
+   "title": "Skill Marketplace",
+   "slug": "skill-marketplace",
+   "type": "Catalog",
+   "status": "Live",
+   "group": "tools",
+   "description": "Illustrative: a catalog driven by a catalog.json file with a small app.js.",
+   "tags": [
+    "catalog",
+    "plugins"
+   ],
+   "owner": "Platform team",
+   "updated": "2026-11"
+  },
+  {
+   "title": "Sales Portal",
+   "slug": "synthetic-personas-sales-portal",
+   "type": "Portal",
+   "status": "Beta",
+   "group": "tools",
+   "description": "Illustrative: grouped items, each with its own actions such as open or download.",
+   "tags": [
+    "sales",
+    "items"
+   ],
+   "owner": "Sales enablement",
+   "updated": "2026-09",
+   "actions": [
+    {
+     "label": "Read the guide",
+     "url": "https://share.blend360.com/spark/"
+    }
+   ]
+  },
+  {
+   "title": "Returns forecasting pilot",
+   "slug": "spark",
+   "type": "Portal",
+   "status": "Draft",
+   "group": "tracker",
+   "description": "Six-week pilot of a weekly returns forecast for two categories.",
+   "detail": "Scope: two product categories, weekly horizon. Next step: review holdout accuracy with the category leads. Ask Owner A for access.",
+   "tags": [
+    "pilot"
+   ],
+   "owner": "Owner A"
+  },
+  {
+   "title": "Legacy pricing dashboard",
+   "slug": "ai-native-program-hub",
+   "type": "Hub",
+   "status": "Deprecated",
+   "group": "tracker",
+   "description": "Replaced by the pricing workspace in 2026; kept for reference.",
+   "detail": "Retired because its source tables are no longer refreshed. Use the pricing workspace instead; historic exports stay available on request.",
+   "tags": [
+    "archive"
+   ],
+   "owner": "Owner B"
+  }
+ ]
 }

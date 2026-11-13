@@ -30,7 +30,7 @@ def code(c):
     lang = html.escape(c.get("lang") or "text")
     title = html.escape(c.get("title") or lang)
     return (f'<div class="g-code"><div class="bar"><span class="lang">{title}</span>'
-            f'<button type="button" class="copy">Copy</button></div>'
+            f'<button type="button" class="copy" aria-label="Copy code">Copy</button></div>'
             f'<pre data-lang="{lang}"><code class="language-{lang}">{html.escape(c["text"])}</code></pre></div>')
 
 
@@ -57,7 +57,7 @@ def block(b, ctx):
     if "table" in b:
         t = b["table"]
         head = "".join(f"<th>{inline(h)}</th>" for h in t["head"])
-        rows = "".join("<tr>" + "".join(f"<td>{inline(c)}</td>" for c in r) + "</tr>" for r in t["rows"])
+        rows = "".join("<tr>" + "".join(f'<td data-label="{html.escape(h, quote=True)}">{inline(c)}</td>' for h, c in zip(t["head"], r)) + "</tr>" for r in t["rows"])
         cap = f'<caption>{inline(t["caption"])}</caption>' if t.get("caption") else ""
         return f'<div class="b-table-wrap"><table class="b-table">{cap}<thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div>'
     if "diagram" in b:
@@ -65,7 +65,7 @@ def block(b, ctx):
         if "flow" in d:
             parts = []
             for i, n in enumerate(d["flow"]):
-                if i: parts.append('<span class="a" aria-hidden="true">&rarr;</span>')
+                if i: parts.append('<span class="a" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h12M9.5 3.5 14 8l-4.5 4.5"/></svg></span>')
                 title, _, sub = n.partition("|")
                 parts.append(f'<div class="n"><b>{inline(title.strip())}</b>{inline(sub.strip())}</div>')
             body = f'<div class="g-flow">{"".join(parts)}</div>'
@@ -76,7 +76,7 @@ def block(b, ctx):
     if "quiz" in b:
         q = b["quiz"]; ctx["quizzes"] += 1; qid = q.get("id") or f'q{ctx["quizzes"]}'
         opts = "".join(f'<button type="button" class="opt">{inline(o)}</button>' for o in q["options"])
-        return (f'<div class="g-quiz b-card" data-quiz="{qid}" data-answer="{int(q["answer"])}" '
+        return (f'<div class="g-quiz b-well" data-quiz="{qid}" data-answer="{int(q["answer"])}" '
                 f'data-why="{html.escape(q.get("why", ""), quote=True)}"><p class="q"><strong>Check:</strong> {inline(q["q"])}</p>'
                 f'{opts}<p class="fb" role="status" aria-live="polite" hidden></p>'
                 f'<button type="button" class="retry" hidden>Try again</button></div>')
@@ -93,7 +93,7 @@ def build(spec, dark=False):
         inner = "".join(block(b, ctx) for b in s["blocks"])
         if mode == "course":
             if "quiz" not in json.dumps(s["blocks"]): print(f"WARN: module '{s['title']}' has no quiz", file=sys.stderr)
-            head = (f'<p class="b-eyebrow">Module {n:02d}</p><h2 id="{sid}-h">{inline(s["title"])}'
+            head = (f'<h2 id="{sid}-h"><span class="g-n">{n}.</span>{inline(s["title"])}'
                     f'<span class="g-modmark" hidden></span></h2>')
             secs.append(f'<section id="{sid}" data-mod="{n}">{head}{inner}</section>')
         else:

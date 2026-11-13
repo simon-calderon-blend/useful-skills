@@ -14,9 +14,9 @@
     "verdict": "The pilot meets its accuracy bar and misses its latency bar. Proceed to a limited rollout once retrieval latency is fixed.",
     "text": ["Answer accuracy beat the manual baseline on four of five ticket categories. Two high-severity findings concern stale source documents and slow retrieval on long threads."],
     "kpis": [
-      {"value": "87%", "label": "Answer accuracy", "caption": "Baseline 79%"},
-      {"value": "4.1 s", "label": "Median latency", "caption": "Target 3.0 s"},
-      {"value": "62%", "label": "Deflection rate", "caption": "Target 55%"},
+      {"value": "87%", "label": "Answer accuracy", "caption": "8 points over the 79% baseline"},
+      {"value": "4.1 s", "label": "Median latency", "caption": "1.1 s over the 3.0 s target"},
+      {"value": "62%", "label": "Deflection rate", "caption": "7 points over the 55% target"},
       {"value": "3", "label": "Open findings", "caption": "2 high, 1 medium"}
     ]
   },
