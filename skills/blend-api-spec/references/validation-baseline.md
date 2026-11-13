@@ -168,3 +168,16 @@ exit=1
 
 - Examples: no FAIL. WARN on A1 is the missing `openapi-spec-validator`. The `--dark` example has a core check 5 WARN: the heuristic sees cyan text in dark-layer rules whose own block has no background (the dark page provides it); it was looked at by eye (README, Known limits).
 - Canons (abbreviated copies, no vendor files or spec): FAIL as expected; checks 2 and 4 show they use no PP Telegraf and no Blend logo, and the missing-file FAILs (6, A1, A5, A8) come from the copies, not from the canon.
+
+## Design pass 2026-11-13
+
+The runs above predate the design pass and show 10 core checks. The core validator now has check 11 "craft"
+(warnings only) and the examples were regenerated. Results on the regenerated examples:
+
+| Target | Exit | FAIL | WARN | Warnings |
+|---|---|---|---|---|
+| `orders-api/` | 0 | 0 | 1 | A1  spec openapi.json        WARN  7 operations; minimal structure onl |
+| `orders-api-dark/` | 0 | 0 | 2 | 5 contrast     WARN cyan/turquoise as text where the rule has no dark ; A1  spec openapi.json        WARN  7 operations; minimal structure onl |
+| `orders-api-compare/` | 0 | 0 | 2 | A1  spec openapi-proposed.json WARN  8 operations; minimal structure o; A1  spec openapi.json        WARN  7 operations; minimal structure onl |
+
+The canonical shares were not re-run; expect check 11 to warn on them (side stripes, uppercase labels, text under 12px).

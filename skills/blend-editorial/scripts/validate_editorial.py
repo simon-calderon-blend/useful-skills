@@ -3,7 +3,7 @@
 
 Usage: validate_editorial.py PATH --kind article|one-pager|landing [--client] [--pages N] [--strict] [--render]
 Runs ../../blend-web-core/scripts/validate.py (subprocess, same --kind), then adds:
- E1 prose measure 60-80ch | E2 body line-height >= 1.6 | E3 body font >= 16px | E4 exactly one h1
+ E1 prose measure 42-56ch (60-80 characters in PP Telegraf) | E2 body line-height >= 1.6 | E3 body font >= 16px | E4 exactly one h1
  E5 CTA present (one-pager, landing) | E6 @page defined + sheet count (one-pager)
  E7 co-branding: topbar "Blend x client", img alt, client image <= 200 KB (auto when --client or a cobrand element exists)
  E8 no horizontal scroll at 375 px (Playwright; otherwise SKIP: use chrome-devtools resize_page 375)
@@ -52,7 +52,9 @@ def rules(c):
     return [(s.strip(), b) for s, b in re.findall(r"([^{}@]+)\{([^{}]*)\}", c)]
 
 
-# E1 prose measure: any rule whose selector mentions prose/article/lede/measure sets max-width in ch (60-80) or px (560-820)
+# E1 prose measure: any rule whose selector mentions prose/article/lede/measure sets max-width in ch (42-56) or px (460-620).
+# The target is 60-80 characters per line. `ch` is the width of the 0, which in PP Telegraf is 1.5x the average letter
+# (measured 2026-11-13: 68ch = 104 characters), so the ch range that gives 60-80 characters is 42-56.
 meas = []
 for sel, body in rules(css):
     if re.fullmatch(r"[.\w\s>,-]*(prose|article|post|body-copy|copy|measure|content|lede)[\w\s>,.-]*", sel.strip(), re.I) or re.search(r"(^|[\s>,])p$", sel.strip()):
@@ -63,10 +65,10 @@ for sel, v in meas:
     m = re.fullmatch(r"([\d.]+)(ch|px)", v)
     if not m: continue
     n = float(m[1])
-    (ok_ch if m[2] == "ch" and 60 <= n <= 80 else ok_px if m[2] == "px" and 560 <= n <= 820 else bad).append(f"{sel}={v}")
+    (ok_ch if m[2] == "ch" and 42 <= n <= 56 else ok_px if m[2] == "px" and 460 <= n <= 620 else bad).append(f"{sel}={v}")
 if ok_ch: add("E1 prose measure", "PASS", f"{ok_ch[0]}")
-elif ok_px: add("E1 prose measure", "WARN", f"{ok_px[0]} is in px (equivalent to ~60-80ch); prefer ch")
-elif bad: add("E1 prose measure", "FAIL", "outside 60-80ch: " + ", ".join(bad[:3]))
+elif ok_px: add("E1 prose measure", "WARN", f"{ok_px[0]} is in px (about 60-80 characters); prefer ch")
+elif bad: add("E1 prose measure", "FAIL", "outside 42-56ch (60-80 characters in PP Telegraf): " + ", ".join(bad[:3]))
 else: add("E1 prose measure", "FAIL", "no max-width on a prose/article container")
 
 

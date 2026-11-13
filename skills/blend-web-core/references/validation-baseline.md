@@ -64,3 +64,14 @@ validate: /home/simoncl20/Work/blend/bld/blend-share-files/persona-grounding-exp
 10 secrets/PII  PASS no secrets, tokens, ARNs or e-mails detected (regex only; review content for client data)
 
 ```
+
+## Design pass 2026-11-13
+
+The runs above predate the design pass and show 10 core checks. The core validator now has check 11 "craft"
+(warnings only) and the examples were regenerated. Results on the regenerated examples:
+
+| Target | Exit | FAIL | WARN | Warnings |
+|---|---|---|---|---|
+| `report-simple.html` | 0 | 0 | 0 | none |
+
+The canonical shares were not re-run; expect check 11 to warn on them (side stripes, uppercase labels, text under 12px).

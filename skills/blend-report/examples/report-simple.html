@@ -54,182 +54,316 @@
   --radius: 12px;
   --radius-lg: 14px;
   --gap: 1rem;
-  --measure: 68ch;
-}
-/* Shared Blend web components. Requires tokens.css. Plain CSS, no dependencies. */
-*, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
-body { margin: 0; background: var(--bg); color: var(--text); font: var(--fw) 1rem/1.65 var(--font); }
-h1, h2, h3 { color: var(--heading); font-weight: var(--fw); line-height: 1.15; letter-spacing: -.01em; }
-h1 { font-size: clamp(2rem, 5vw, 3.4rem); letter-spacing: -.02em; }
-a { color: var(--accent); }
-img, svg { max-width: 100%; }
+  --measure: 48ch;              /* about 72 characters: the 0 of PP Telegraf is 1.5x its average letter, so 68ch was 104 */
 
-.b-eyebrow { font-size: .75rem; text-transform: uppercase; letter-spacing: .14em; color: var(--text-muted); }
+  /* ---- Design-system tokens (layout, not brand). See references/design-principles.md ---- */
+  /* Spacing: one scale on a 4px base. No spacing value outside it. */
+  --s-1: .25rem; --s-2: .5rem; --s-3: .75rem; --s-4: 1rem; --s-5: 1.5rem;
+  --s-6: 2rem; --s-7: 3rem; --s-8: 4rem; --s-9: 6rem;
+  /* Widths: every page uses one of these, so the left line is the same from header to footer. */
+  --w-page: 72rem;              /* documents, portals, landings */
+  --w-wide: 80rem;              /* dashboards, API reference, sidebar layouts */
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  /* Type roles, ratio 1.2 from a 16px body. Weight stays 400: hierarchy is size, space and tone. */
+  --t-micro: .75rem;            /* 12px floor: chips, table meta */
+  --t-small: .875rem;           /* captions, labels, secondary */
+  --t-body: 1rem;
+  --t-lead: 1.2rem;             /* standfirst, card title, h3 */
+  --t-h2: 1.728rem;
+  --t-h1: 2.488rem;
+  --t-figure: 2.074rem;         /* KPI value: never larger than the h1 */
+  --t-display: clamp(2.2rem, 1.3rem + 3.6vw, 3.6rem);  /* persuade pages only (landing, one-pager, hero) */
+  /* Motion: three durations, one curve. Only transform, opacity and colour move. */
+  --dur-1: 120ms;               /* press, feedback */
+  --dur-2: 220ms;               /* hover, menu, indicator */
+  --dur-3: 420ms;               /* panel, progress */
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  /* Controls */
+  --tap: 2.75rem;               /* 44px hit target */
+  --radius-sm: 6px;             /* inner radius = outer radius - padding */
+  --focus: var(--accent);       /* navy surfaces set --focus: var(--blend-cyan) */
+  /* Tinted wells, derived from the state tokens (no new hex). State colours are fills and borders,
+     never small text on light: warn is 4.1:1 on white, bad 4.5:1 on paper. */
+  --tint-note: color-mix(in srgb, var(--blend-cyan-soft) 30%, var(--surface));
+  --tint-key: color-mix(in srgb, var(--blend-navy) 7%, var(--surface));
+  --tint-ok: color-mix(in srgb, var(--state-ok) 9%, var(--surface));
+  --tint-warn: color-mix(in srgb, var(--state-warn) 16%, var(--surface));
+  --tint-bad: color-mix(in srgb, var(--state-bad) 13%, var(--surface));
+  --tint-info: color-mix(in srgb, var(--state-info) 8%, var(--surface));
+}
+/* Shared Blend web components. Requires tokens.css. Plain CSS, no dependencies.
+   Design rules behind these choices: references/design-principles.md. */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scrollbar-color: color-mix(in srgb, var(--heading) 35%, transparent) transparent; }
+body { margin: 0; background: var(--bg); color: var(--text); font: var(--fw) var(--t-body)/1.65 var(--font);
+  caret-color: var(--accent); accent-color: var(--blend-navy); text-wrap: pretty; overflow-wrap: break-word; }
+::selection { background: var(--blend-cyan-soft); color: var(--blend-navy); }
+
+/* Headings: weight is always 400, so hierarchy is size, space and colour. A heading belongs to what
+   follows it: twice the space above as below. */
+h1, h2, h3 { color: var(--heading); font-weight: var(--fw); line-height: 1.15; letter-spacing: -.01em; text-wrap: balance; }
+h1 { font-size: clamp(2rem, 1.5rem + 2vw, var(--t-h1)); letter-spacing: -.02em; max-width: 24ch; margin: 0 0 var(--s-4); }
+h2 { font-size: clamp(1.44rem, 1.2rem + 1vw, var(--t-h2)); max-width: 32ch; margin: var(--s-7) 0 var(--s-4); }
+h3 { font-size: var(--t-lead); line-height: 1.3; max-width: 44ch; margin: var(--s-6) 0 var(--s-2); }
+p { margin: 0 0 var(--s-4); }
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: .18em; }
+img, svg { max-width: 100%; }
+/* The brand face has one weight. Emphasis is tone (navy), never a browser-synthesised bold. */
+body { font-synthesis: none; }
+:where(strong, b, th) { font-weight: var(--fw); }
+:where(strong, b) { color: var(--heading); }
+:where(.b-hero, .b-band, [class*="-hero"], [class*="-cta"], [class*="-band"], th, pre) :where(strong, b) { color: inherit; }
+::placeholder { color: var(--text-muted); opacity: 1; }
+
+/* One eyebrow per page (masthead or hero). Every other small label is .b-label: sentence case, no tracking. */
+.b-eyebrow { font-size: var(--t-micro); text-transform: uppercase; letter-spacing: .14em; color: var(--text-muted); }
+.b-label { font-size: var(--t-small); color: var(--text-muted); }
 .b-prose { max-width: var(--measure); }
+.b-num, .b-kpi .v, .b-table td.num, .b-table th.num { font-variant-numeric: tabular-nums; }
+.b-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.b-skip { position: absolute; left: var(--s-4); top: var(--s-2); z-index: 100; padding: var(--s-2) var(--s-4); background: var(--blend-navy);
+  color: var(--blend-white); border-radius: var(--radius-sm); transform: translateY(-200%); }
+.b-skip:focus { transform: none; }
 
 /* Header with logo */
-.b-header { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between;
-  padding: .75rem clamp(1rem, 4vw, 2.5rem); background: var(--bg); border-bottom: 1px solid var(--hairline); }
-.b-header .blend-logo { height: 22px; width: auto; color: var(--blend-navy); }
+.b-header { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: var(--s-4);
+  padding: var(--s-3) var(--gutter); background: var(--bg); border-bottom: 1px solid var(--hairline); }
+.b-header .blend-logo { height: 22px; width: auto; color: var(--blend-navy); display: block; }
 
-/* Hero and CTA band (navy, cyan accent text is allowed here: dark background) */
-.b-hero, .b-band { background: var(--blend-navy); color: var(--blend-white); padding: clamp(2rem, 6vw, 5rem) clamp(1rem, 4vw, 2.5rem); }
+/* Hero and CTA band: the navy region. Cyan is text only here; secondary text is soft cyan, never grey or opacity. */
+.b-hero, .b-band { --focus: var(--blend-cyan); --kpi-rule: color-mix(in srgb, var(--blend-cyan-soft) 35%, transparent); background: var(--blend-navy); color: var(--blend-white);
+  padding: clamp(2rem, 6vw, 5rem) var(--gutter); }
 .b-hero h1, .b-band h2 { color: var(--blend-cyan); }
-.b-btn { display: inline-block; padding: .7rem 1.2rem; border-radius: 999px; background: var(--blend-cyan); color: var(--blend-navy);
-  text-decoration: none; font-weight: var(--fw); }
+.b-hero ::selection, .b-band ::selection { background: var(--blend-cyan); color: var(--blend-navy); }
 
-/* Cards, KPI tiles, callouts, chips, tables */
-.b-card { background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; }
-.b-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--gap); }
-.b-kpi .v { display: block; font-size: 2rem; color: var(--heading); line-height: 1.1; }
-.b-kpi .l { font-size: .8rem; color: var(--text-muted); }
-.b-callout { border-left: 4px solid var(--blend-cyan); background: var(--surface); padding: .8rem 1rem; border-radius: 0 var(--radius) var(--radius) 0; }
-.b-callout.warn { border-color: var(--state-warn); }
-.b-callout.bad { border-color: var(--state-bad); }
-.b-chip { display: inline-block; padding: .15rem .6rem; border-radius: 999px; font-size: .75rem; border: 1px solid var(--hairline); color: var(--text-muted); }
-.b-chip.ok { color: var(--state-ok); border-color: currentColor; }
-.b-chip.warn { color: var(--state-warn); border-color: currentColor; }
-.b-chip.bad { color: var(--state-bad); border-color: currentColor; }
-.b-table { width: 100%; border-collapse: collapse; font-size: .92rem; }
-.b-table th { background: var(--blend-navy); color: var(--blend-white); text-align: left; padding: .55rem .7rem; font-weight: var(--fw); }
-.b-table td { padding: .5rem .7rem; border-bottom: 1px solid var(--hairline); }
-.b-table td.num, .b-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+/* Buttons. One filled .b-btn per view: the primary action. Everything else is .secondary or a link.
+   Pill radius is for controls (buttons, chips, search), not for containers. */
+.b-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--s-2); min-height: var(--tap); padding: var(--s-2) var(--s-5);
+  border-radius: 999px; border: 1px solid transparent; background: var(--blend-cyan); color: var(--blend-navy); font: inherit; line-height: 1.2;
+  text-decoration: none; white-space: nowrap; cursor: pointer;
+  transition: background-color var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease), color var(--dur-2) var(--ease), transform var(--dur-1) var(--ease); }
+.b-btn.secondary { background: transparent; color: var(--heading); border-color: color-mix(in srgb, var(--heading) 45%, transparent); }
+.b-hero .b-btn.secondary, .b-band .b-btn.secondary { color: var(--blend-white); border-color: var(--blend-cyan-soft); }
+@media (hover: hover) {
+  .b-btn:hover { background: color-mix(in srgb, var(--blend-cyan) 84%, var(--blend-navy)); }
+  .b-btn.secondary:hover { background: color-mix(in srgb, var(--heading) 8%, transparent); border-color: var(--heading); }
+  .b-hero .b-btn.secondary:hover, .b-band .b-btn.secondary:hover { background: color-mix(in srgb, var(--blend-white) 12%, transparent); border-color: var(--blend-white); }
+}
+.b-btn:active { transform: translateY(1px); }
+.b-btn:disabled, .b-btn[aria-disabled="true"] { opacity: .55; cursor: not-allowed; transform: none; }
+
+/* Containers: space first, then a hairline, then a tinted well, then a card. Never a card inside a card. */
+.b-card { background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-lg); padding: var(--s-5); min-width: 0; }
+/* carded KPI (decks): compact, so existing slides keep their height */
+.b-card.b-kpi { padding: var(--s-4) var(--s-5); }
+.b-card.b-kpi .l { margin-top: 0; }
+.b-well { background: var(--tint-key); border-radius: var(--radius); padding: var(--s-4) var(--s-5); min-width: 0; }
+
+/* KPI figures: a row parted by hairlines, not a strip of identical cards. Each figure carries its unit
+   in .v, what it counts in .l and a qualifier (target, baseline, period) in .c. */
+.b-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--s-5) var(--gap); }
+.b-kpis:not(:has(> .b-card)) { gap: var(--s-5) 0; margin-left: calc(var(--s-5) * -1); clip-path: inset(0 0 0 var(--s-5)); }
+.b-kpis > .b-kpi:not(.b-card) { padding: 0 var(--s-5); box-shadow: -1px 0 0 var(--kpi-rule, var(--hairline)); min-width: 0; }
+/* phone: an odd count would strand one figure on the last row, so the row becomes a list */
+@media (max-width: 40rem) {
+  .b-kpis:not(:has(> .b-card)):has(> .b-kpi:nth-child(odd):last-child) { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .b-kpis:has(> .b-kpi:nth-child(odd):last-child) > .b-kpi:not(.b-card) { box-shadow: none; padding-block: var(--s-3); border-top: 1px solid var(--kpi-rule, var(--hairline)); }
+  .b-kpis:has(> .b-kpi:nth-child(odd):last-child) > .b-kpi:not(.b-card):first-child { border-top: 0; padding-top: 0; }
+}
+.b-kpi .v { display: block; font-size: clamp(1.6rem, 1.2rem + 1.6vw, var(--t-figure)); color: var(--heading); line-height: 1.1; white-space: nowrap; }
+.b-kpi .l { display: block; font-size: var(--t-small); color: var(--text); margin-top: var(--s-1); }
+.b-kpi .c { display: block; font-size: var(--t-micro); color: var(--text-muted); margin-top: var(--s-1); }
+
+/* Callouts: a tinted well with a worded title, no side stripe. The kind is said in words, not by colour alone. */
+.b-callout { background: var(--tint-key); border-radius: var(--radius); padding: var(--s-4) var(--s-5); min-width: 0; }
+.b-callout.key { background: var(--tint-note); }   /* the one that asks for something gets the accent tint */
+.b-callout.warn { background: var(--tint-warn); }
+.b-callout.bad { background: var(--tint-bad); }
+.b-callout .t { display: block; color: var(--heading); margin-bottom: var(--s-1); }
+.b-callout.warn .t::before, .b-callout.bad .t::before { content: ""; display: inline-block; width: .5em; height: .5em; border-radius: 50%; margin-right: .5em; vertical-align: .1em; background: var(--state-warn); }
+.b-callout.bad .t::before { background: var(--state-bad); }
+.b-callout > :last-child { margin-bottom: 0; }
+
+/* Chips: status in words, with the state colour as dot and border (state colours fail AA as small text). */
+.b-chip { display: inline-flex; align-items: center; gap: .4em; padding: .15rem .6rem; border-radius: 999px; font-size: var(--t-micro); line-height: 1.5;
+  border: 1px solid var(--hairline); color: var(--text-muted); white-space: nowrap; }
+.b-chip.ok, .b-chip.warn, .b-chip.bad, .b-chip.info { color: var(--text); }
+.b-chip.ok::before, .b-chip.warn::before, .b-chip.bad::before, .b-chip.info::before { content: ""; width: .5em; height: .5em; border-radius: 50%; background: currentColor; flex: none; }
+.b-chip.ok { border-color: var(--state-ok); } .b-chip.ok::before { background: var(--state-ok); }
+.b-chip.warn { border-color: var(--state-warn); } .b-chip.warn::before { background: var(--state-warn); }
+.b-chip.bad { border-color: var(--state-bad); } .b-chip.bad::before { background: var(--state-bad); }
+.b-chip.info { border-color: var(--state-info); } .b-chip.info::before { background: var(--state-info); }
+button.b-chip { font: inherit; font-size: var(--t-small); min-height: 2.25rem; background: var(--surface); color: var(--text); cursor: pointer;
+  border-color: color-mix(in srgb, var(--heading) 35%, transparent);   /* controls carry a firmer edge than static chips */
+  transition: background-color var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease), color var(--dur-2) var(--ease); }
+button.b-chip[aria-pressed="true"] { background: var(--blend-navy); color: var(--blend-white); border-color: var(--blend-navy); }
+@media (hover: hover) { button.b-chip:hover { border-color: var(--heading); } }
+@media (pointer: coarse) { button.b-chip { min-height: var(--tap); padding-inline: var(--s-4); } }
+
+/* Tables: navy head, horizontal rules only, numbers right and tabular, first column is the row's name. */
+.b-table { width: 100%; border-collapse: collapse; font-size: var(--t-small); }
+.b-table th { background: var(--blend-navy); color: var(--blend-white); text-align: left; padding: var(--s-2) var(--s-3); font-weight: var(--fw); white-space: nowrap; }
+.b-table td { padding: var(--s-2) var(--s-3); border-bottom: 1px solid var(--hairline); vertical-align: top; }
+.b-table tbody td:first-child { color: var(--heading); }
+.b-table td.num, .b-table th.num { text-align: right; white-space: nowrap; }
+.b-table caption { caption-side: top; text-align: left; font-size: var(--t-small); color: var(--text-muted); padding: 0 0 var(--s-2); }
 .b-table-wrap { overflow-x: auto; }
 
-.b-footer { padding: 1.5rem clamp(1rem, 4vw, 2.5rem); color: var(--text-muted); font-size: .8rem; border-top: 1px solid var(--hairline); }
+.b-footer { padding: var(--s-5) var(--gutter); color: var(--text-muted); font-size: var(--t-small); border-top: 1px solid var(--hairline); }
 
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
-@media print { .b-header { position: static; } body { background: #fff; } .b-hero, .b-band { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+/* Focus: instant, 2px, never animated. Navy regions switch --focus to cyan (the link blue is 1.6:1 on navy). */
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+/* Reduced motion: movement goes, colour and state changes stay. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; scroll-behavior: auto !important;
+    transition-property: color, background-color, border-color, outline-color, opacity !important; }
+}
+@media print { .b-header { position: static; } .b-skip { display: none; } body { background: #fff; }
+  .b-hero, .b-band, .b-table th, .b-callout, .b-well { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
 /* blend-report: report-specific layer. Loaded AFTER blend-web-core tokens.css + components.css.
-   Uses only core tokens (--blend-*, --state-*, --bg, --surface, --text, --heading, --hairline, --font-mono).
-   Status colors are never redefined here: chips come from the core (.b-chip.ok|warn|bad). */
+   Uses only core tokens. Status colours are never redefined here: chips come from the core.
+   A report is a Read page: fixed type roles, one left line, a calm column. The brand lives in the frame
+   (masthead, navy summary band, navy table heads), not in decoration around every block. */
 
-/* Layout ------------------------------------------------------------------ */
-.r-shell { max-width: 64rem; margin: 0 auto; padding: 0 clamp(1rem, 4vw, 2rem); }
-.r-masthead { max-width: 64rem; margin: 0 auto; padding: 1.75rem clamp(1rem, 4vw, 2rem) 0;
-  display: flex; align-items: center; justify-content: space-between; gap: 1rem 1.5rem; flex-wrap: wrap; }
+/* Frame ------------------------------------------------------------------- */
+.r-shell, .r-masthead { max-width: var(--w-page); margin: 0 auto; }
+.r-foot-in { max-width: calc(var(--w-page) - 2 * var(--gutter)); margin: 0 auto; }
+.r-shell { padding: 0 var(--gutter); }
+.r-masthead { padding: var(--s-6) var(--gutter) 0; display: flex; align-items: center; justify-content: space-between; gap: var(--s-4) var(--s-5); flex-wrap: wrap; }
 .r-masthead .blend-logo { height: 26px; width: auto; color: var(--heading); display: block; }
-.r-title { padding: 2rem 0 1rem; }
-.r-title h1 { margin: .4rem 0 .75rem; max-width: 22ch; text-wrap: balance; }
-.r-rule { height: 2px; width: 64px; background: var(--blend-cyan); border: 0; margin: 0 0 1rem; }
-.r-standfirst { font-size: clamp(1.05rem, 1rem + .4vw, 1.25rem); color: var(--text-muted); max-width: 52ch; margin: 0; }
-.r-meta { display: flex; flex-wrap: wrap; gap: .4rem 1.25rem; margin: 1.25rem 0 0; padding: 0; list-style: none;
-  font-size: .8rem; color: var(--text-muted); }
+.r-masthead .b-eyebrow { margin: 0; }
+.r-title { padding: var(--s-7) 0 var(--s-5); }
+.r-rule { height: 2px; width: var(--s-8); background: var(--blend-cyan); border: 0; margin: 0 0 var(--s-5); }
+.r-title h1 { margin: 0 0 var(--s-4); }
+.r-standfirst { font-size: var(--t-lead); line-height: 1.45; color: var(--text-muted); max-width: 40ch; margin: 0; }
+.r-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2) var(--s-5); margin: var(--s-5) 0 0; padding: 0; list-style: none;
+  font-size: var(--t-small); color: var(--text-muted); }
 .r-meta strong { font-weight: var(--fw); color: var(--heading); }
 
-main section { padding: 1.6rem 0; }
-main section > h2 { font-size: clamp(1.4rem, 1.15rem + 1.1vw, 1.9rem); margin: 0 0 1rem; max-width: 30ch; text-wrap: balance; }
-main section > h2 .r-n { color: var(--text-muted); margin-right: .5rem; font-size: .8em; }
-main h3 { font-size: 1.15rem; margin: 1.4rem 0 .5rem; }
-.r-stack > * + * { margin-top: 1.1rem; }
-.r-prose p { max-width: var(--measure); margin: 0 0 1rem; }
-code { font-family: var(--font-mono); font-size: .88em; background: var(--blend-mist); padding: 1px 5px; border-radius: 4px; color: var(--blend-navy); }
+/* Sections: space separates them; headings carry twice the air above as below (core). */
+main section { padding: 0; }
+main section > h2 .r-n { color: var(--text-muted); margin-right: var(--s-2); font-variant-numeric: tabular-nums; }
+.r-stack { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-5); }
+.r-stack > h3 { margin: var(--s-4) 0 calc(var(--s-3) * -1); }
+.r-prose p { max-width: var(--measure); margin: 0; }
+code { font-family: var(--font-mono); font-size: .88em; background: var(--tint-key); padding: 1px 5px; border-radius: 4px; color: var(--heading); }
 
-body[data-variant="sidebar"] .r-masthead { max-width: 76rem; }
-
-/* Executive summary --------------------------------------------------------- */
-.r-hero { background: var(--blend-navy); color: var(--blend-white); border-radius: var(--radius-lg);
-  padding: clamp(1.25rem, 3vw, 2rem); }
-body[data-variant] main section.r-hero { padding: clamp(1.25rem, 3vw, 2rem); margin: 1rem 0 .5rem; }
-.r-hero h2 { color: var(--blend-cyan); margin: 0 0 .75rem; }
-.r-hero .r-verdict { font-size: clamp(1.15rem, 1rem + .7vw, 1.5rem); margin: 0 0 .75rem; max-width: 40ch; color: var(--blend-white); }
-.r-hero p { margin: 0 0 .75rem; max-width: 62ch; }
-.r-hero .r-kpis { margin-top: 1.25rem; }
+/* Executive summary: the one navy region of the report. The verdict is the primary element of the page. */
+.r-hero { --focus: var(--blend-cyan); --kpi-rule: color-mix(in srgb, var(--blend-cyan-soft) 35%, transparent); background: var(--blend-navy); color: var(--blend-white); border-radius: var(--radius-lg);
+  margin: var(--s-5) 0 0; }
+body[data-variant] main section.r-hero { padding: clamp(var(--s-5), 4vw, var(--s-7)); }
+.r-hero h2 { color: var(--blend-cyan); font-size: var(--t-body); letter-spacing: 0; margin: 0 0 var(--s-3); }
+.r-hero .r-verdict { font-size: clamp(1.44rem, 1rem + 2.2vw, var(--t-h1)); line-height: 1.15; letter-spacing: -.01em; margin: 0 0 var(--s-5); max-width: 22ch; text-wrap: balance; }
+.r-hero p { margin: 0 0 var(--s-3); max-width: var(--measure); color: var(--blend-cyan-soft); }
+.r-hero > :last-child { margin-bottom: 0; }
+/* wide screens: verdict and its support on the left, the figures as a 2 x 2 on the right (even counts only) */
+@media (min-width: 64rem) {
+  body:not([data-variant="scorecard"]):not([data-variant="sidebar"]) .r-hero:has(> .r-kpis > .b-kpi:nth-child(even):last-child) { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); column-gap: var(--s-7); align-content: start; }
+  body:not([data-variant="scorecard"]):not([data-variant="sidebar"]) .r-hero:has(> .r-kpis > .b-kpi:nth-child(even):last-child) > * { grid-column: 1; }
+  body:not([data-variant="scorecard"]):not([data-variant="sidebar"]) .r-hero:has(> .r-kpis > .b-kpi:nth-child(even):last-child) > .r-kpis { grid-column: 2; grid-row: 1 / span 12; align-self: center; margin-top: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-6) 0; }
+}
+.r-hero p.r-verdict { color: var(--blend-white); }
+.r-hero .r-kpis { margin-top: var(--s-6); }
 .r-hero .b-kpi .v { color: var(--blend-cyan); }
-.r-hero .b-kpi .l, .r-hero .b-kpi .c { color: var(--blend-cyan-soft); }
-.b-kpi .c { display: block; font-size: .75rem; color: var(--text-muted); margin-top: .15rem; }
-.b-kpi { padding: .25rem 0; }
+.r-hero .b-kpi .l { color: var(--blend-white); }
+.r-hero .b-kpi .c { color: var(--blend-cyan-soft); }
+.r-hero ::selection { background: var(--blend-cyan); color: var(--blend-navy); }
 
-/* Callouts (note / key / warning) -------------------------------------------- */
-.b-callout { margin: 0; }
-.b-callout .t { display: block; color: var(--heading); margin-bottom: .2rem; }
-.b-callout p { margin: 0; }
-.b-callout.key { border-color: var(--blend-navy); background: var(--blend-mist); }
-
-/* Findings ---------------------------------------------------------------------- */
-.r-findings { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
-.r-finding, .r-evidence, .r-two > * { min-width: 0; }
-.r-finding { background: var(--surface); border: 1px solid var(--hairline); border-left: 4px solid var(--hairline);
-  border-radius: 0 var(--radius-lg) var(--radius-lg) 0; padding: 1rem 1.25rem; break-inside: avoid; }
-.r-finding[data-sev="critical"], .r-finding[data-sev="high"] { border-left-color: var(--state-bad); }
-.r-finding[data-sev="medium"] { border-left-color: var(--state-warn); }
-.r-finding[data-sev="low"] { border-left-color: var(--state-ok); }
-.r-finding[data-sev="info"] { border-left-color: var(--state-info); }
-.r-finding header { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem .75rem; margin-bottom: .4rem; }
-.r-finding .id { font-family: var(--font-mono); font-size: .8rem; color: var(--text-muted); }
-.r-finding h3 { margin: 0; font-size: 1.05rem; flex: 1 1 14rem; }
-.r-finding p { margin: 0 0 .6rem; max-width: var(--measure); }
-.r-evidence { border-top: 1px dashed var(--hairline); padding-top: .6rem; margin-top: .6rem; font-size: .92rem; }
-.r-evidence > .b-eyebrow { display: block; margin-bottom: .3rem; }
-.r-evidence > *:last-child { margin-bottom: 0; }
-.r-finding .r-rec { font-size: .92rem; color: var(--text-muted); margin: .6rem 0 0; }
+/* Findings: a list parted by hairlines, not a stack of striped cards. Severity is a worded chip; the
+   evidence sits in a tinted well so nothing is boxed inside a box. */
+.r-findings { display: grid; grid-template-columns: minmax(0, 1fr); }
+.r-finding { min-width: 0; padding: var(--s-5) 0; border-top: 1px solid var(--hairline); break-inside: avoid; scroll-margin-top: var(--s-5); }
+.r-finding header { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s-2) var(--s-3); margin-bottom: var(--s-2); }
+.r-finding .id { font-family: var(--font-mono); font-size: var(--t-small); color: var(--text-muted); }
+.r-finding h3 { margin: 0; flex: 0 1 auto; max-width: none; }
+/* wide screens: the claim on the left, its evidence beside it */
+@media (min-width: 64rem) {
+  body[data-variant="simple"] .r-finding { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); column-gap: var(--s-7); align-items: start; }
+  body[data-variant="simple"] .r-finding > * { grid-column: 1; }
+  body[data-variant="simple"] .r-finding > .r-evidence { grid-column: 2; grid-row: 1 / span 6; margin-top: 0; }
+}
+.r-finding p { margin: 0 0 var(--s-3); max-width: var(--measure); }
+.r-evidence { min-width: 0; background: var(--tint-key); border-radius: var(--radius); padding: var(--s-4) var(--s-5); margin-top: var(--s-4);
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-3); font-size: var(--t-small); }
+.r-evidence > .b-label { color: var(--heading); }
+.r-evidence p { margin: 0; }
+/* a table or code block is already a box: the well is dropped so nothing is boxed inside a box */
+.r-evidence.plain { background: none; padding: 0; border-radius: 0; }
+.r-finding .r-rec { color: var(--text); margin: var(--s-4) 0 0; }
 .r-finding .r-rec strong { font-weight: var(--fw); color: var(--heading); }
-.b-chip.info { color: var(--state-info); border-color: currentColor; }
 
-/* Tables and code ------------------------------------------------------------------ */
+/* Tables and code --------------------------------------------------------- */
 figure { margin: 0; }
-figcaption, caption { font-size: .85rem; color: var(--text-muted); text-align: left; margin: .6rem 0 0; max-width: 62ch; }
-caption { caption-side: top; margin: 0; padding: .6rem .7rem .5rem; }
+figcaption { font-size: var(--t-small); color: var(--text-muted); margin: var(--s-2) 0 0; max-width: var(--measure); }
 .b-table-wrap { border: 1px solid var(--hairline); border-radius: var(--radius); background: var(--surface); }
-.b-table { min-width: 34rem; }
-.b-table tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--blend-mist) 45%, transparent); }
+.b-table.r-wide { min-width: 34rem; }   /* 5+ columns scroll inside the wrapper; narrower tables always fit a phone */
+.b-table td { overflow-wrap: anywhere; }
+.b-table caption { padding: var(--s-3) var(--s-3) var(--s-2); color: var(--text); }
+.b-table tbody tr:last-child td { border-bottom: 0; }
 pre.r-code code { background: none; color: inherit; padding: 0; font-size: inherit; }
-pre.r-code { margin: 0; background: var(--blend-black); color: var(--blend-paper); border-radius: var(--radius);
-  padding: .9rem 1.1rem; overflow-x: auto; font: .85rem/1.55 var(--font-mono); }
+pre.r-code { margin: 0; background: var(--blend-black); color: var(--blend-paper); border-radius: var(--radius-sm);
+  padding: var(--s-4) var(--s-5); overflow-x: auto; font: var(--t-small)/1.55 var(--font-mono); }
 
-/* Recommendations -------------------------------------------------------------------- */
-ol.r-recs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: .75rem; counter-reset: rec; }
-ol.r-recs li { counter-increment: rec; display: grid; grid-template-columns: 2.2rem 1fr; gap: .75rem; background: var(--surface);
-  border: 1px solid var(--hairline); border-radius: var(--radius); padding: .85rem 1rem; break-inside: avoid; }
-ol.r-recs li::before { content: counter(rec); width: 2.2rem; height: 2.2rem; display: grid; place-items: center; border-radius: 50%;
-  background: var(--blend-navy); color: var(--blend-white); font-size: .9rem; }
-ol.r-recs .t { display: block; color: var(--heading); }
-ol.r-recs .m { font-size: .8rem; color: var(--text-muted); margin-top: .25rem; display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+/* Recommendations: numbered because the order is the priority. Rows, not cards. */
+ol.r-recs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); counter-reset: rec; }
+ol.r-recs li { counter-increment: rec; display: grid; grid-template-columns: var(--s-6) minmax(0, 1fr); gap: var(--s-4); padding: var(--s-4) 0;
+  border-top: 1px solid var(--hairline); break-inside: avoid; }
+ol.r-recs li::before { content: counter(rec); font-size: var(--t-h2); line-height: 1; color: var(--heading); font-variant-numeric: tabular-nums; }
+ol.r-recs .t { display: block; color: var(--heading); font-size: var(--t-lead); line-height: 1.3; margin-bottom: var(--s-1); }
+ol.r-recs .m { font-size: var(--t-small); color: var(--text-muted); margin-top: var(--s-2); display: flex; gap: var(--s-2) var(--s-3); flex-wrap: wrap; align-items: center; }
 
-/* TOC and sidebar variant ------------------------------------------------------------- */
-nav.r-toc { font-size: .9rem; }
-nav.r-toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: .1rem; }
-nav.r-toc a { display: block; padding: .3rem .6rem; border-left: 2px solid var(--hairline); color: var(--text-muted); text-decoration: none; }
-nav.r-toc a:hover { color: var(--heading); border-left-color: var(--blend-cyan); }
-nav.r-toc .b-eyebrow { display: block; margin-bottom: .5rem; }
-.r-toc-inline { border: 1px solid var(--hairline); border-radius: var(--radius); background: var(--surface); padding: .9rem 1rem; margin: 1.25rem 0 0; }
-.r-toc-inline ol { grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
-body[data-variant="sidebar"] .r-layout { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 2.5rem;
-  max-width: 76rem; margin: 0 auto; padding: 0 clamp(1rem, 4vw, 2rem); align-items: start; }
-body[data-variant="sidebar"] .r-layout > nav.r-toc { position: sticky; top: 1rem; padding: 2rem 0; max-height: 100vh; overflow-y: auto; }
+/* Contents: inline list in the simple variant, sticky rail in the sidebar variant. */
+nav.r-toc { font-size: var(--t-small); }
+nav.r-toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+nav.r-toc a { display: block; padding: var(--s-2) var(--s-3); border-left: 1px solid var(--hairline); color: var(--text-muted); text-decoration: none;
+  transition: color var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease); }
+@media (hover: hover) { nav.r-toc a:hover { color: var(--heading); border-left-color: var(--heading); } }
+nav.r-toc a[aria-current="true"] { color: var(--heading); border-left-color: var(--heading); }
+nav.r-toc .b-label { display: block; margin-bottom: var(--s-2); color: var(--heading); }
+.r-toc-inline { border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); padding: var(--s-4) 0; margin: var(--s-2) 0 0; }
+.r-toc-inline ol { grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0 var(--s-4); }
+/* phone: contents as one wrapped run, so the verdict starts in the first screen */
+@media (max-width: 40rem) { .r-toc-inline { padding: var(--s-3) 0; } nav.r-toc.r-toc-inline ol { display: flex; flex-wrap: wrap; gap: 0 var(--s-5); } nav.r-toc.r-toc-inline a { border-left: 0; padding: var(--s-2) 0; }
+  nav.r-toc.r-toc-inline .b-label { display: none; } }
+body[data-variant="sidebar"] .r-masthead { max-width: var(--w-wide); }
+body[data-variant="sidebar"] .r-foot-in { max-width: calc(var(--w-wide) - 2 * var(--gutter)); }
+body[data-variant="sidebar"] .r-layout { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: var(--s-7);
+  max-width: var(--w-wide); margin: 0 auto; padding: 0 var(--gutter); align-items: start; }
+body[data-variant="sidebar"] .r-layout > nav.r-toc { position: sticky; top: var(--s-4); padding: var(--s-7) 0 var(--s-5); max-height: 100vh; overflow-y: auto; }
 body[data-variant="sidebar"] .r-toc-inline { display: none; }
-body[data-variant="sidebar"] .r-shell { padding: 0; max-width: 48rem; }
-@media (max-width: 900px) {
+body[data-variant="sidebar"] .r-shell { padding: 0; max-width: 52rem; margin: 0; }
+@media (max-width: 60rem) {
   body[data-variant="sidebar"] .r-layout { display: block; }
   body[data-variant="sidebar"] .r-layout > nav.r-toc { display: none; }
   body[data-variant="sidebar"] .r-toc-inline { display: block; }
+  body[data-variant="sidebar"] .r-shell { max-width: none; }
 }
 
-/* Appendices ------------------------------------------------------------------------------ */
-.r-appendix { border-top: 1px solid var(--hairline); margin-top: 1.5rem; }
-.r-appendix > h2 .r-n { text-transform: uppercase; letter-spacing: .1em; font-size: .7em; }
+/* Appendices -------------------------------------------------------------- */
+.r-appendix { border-top: 1px solid var(--hairline); margin-top: var(--s-7); }
+.r-appendix > h2 { margin-top: var(--s-6); }
 
-/* Scorecard one-pager --------------------------------------------------------------------------- */
-body[data-variant="scorecard"] .r-shell { max-width: 60rem; }
-body[data-variant="scorecard"] main section { padding: .9rem 0; }
-.r-score { display: grid; gap: .55rem; }
-.r-score-row { display: grid; grid-template-columns: minmax(8rem, 14rem) 1fr auto auto; gap: .75rem; align-items: center; font-size: .92rem; }
-.r-score-row .bar { height: .6rem; background: var(--blend-mist); border-radius: 999px; overflow: hidden; }
+/* Scorecard one-pager: denser, same roles. */
+body[data-variant="scorecard"] main section:not(.r-hero) > h2 { margin-top: var(--s-6); }
+.r-score { display: grid; gap: var(--s-3); }
+.r-score-row { display: grid; grid-template-columns: minmax(8rem, 14rem) minmax(0, 1fr) auto 6.5rem; gap: var(--s-3); align-items: center; font-size: var(--t-small); }
+.r-score-row > span:first-child { color: var(--heading); font-size: var(--t-body); }
+.r-score-row .bar { height: var(--s-2); background: var(--tint-key); border-radius: 999px; overflow: hidden; }
 .r-score-row .bar i { display: block; height: 100%; background: var(--blend-navy); border-radius: 999px; }
 .r-score-row .b-chip { justify-self: start; }
-.r-score-row .n { font-variant-numeric: tabular-nums; color: var(--heading); min-width: 4.5ch; text-align: right; }
-.r-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 1.25rem; }
-@media (max-width: 560px) { .r-score-row { grid-template-columns: 1fr auto; } .r-score-row .bar { grid-column: 1 / -1; grid-row: 2; } }
+.r-score-row .n { font-variant-numeric: tabular-nums; color: var(--heading); min-width: 4.5ch; text-align: right; white-space: nowrap; }
+.r-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: var(--s-6); align-items: start; }
+.r-two > * { min-width: 0; }
+@media (max-width: 40rem) { .r-score-row { grid-template-columns: minmax(0, 1fr) auto auto; } .r-score-row .bar { grid-column: 1 / -1; grid-row: 2; } }
 
-/* Footer ---------------------------------------------------------------------------------------------- */
-.r-foot { border-top: 1px solid var(--hairline); margin-top: 2rem; padding: 1.5rem clamp(1rem, 4vw, 2rem) 2.5rem; }
-.r-foot-in { max-width: 64rem; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; align-items: center; justify-content: space-between;
-  font-size: .8rem; color: var(--text-muted); }
+/* Footer ------------------------------------------------------------------ */
+.r-foot { border-top: 1px solid var(--hairline); margin-top: var(--s-8); padding: var(--s-5) var(--gutter) var(--s-7); }
+.r-foot-in { display: flex; flex-wrap: wrap; gap: var(--s-4) var(--s-5); align-items: center; justify-content: space-between;
+  font-size: var(--t-small); color: var(--text-muted); }
+.r-foot p { margin: 0; }
 .r-foot .blend-logo { height: 18px; width: auto; color: var(--heading); }
 
-/* Print ---------------------------------------------------------------------------------------------------- */
+/* Print ------------------------------------------------------------------- */
 @page { size: A4; margin: 16mm 14mm; }
 @media print {
   html { font-size: 10.5pt; }
@@ -237,23 +371,40 @@ body[data-variant="scorecard"] main section { padding: .9rem 0; }
   .b-header, nav.r-toc, .r-toc-inline { display: none !important; }
   body[data-variant="sidebar"] .r-layout { display: block; }
   .r-shell, body[data-variant="sidebar"] .r-shell { max-width: none; padding: 0; }
-  .r-hero, .b-table th, ol.r-recs li::before, .r-score-row .bar i, pre.r-code { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  main section { padding: .8rem 0; }
+  .r-hero, .b-table th, .r-score-row .bar i, pre.r-code, .r-evidence { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   main h2, main h3, caption, figcaption { break-after: avoid; }
   .r-finding, .b-callout, figure, .b-table-wrap, ol.r-recs li, .r-hero { break-inside: avoid; }
   .b-table-wrap { overflow: visible; border: 0; }
-  .b-table { min-width: 0; font-size: 9pt; }
+  .b-table, .b-table.r-wide { min-width: 0; font-size: 9pt; }
   pre.r-code { white-space: pre-wrap; font-size: 8pt; }
   a { color: inherit; text-decoration: none; }
-  body[data-variant="scorecard"] { font-size: 9.5pt; }
+  html:has(body[data-variant="scorecard"]) { font-size: 9.5pt; }
   body[data-variant="scorecard"] h1 { font-size: 22pt; }
-  body[data-variant="scorecard"] main section { padding: .5rem 0; }
+  .r-title { padding-top: var(--s-5); }
+  /* scorecard must fit one A4 page: same roles, tighter intervals */
+  body[data-variant="scorecard"] .r-masthead { padding-top: 0; }
+  body[data-variant="scorecard"] .r-title { padding: var(--s-4) 0 var(--s-2); }
+  body[data-variant="scorecard"] .r-rule { margin-bottom: var(--s-3); }
+  body[data-variant="scorecard"] .r-meta { margin-top: var(--s-3); }
+  body[data-variant="scorecard"] main section.r-hero { padding: var(--s-4) var(--s-5); margin-top: var(--s-3); }
+  body[data-variant="scorecard"] .r-hero .r-kpis { margin-top: var(--s-4); }
+  body[data-variant="scorecard"] .r-score { gap: var(--s-2); }
+  body[data-variant="scorecard"] .r-finding, body[data-variant="scorecard"] ol.r-recs li { padding: var(--s-3) 0; }
+  body[data-variant="scorecard"] .r-evidence { padding: var(--s-2) var(--s-3); margin-top: var(--s-2); gap: var(--s-1); }
+  body[data-variant="scorecard"] .r-two { gap: var(--s-5); grid-template-columns: 1fr 1fr; }
+  body[data-variant="scorecard"] .r-foot { margin-top: var(--s-3); padding: var(--s-2) 0 0; break-inside: avoid; }
+  body[data-variant="scorecard"] main section:not(.r-hero) > h2 { margin: var(--s-4) 0 var(--s-2); }
+  body[data-variant="scorecard"] .r-standfirst { font-size: var(--t-body); }
+  body[data-variant="scorecard"] .r-foot .blend-logo { display: none; }
+  body[data-variant="scorecard"] .r-foot-in { font-size: var(--t-micro); }
+  body[data-variant="scorecard"] .r-finding p { margin-bottom: var(--s-1); }
   .r-appendix { break-before: page; }
 }
 
 </style>
 </head>
 <body data-variant="simple">
+<a class="b-skip" href="#main">Skip to content</a>
 
 <header class="r-masthead"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 572 110" fill="none" role="img" aria-label="Blend" class="blend-logo">
 <path d="M0 90.2812V25.1138H48.9904C64.5239 25.1138 70.3146 32.0074 70.3146 41.3827C70.3146 48.552 66.2703 53.8831 59.2848 56.4567C67.4652 58.3869 74.0831 62.9826 74.0831 72.5417C74.0831 83.2957 67.1895 90.2812 53.1265 90.2812H0ZM12.3165 81.0898H49.2661C56.895 81.0898 61.307 78.1485 61.307 71.163C61.307 63.626 55.4244 61.4201 49.2661 61.4201H12.3165V81.0898ZM12.3165 53.5154H45.5896C52.2074 53.5154 58.0899 51.2176 58.0899 43.7725C58.0899 37.1546 53.6781 34.3053 45.5896 34.3053H12.3165V53.5154Z" fill="currentColor"></path>
@@ -265,9 +416,9 @@ body[data-variant="scorecard"] main section { padding: .9rem 0; }
 <path d="M552.196 12.7754V1.42904H547.943V-0.000427246H558.057V1.42904H553.804V12.7754H552.196Z" fill="currentColor"></path>
 <path d="M558.983 12.7754V-0.000427246H561.181L565.183 10.6133H565.219L569.221 -0.000427246H571.419V12.7754H569.811V2.26885H569.775L565.916 12.7754H564.486L560.627 2.26885H560.591V12.7754H558.983Z" fill="currentColor"></path>
 </svg>
-<p class="b-eyebrow">Analytics practice · Evaluation report <span class="b-chip info">Illustrative data</span></p></header><div class="r-shell"><div class="r-title"><hr class="r-rule"><h1>Support Assistant Pilot Evaluation</h1><p class="r-standfirst">Results of an eight-week pilot of a retrieval-based support assistant, scored against the manual baseline.</p><ul class="r-meta"><li><strong>Status:</strong> Final</li><li><strong>Date:</strong> 2026-11-10</li><li><strong>Audience:</strong> Internal</li></ul></div><nav class="r-toc r-toc-inline" aria-label="Contents"><span class="b-eyebrow">Contents</span><ol><li><a href="#resumen">Executive summary</a></li><li><a href="#scope-and-method">Scope and method</a></li><li><a href="#findings">Findings</a></li><li><a href="#recommendations">Recommendations</a></li><li><a href="#scoring-rubric">Appendix A: Scoring rubric</a></li></ol></nav><main><section id="resumen" class="r-hero" aria-labelledby="resumen-h"><h2 id="resumen-h">Executive summary</h2><p class="r-verdict">The pilot meets its accuracy bar and misses its latency bar. Proceed to a limited rollout once retrieval latency is fixed.</p><p>Answer accuracy beat the manual baseline on four of five ticket categories. Two high-severity findings concern stale source documents and slow retrieval on long threads.</p><div class="b-kpis r-kpis "><div class="b-kpi"><span class="v">87%</span><span class="l">Answer accuracy</span><span class="c">Baseline 79%</span></div><div class="b-kpi"><span class="v">4.1 s</span><span class="l">Median latency</span><span class="c">Target 3.0 s</span></div><div class="b-kpi"><span class="v">62%</span><span class="l">Deflection rate</span><span class="c">Target 55%</span></div><div class="b-kpi"><span class="v">3</span><span class="l">Open findings</span><span class="c">2 high, 1 medium</span></div></div></section><section id="scope-and-method"><h2><span class="r-n">1.</span>Scope and method</h2><div class="r-stack"><div class="r-prose"><p>Illustrative setup: 1,200 tickets across five categories were answered by the assistant and by the manual process. Two reviewers scored each answer against a rubric for correctness and completeness.</p></div><div class="b-callout" role="note"><span class="t">Scoring</span><p>Accuracy counts an answer as correct only when both reviewers agree. Disagreements (6%) were resolved by a third reviewer.</p></div><div class="b-table-wrap"><table class="b-table"><caption>Table 1. Accuracy by ticket category (Illustrative).</caption><thead><tr><th scope="col">Category</th><th scope="col" class=num>Tickets</th><th scope="col" class=num>Assistant</th><th scope="col" class=num>Baseline</th></tr></thead><tbody><tr><td>Billing</td><td class=num>310</td><td class=num>91%</td><td class=num>84%</td></tr><tr><td>Access</td><td class=num>280</td><td class=num>89%</td><td class=num>80%</td></tr><tr><td>Integrations</td><td class=num>240</td><td class=num>84%</td><td class=num>78%</td></tr><tr><td>Data quality</td><td class=num>210</td><td class=num>88%</td><td class=num>75%</td></tr><tr><td>Legacy</td><td class=num>160</td><td class=num>76%</td><td class=num>79%</td></tr></tbody></table></div></div></section><section id="findings"><h2><span class="r-n">2.</span>Findings</h2><div class="r-stack"><div class="r-findings"><article class="r-finding" id="f-01" data-sev="high"><header><span class="id">F-01</span><h3>Stale source documents cause wrong answers in Legacy</h3><span class="b-chip bad sev" data-sev="high">High</span></header><p>The Legacy category is the only one where the assistant trails the baseline. Wrong answers cite documents last updated before the 2025 migration.</p><div class="r-evidence"><span class="b-eyebrow">Evidence</span><p>21 of 38 wrong Legacy answers cite a document with a modified date older than 2025-06-01.</p><figure><pre class="r-code" tabindex="0"><code>SELECT COUNT(*) FROM answers a
+<p class="b-eyebrow">Analytics practice · Evaluation report</p></header><div class="r-shell"><div class="r-title"><hr class="r-rule"><h1>Support Assistant Pilot Evaluation</h1><p class="r-standfirst">Results of an eight-week pilot of a retrieval-based support assistant, scored against the manual baseline.</p><ul class="r-meta"><li><strong>Status:</strong> Final</li><li><strong>Date:</strong> 2026-11-10</li><li><strong>Audience:</strong> Internal</li><li><span class="b-chip info">Illustrative data</span></li></ul></div><nav class="r-toc r-toc-inline" aria-label="Contents"><span class="b-label">Contents</span><ol><li><a href="#resumen">Executive summary</a></li><li><a href="#scope-and-method">Scope and method</a></li><li><a href="#findings">Findings</a></li><li><a href="#recommendations">Recommendations</a></li><li><a href="#scoring-rubric">Appendix A: Scoring rubric</a></li></ol></nav><main id="main"><section id="resumen" class="r-hero" aria-labelledby="resumen-h"><h2 id="resumen-h">Executive summary</h2><p class="r-verdict">The pilot meets its accuracy bar and misses its latency bar. Proceed to a limited rollout once retrieval latency is fixed.</p><p>Answer accuracy beat the manual baseline on four of five ticket categories. Two high-severity findings concern stale source documents and slow retrieval on long threads.</p><div class="b-kpis r-kpis "><div class="b-kpi"><span class="v">87%</span><span class="l">Answer accuracy</span><span class="c">8 points over the 79% baseline</span></div><div class="b-kpi"><span class="v">4.1 s</span><span class="l">Median latency</span><span class="c">1.1 s over the 3.0 s target</span></div><div class="b-kpi"><span class="v">62%</span><span class="l">Deflection rate</span><span class="c">7 points over the 55% target</span></div><div class="b-kpi"><span class="v">3</span><span class="l">Open findings</span><span class="c">2 high, 1 medium</span></div></div></section><section id="scope-and-method"><h2><span class="r-n">1.</span>Scope and method</h2><div class="r-stack"><div class="r-prose"><p>Illustrative setup: 1,200 tickets across five categories were answered by the assistant and by the manual process. Two reviewers scored each answer against a rubric for correctness and completeness.</p></div><div class="b-callout" role="note"><span class="t">Scoring</span><p>Accuracy counts an answer as correct only when both reviewers agree. Disagreements (6%) were resolved by a third reviewer.</p></div><div class="b-table-wrap"><table class="b-table"><caption>Table 1. Accuracy by ticket category (Illustrative).</caption><thead><tr><th scope="col">Category</th><th scope="col" class=num>Tickets</th><th scope="col" class=num>Assistant</th><th scope="col" class=num>Baseline</th></tr></thead><tbody><tr><td>Billing</td><td class=num>310</td><td class=num>91%</td><td class=num>84%</td></tr><tr><td>Access</td><td class=num>280</td><td class=num>89%</td><td class=num>80%</td></tr><tr><td>Integrations</td><td class=num>240</td><td class=num>84%</td><td class=num>78%</td></tr><tr><td>Data quality</td><td class=num>210</td><td class=num>88%</td><td class=num>75%</td></tr><tr><td>Legacy</td><td class=num>160</td><td class=num>76%</td><td class=num>79%</td></tr></tbody></table></div></div></section><section id="findings"><h2><span class="r-n">2.</span>Findings</h2><div class="r-stack"><div class="r-findings"><article class="r-finding" id="f-01" data-sev="high"><header><span class="id">F-01</span><h3>Stale source documents cause wrong answers in Legacy</h3><span class="b-chip bad sev" data-sev="high">High</span></header><p>The Legacy category is the only one where the assistant trails the baseline. Wrong answers cite documents last updated before the 2025 migration.</p><div class="r-evidence plain"><span class="b-label">Evidence</span><p>21 of 38 wrong Legacy answers cite a document with a modified date older than 2025-06-01.</p><figure><pre class="r-code" tabindex="0"><code>SELECT COUNT(*) FROM answers a
 JOIN docs d ON d.id = a.doc_id
-WHERE a.correct = false AND d.modified &lt; &#x27;2025-06-01&#x27;;</code></pre><figcaption>Query used to count the stale citations (Illustrative).</figcaption></figure></div><p class="r-rec"><strong>Recommendation.</strong> Add a freshness filter and retire documents older than the migration.</p></article><article class="r-finding" id="f-02" data-sev="high"><header><span class="id">F-02</span><h3>Retrieval latency misses the target on long threads</h3><span class="b-chip bad sev" data-sev="high">High</span></header><p>Median latency is 4.1 s against a 3.0 s target; threads above 20 messages average 7.4 s.</p><div class="r-evidence"><span class="b-eyebrow">Evidence</span><div class="b-table-wrap"><table class="b-table"><thead><tr><th scope="col">Thread length</th><th scope="col" class=num>Median latency</th></tr></thead><tbody><tr><td>1-5 messages</td><td class=num>2.6 s</td></tr><tr><td>6-20 messages</td><td class=num>4.0 s</td></tr><tr><td>21+ messages</td><td class=num>7.4 s</td></tr></tbody></table></div></div><p class="r-rec"><strong>Recommendation.</strong> Summarize long threads before retrieval and cache the summary.</p></article><article class="r-finding" id="f-03" data-sev="medium"><header><span class="id">F-03</span><h3>Reviewer disagreement is concentrated in Integrations</h3><span class="b-chip warn sev" data-sev="medium">Medium</span></header><p>Half of the 6% disagreement comes from the Integrations category, where the rubric does not say how to score partial answers.</p><div class="r-evidence"><span class="b-eyebrow">Evidence</span><p>72 disagreements in total, 36 of them in Integrations.</p></div><p class="r-rec"><strong>Recommendation.</strong> Extend the rubric with a partial-credit rule before the next round.</p></article></div></div></section><section id="recommendations"><h2><span class="r-n">3.</span>Recommendations</h2><div class="r-stack"><div class="b-callout key" role="note"><span class="t">Decision requested</span><p>Approve a limited rollout to the Billing and Access queues, conditional on F-02 reaching the 3.0 s target.</p></div><ol class="r-recs"><li><div><span class="t">Fix retrieval latency on long threads</span>Summarize before retrieval; re-run the latency benchmark.<div class="m"><span class="b-chip bad">high</span><span>Owner: Platform team</span></div></div></li><li><div><span class="t">Retire stale documents</span>Apply the freshness filter and review the Legacy corpus.<div class="m"><span class="b-chip bad">high</span><span>Owner: Content owner</span></div></div></li><li><div><span class="t">Extend the scoring rubric</span>Add the partial-credit rule and re-score Integrations.<div class="m"><span class="b-chip warn">medium</span><span>Owner: Evaluation lead</span></div></div></li></ol></div></section><section id="scoring-rubric" class="r-appendix"><h2><span class="r-n">Appendix A</span>Scoring rubric</h2><div class="r-stack"><div class="b-table-wrap"><table class="b-table"><caption>Table A1. Rubric used by both reviewers (Illustrative).</caption><thead><tr><th scope="col">Score</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>Correct</td><td>Answer is accurate and complete.</td></tr><tr><td>Partial</td><td>Accurate but missing a required step.</td></tr><tr><td>Wrong</td><td>Inaccurate or unsupported.</td></tr></tbody></table></div></div></section></main></div><footer class="r-foot"><div class="r-foot-in"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 572 110" fill="none" role="img" aria-label="Blend" class="blend-logo">
+WHERE a.correct = false AND d.modified &lt; &#x27;2025-06-01&#x27;;</code></pre><figcaption>Query used to count the stale citations (Illustrative).</figcaption></figure></div><p class="r-rec"><strong>Recommendation.</strong> Add a freshness filter and retire documents older than the migration.</p></article><article class="r-finding" id="f-02" data-sev="high"><header><span class="id">F-02</span><h3>Retrieval latency misses the target on long threads</h3><span class="b-chip bad sev" data-sev="high">High</span></header><p>Median latency is 4.1 s against a 3.0 s target; threads above 20 messages average 7.4 s.</p><div class="r-evidence plain"><span class="b-label">Evidence</span><div class="b-table-wrap"><table class="b-table"><thead><tr><th scope="col">Thread length</th><th scope="col" class=num>Median latency</th></tr></thead><tbody><tr><td>1-5 messages</td><td class=num>2.6 s</td></tr><tr><td>6-20 messages</td><td class=num>4.0 s</td></tr><tr><td>21+ messages</td><td class=num>7.4 s</td></tr></tbody></table></div></div><p class="r-rec"><strong>Recommendation.</strong> Summarize long threads before retrieval and cache the summary.</p></article><article class="r-finding" id="f-03" data-sev="medium"><header><span class="id">F-03</span><h3>Reviewer disagreement is concentrated in Integrations</h3><span class="b-chip warn sev" data-sev="medium">Medium</span></header><p>Half of the 6% disagreement comes from the Integrations category, where the rubric does not say how to score partial answers.</p><div class="r-evidence"><span class="b-label">Evidence</span><p>72 disagreements in total, 36 of them in Integrations.</p></div><p class="r-rec"><strong>Recommendation.</strong> Extend the rubric with a partial-credit rule before the next round.</p></article></div></div></section><section id="recommendations"><h2><span class="r-n">3.</span>Recommendations</h2><div class="r-stack"><div class="b-callout key" role="note"><span class="t">Decision requested</span><p>Approve a limited rollout to the Billing and Access queues, conditional on F-02 reaching the 3.0 s target.</p></div><ol class="r-recs"><li><div><span class="t">Fix retrieval latency on long threads</span>Summarize before retrieval; re-run the latency benchmark.<div class="m"><span class="b-chip bad">High</span><span>Owner: Platform team</span></div></div></li><li><div><span class="t">Retire stale documents</span>Apply the freshness filter and review the Legacy corpus.<div class="m"><span class="b-chip bad">High</span><span>Owner: Content owner</span></div></div></li><li><div><span class="t">Extend the scoring rubric</span>Add the partial-credit rule and re-score Integrations.<div class="m"><span class="b-chip warn">Medium</span><span>Owner: Evaluation lead</span></div></div></li></ol></div></section><section id="scoring-rubric" class="r-appendix"><h2><span class="r-n">Appendix A</span>Scoring rubric</h2><div class="r-stack"><div class="b-table-wrap"><table class="b-table"><caption>Table A1. Rubric used by both reviewers (Illustrative).</caption><thead><tr><th scope="col">Score</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>Correct</td><td>Answer is accurate and complete.</td></tr><tr><td>Partial</td><td>Accurate but missing a required step.</td></tr><tr><td>Wrong</td><td>Inaccurate or unsupported.</td></tr></tbody></table></div></div></section></main></div><footer class="r-foot"><div class="r-foot-in"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 572 110" fill="none" role="img" aria-label="Blend" class="blend-logo">
 <path d="M0 90.2812V25.1138H48.9904C64.5239 25.1138 70.3146 32.0074 70.3146 41.3827C70.3146 48.552 66.2703 53.8831 59.2848 56.4567C67.4652 58.3869 74.0831 62.9826 74.0831 72.5417C74.0831 83.2957 67.1895 90.2812 53.1265 90.2812H0ZM12.3165 81.0898H49.2661C56.895 81.0898 61.307 78.1485 61.307 71.163C61.307 63.626 55.4244 61.4201 49.2661 61.4201H12.3165V81.0898ZM12.3165 53.5154H45.5896C52.2074 53.5154 58.0899 51.2176 58.0899 43.7725C58.0899 37.1546 53.6781 34.3053 45.5896 34.3053H12.3165V53.5154Z" fill="currentColor"></path>
 <path d="M79.532 90.2812V16.7496H91.6647V90.2812H79.532Z" fill="currentColor"></path>
 <path d="M136.308 92.1195C112.778 92.1195 98.4392 81.3655 98.4392 63.1664C98.4392 44.9674 113.054 34.1215 135.665 34.1215C158.459 34.1215 172.338 45.335 172.338 67.5783H111.583C113.421 77.2293 122.245 82.3766 136.676 82.3766C148.533 82.3766 156.529 78.7 158.919 72.4498H171.511C168.202 84.7663 156.161 92.1195 136.308 92.1195ZM111.767 58.1111H159.195C156.989 48.1844 148.9 43.7725 135.756 43.7725C122.521 43.7725 113.973 48.3682 111.767 58.1111Z" fill="currentColor"></path>

@@ -49,7 +49,8 @@ def table(t):
     rows = "".join("<tr>" + "".join(f'<td{" class=num" if i in num else ""}>{esc(c)}</td>' for i, c in enumerate(r)) + "</tr>"
                    for r in t["rows"])
     cap = f"<caption>{esc(t['caption'])}</caption>" if t.get("caption") else ""
-    return (f'<div class="b-table-wrap"><table class="b-table">{cap}<thead><tr>{head}</tr></thead>'
+    wide = " r-wide" if len(t["headers"]) >= 5 else ""
+    return (f'<div class="b-table-wrap"><table class="b-table{wide}">{cap}<thead><tr>{head}</tr></thead>'
             f"<tbody>{rows}</tbody></table></div>")
 
 
@@ -71,7 +72,8 @@ def evidence_html(ev, lang):
             out.append(code(e["code"]))
         elif "text" in e:
             out.append(f"<p>{esc(e['text'])}</p>")
-    return f'<div class="r-evidence"><span class="b-eyebrow">{L[lang]["evidence"]}</span>{"".join(out)}</div>'
+    boxed = any(not isinstance(e, str) and ("table" in e or "code" in e) for e in items)
+    return f'<div class="r-evidence{" plain" if boxed else ""}"><span class="b-label">{L[lang]["evidence"]}</span>{"".join(out)}</div>'
 
 
 def finding(f, lang):
@@ -96,7 +98,8 @@ def recs(items, lang):
         if r.get("priority"):
             p = r["priority"]
             cls = {"high": "bad", "medium": "warn", "low": ""}.get(p, "")
-            meta.append(f'<span class="b-chip {cls}">{esc(p)}</span>')
+            plabel = {"high": "Alta", "medium": "Media", "low": "Baja"}.get(p, p) if lang == "es" else str(p).capitalize()
+            meta.append(f'<span class="b-chip {cls}">{esc(plabel)}</span>')
         if r.get("owner"):
             meta.append(f'<span>{L[lang]["owner"]}: {esc(r["owner"])}</span>')
         m = f'<div class="m">{"".join(meta)}</div>' if meta else ""
@@ -173,7 +176,7 @@ def render(spec, variant, dark=False):
     sm = spec["summary"]
     toc = [("resumen", T["summary"])] + [(s.get("id") or slug(s["title"]), s["title"]) for s in secs] \
         + [(s.get("id") or slug(s["title"]), f'{T["appendix"]} {chr(65 + i)}: {s["title"]}') for i, s in enumerate(apps)]
-    toc_html = ('<nav class="r-toc" aria-label="%s"><span class="b-eyebrow">%s</span><ol>%s</ol></nav>'
+    toc_html = ('<nav class="r-toc" aria-label="%s"><span class="b-label">%s</span><ol>%s</ol></nav>'
                 % (T["contents"], T["contents"], "".join(f'<li><a href="#{i}">{esc(t)}</a></li>' for i, t in toc)))
     inline_toc = toc_html.replace('class="r-toc"', 'class="r-toc r-toc-inline"')
 
@@ -186,10 +189,11 @@ def render(spec, variant, dark=False):
     meta.append(f'<li><strong>{T["audience"]}:</strong> {T["client"] if aud == "client" else T["internal"]}</li>')
     if spec.get("author"):
         meta.append(f'<li>{esc(spec["author"])}</li>')
-    illus = f'<span class="b-chip info">{T["illus"]}</span>' if spec.get("illustrative") else ""
+    if spec.get("illustrative"):  # a chip in the meta row, not inside the eyebrow
+        meta.append(f'<li><span class="b-chip info">{T["illus"]}</span></li>')
     eyebrow = spec.get("eyebrow", "")
 
-    mast = f'<header class="r-masthead">{{{{LOGO}}}}<p class="b-eyebrow">{esc(eyebrow)} {illus}</p></header>'
+    mast = f'<header class="r-masthead">{{{{LOGO}}}}<p class="b-eyebrow">{esc(eyebrow)}</p></header>'
     title = (f'<div class="r-title"><hr class="r-rule"><h1>{esc(spec["title"])}</h1>'
              + (f'<p class="r-standfirst">{esc(spec["subtitle"])}</p>' if spec.get("subtitle") else "")
              + f'<ul class="r-meta">{"".join(meta)}</ul></div>')
@@ -204,9 +208,9 @@ def render(spec, variant, dark=False):
     show_toc = variant != "scorecard" and len(secs) + len(apps) + 1 > 3
     tocs = inline_toc if show_toc else ""
     if variant == "sidebar":
-        layout = mast + f'<div class="r-layout">{toc_html}<div class="r-shell">{title}{tocs}<main>{body_main}</main></div></div>'
+        layout = mast + f'<div class="r-layout">{toc_html}<div class="r-shell">{title}{tocs}<main id="main">{body_main}</main></div></div>'
     else:
-        layout = mast + f'<div class="r-shell">{title}{tocs}<main>{body_main}</main></div>'
+        layout = mast + f'<div class="r-shell">{title}{tocs}<main id="main">{body_main}</main></div>'
     src = f'<p>{T["source"]}: {esc(spec["source"])}</p>' if spec.get("source") else ""
     foot = (f'<footer class="r-foot"><div class="r-foot-in">{{{{LOGO}}}}<div>{src}<p>{esc(spec.get("footer", ""))}'
             f'{" " + T["illus"] + "." if spec.get("illustrative") else ""}</p></div></div></footer>')

@@ -3,11 +3,11 @@
   "lang": "en",
   "eyebrow": "Guide - Illustrative",
   "description": "Illustrative step-by-step guide showing the blend-guide components.",
-  "intro": "Illustrative content. A short guide that shows numbered steps, copyable code, callouts, a table and a flow diagram. Replace it with the real material.",
+  "intro": "Clone the sample pipeline, create its environment and run it end to end on your laptop in about ten minutes.",
   "footer": "Illustrative example generated with blend-guide. Not real project documentation.",
   "sections": [
     {"title": "Before you start", "blocks": [
-      {"p": "You need **Python 3.11** and a terminal. This guide takes about ten minutes."},
+      {"p": "You need **Python 3.11** and a terminal."},
       {"callout": {"kind": "note", "title": "Illustrative", "text": "Names, versions and commands below are placeholders, not a real project."}},
       {"table": {"caption": "Prerequisites (Illustrative)", "head": ["Tool", "Version", "Check"], "rows": [
         ["Python", "3.11+", "`python3 --version`"], ["Git", "2.40+", "`git --version`"]]}}
@@ -31,7 +31,7 @@
       {"table": {"head": ["Symptom", "Likely cause", "Fix"], "rows": [
         ["`ModuleNotFoundError`", "Environment not active", "Run `source .venv/bin/activate`"],
         ["Tests fail on first run", "Missing sample data", "Re-run the extract step"]]}},
-      {"callout": {"kind": "bad", "title": "Do not", "text": "Do not run `pip install` outside the virtual environment."}}
+      {"callout": {"kind": "bad", "title": "Do not", "text": "Run `pip install` outside the virtual environment: it changes the system Python for every project."}}
     ]},
     {"title": "Next steps", "blocks": [
       {"list": ["Read the architecture notes.", "Pick a starter issue.", "Ask for a review before merging."]}

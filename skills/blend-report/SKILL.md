@@ -49,10 +49,23 @@ figure, with a caption.
 
 ## Components (class names)
 
-`r-hero` summary band (cyan on navy only) · `b-kpis/b-kpi` tiles · `r-finding` + `b-chip critical|high -> bad,
-medium -> warn, low -> neutral, info` · `r-evidence` · `b-table` (navy `th`) · `pre.r-code` · `b-callout`
-(note/key/warn) · `ol.r-recs` · `r-score` bars · `nav.r-toc` · `r-appendix`. Status colors are only
+`r-hero` summary band (the one navy region; verdict is the largest text on the page) · `b-kpis/b-kpi` figure row
+parted by hairlines · `r-finding` rows + `b-chip critical|high -> bad, medium -> warn, low -> neutral, info` ·
+`r-evidence` tinted well · `b-table` (navy `th`) · `pre.r-code` · `b-callout` tinted (note/key/warn) ·
+`ol.r-recs` numbered rows · `r-score` bars · `nav.r-toc` · `r-appendix`. Status colors are only
 `--state-ok|warn|bad|info` from the core; this skill defines none.
+
+## Design checklist (before delivery)
+
+A report is a Read page. Run the core [delivery checklist](../blend-web-core/references/delivery-checklist.md), then:
+
+- [ ] The verdict is one sentence and is the first thing read; the summary band is the only navy block.
+- [ ] 2 to 4 KPIs, each with unit, label and a caption (target, baseline or period); none repeats a table cell-for-cell.
+- [ ] Findings are rows parted by hairlines: no side stripes, no table boxed inside a card. Severity is a worded chip.
+- [ ] Every table and figure has a caption that states its claim; numeric columns are listed in `num`.
+- [ ] Section numbers stay (people cite them); one eyebrow, in the masthead.
+- [ ] Recommendations are ordered by priority and each names an owner.
+- [ ] Scorecard: fits one A4 page in print preview with the real content.
 
 ## Reference examples (shares)
 

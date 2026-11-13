@@ -154,3 +154,15 @@ RESULT: FAIL
 exit=1
 ```
 
+## Design pass 2026-11-13
+
+The runs above predate the design pass and show 10 core checks. The core validator now has check 11 "craft"
+(warnings only) and the examples were regenerated. Results on the regenerated examples:
+
+| Target | Exit | FAIL | WARN | Warnings |
+|---|---|---|---|---|
+| `report-simple.html` | 0 | 0 | 0 | none |
+| `report-sidebar.html` | 0 | 0 | 0 | none |
+| `report-scorecard.html` | 0 | 0 | 0 | none |
+
+The canonical shares were not re-run; expect check 11 to warn on them (side stripes, uppercase labels, text under 12px).

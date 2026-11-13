@@ -1,53 +1,84 @@
-/* blend-editorial: article + commercial components. Requires blend-web-core tokens.css + components.css. */
-:root { --e-bleed: 1080px; --e-hero: 1080px; --e-measure: 68ch; }
-.e-topbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: .9rem; flex-wrap: wrap;
-  padding: .7rem clamp(1rem, 4vw, 2.5rem); background: var(--blend-white); border-bottom: 1px solid var(--hairline); }
+/* blend-editorial: article + commercial components. Requires blend-web-core tokens.css + components.css.
+   article = Read page (calm column, fixed type roles). landing / one-pager = Persuade page (display-size
+   title, one promise, proof, one action). One left line everywhere: --e-pad aligns topbar, hero, sections
+   and footer to the same container. Sections are separated by space, and each block type has its own
+   build (columns, figure row, numbered rows) so no two neighbours share a skeleton. */
+:root { --e-measure: 48ch; --e-pad: max(var(--gutter), calc((100% - var(--w-page)) / 2)); }
+.e-topbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: var(--s-4); flex-wrap: wrap;
+  padding: var(--s-3) var(--e-pad); background: var(--blend-white); border-bottom: 1px solid var(--hairline); }
 .e-topbar .blend-logo { height: 22px; width: auto; color: var(--blend-navy); display: block; }
-.e-topbar nav { margin-left: auto; display: flex; gap: 1.1rem; flex-wrap: wrap; font-size: .85rem; }
-.e-topbar nav a { color: var(--blend-navy); text-decoration: none; }
-.e-cobrand { display: flex; align-items: center; gap: .9rem; }
+.e-topbar nav { margin-left: auto; display: flex; gap: var(--s-5); flex-wrap: wrap; font-size: var(--t-small); }
+.e-topbar nav a { color: var(--blend-navy); text-decoration: none; padding: var(--s-2) 0; border-bottom: 1px solid transparent;
+  transition: border-color var(--dur-2) var(--ease); white-space: nowrap; }
+@media (hover: hover) { .e-topbar nav a:hover { border-bottom-color: currentColor; } }
+.e-cobrand { display: flex; align-items: center; gap: var(--s-4); }
 .e-cobrand .div { width: 1px; height: 22px; background: var(--hairline); }
-.e-cobrand .x { color: var(--text-muted); font-size: .9rem; }
-.e-cobrand .client { font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; color: var(--blend-slate); font-family: var(--font-mono); }
+.e-cobrand .x { color: var(--text-muted); font-size: var(--t-small); }
+.e-cobrand .client { font-size: var(--t-body); color: var(--blend-slate); }
 .e-cobrand img { height: 26px; width: auto; display: block; background: #fff; }
-.e-hero { background: var(--blend-navy); color: var(--blend-white); padding: clamp(2.5rem, 7vw, 5.5rem) clamp(1rem, 4vw, 2.5rem); }
-.e-hero > div { max-width: var(--e-hero); margin: 0 auto; }
-.e-hero .b-eyebrow { color: var(--blend-cyan); letter-spacing: .16em; }
-.e-hero h1 { color: var(--blend-white); font-size: clamp(2rem, 5.2vw, 3.4rem); margin: .5rem 0 1rem; letter-spacing: -.02em; }
-.e-hero .dek { color: var(--blend-cyan-soft); font-size: 1.2rem; line-height: 1.5; max-width: 60ch; margin: 0 0 1.5rem; }
-.e-hero .meta { color: var(--blend-cyan-soft); font-size: .85rem; margin: 0; }
-.e-hero .actions { display: flex; gap: .8rem; flex-wrap: wrap; margin-top: 1.5rem; }
-.e-btn { display: inline-block; padding: .75rem 1.4rem; border-radius: 999px; background: var(--blend-cyan); color: var(--blend-navy);
-  text-decoration: none; font-size: 1rem; }
-.e-btn.ghost { background: transparent; color: var(--blend-white); border: 1px solid var(--blend-cyan-soft); }
-.e-main { padding: 0 clamp(1rem, 4vw, 2.5rem); }
-.e-section { max-width: var(--e-bleed); margin: 0 auto; padding: clamp(2rem, 5vw, 3.5rem) 0; border-bottom: 1px solid var(--hairline); }
-.e-label { display: flex; gap: .8rem; align-items: baseline; font-size: .75rem; text-transform: uppercase; letter-spacing: .16em; color: var(--blend-slate); margin: 0 0 .5rem; }
-.e-label b { font-weight: var(--fw); color: var(--blend-link); }
-.e-section h2 { font-size: clamp(1.5rem, 3.2vw, 2.2rem); margin: 0 0 1rem; }
+
+/* Hero: the navy region. Title is the primary element; dek and meta are soft cyan, never grey. */
+.e-hero { --focus: var(--blend-cyan); background: var(--blend-navy); color: var(--blend-white); padding: clamp(var(--s-7), 8vw, var(--s-9)) var(--e-pad); }
+.e-hero .b-eyebrow { color: var(--blend-cyan); margin: 0 0 var(--s-4); }
+.e-hero h1 { color: var(--blend-white); font-size: var(--t-display); line-height: 1.05; max-width: 20ch; margin: 0 0 var(--s-5); }
+.e-hero .dek { color: var(--blend-cyan-soft); font-size: var(--t-lead); line-height: 1.45; max-width: 40ch; margin: 0; }
+.e-hero .meta { color: var(--blend-cyan-soft); font-size: var(--t-small); margin: var(--s-5) 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2) var(--s-4); }
+.e-hero .actions { display: flex; gap: var(--s-3); flex-wrap: wrap; margin-top: var(--s-6); }
+.e-hero ::selection, .e-cta ::selection { background: var(--blend-cyan); color: var(--blend-navy); }
+.e-pill { display: inline-flex; padding: .15rem .6rem; border-radius: 999px; border: 1px solid currentColor; font-size: var(--t-micro); line-height: 1.5; white-space: nowrap; }
+
+/* Sections */
+.e-main { padding: 0 var(--e-pad) var(--s-8); }
+.e-section { padding: 0; scroll-margin-top: var(--s-8); }
+.e-section > h2 { margin-top: var(--s-8); }
 .e-prose { font-size: 1.0625rem; line-height: 1.7; }
-/* Text blocks keep the reading measure; cards, KPIs, figures and tables use the full section width. */
-.e-prose > p, .e-prose > h3, .e-prose > ul, .e-prose > .b-callout { max-width: var(--e-measure); }
+/* Text blocks keep the reading measure; columns, figures and tables use the full section width. */
+.e-prose > p, .e-prose > h3, .e-prose > ul, .e-prose > ol:not(.e-steps), .e-prose > .b-callout { max-width: var(--e-measure); }
 .e-prose p { margin: 0 0 1.1em; }
-.e-prose h3 { font-size: 1.25rem; margin: 1.6em 0 .5em; }
-.e-prose ul, .e-prose ol { padding-left: 1.3em; margin: 0 0 1.1em; }
-.e-quote { margin: 1.8rem 0; padding: .4rem 0 .4rem 1.4rem; border-left: 4px solid var(--blend-cyan); max-width: 56ch;
-  font-size: clamp(1.25rem, 2.6vw, 1.6rem); line-height: 1.35; color: var(--blend-navy); }
-.e-quote cite { display: block; margin-top: .6rem; font-size: .85rem; font-style: normal; color: var(--text-muted); }
-.e-figure { margin: 1.8rem 0; }
+.e-prose ul, .e-prose ol:not(.e-steps) { padding-left: 1.3em; margin: 0 0 1.1em; }
+.e-prose > :last-child { margin-bottom: 0; }
+.e-prose .b-callout { margin: var(--s-6) 0; }
+.e-prose .b-callout strong { font-weight: var(--fw); color: var(--heading); }
+.e-quote { margin: var(--s-7) 0; padding: 0; max-width: 30ch; font-size: clamp(1.44rem, 1.1rem + 1.6vw, 2.074rem); line-height: 1.25; color: var(--blend-navy); text-wrap: balance; }
+.e-quote::before { content: ""; display: block; width: var(--s-8); height: 2px; background: var(--blend-cyan); margin-bottom: var(--s-5); }
+.e-quote cite { display: block; margin-top: var(--s-4); font-size: var(--t-small); font-style: normal; color: var(--text-muted); }
+.e-figure { margin: var(--s-6) 0; }
 .e-figure svg { width: 100%; height: auto; background: var(--blend-white); border: 1px solid var(--hairline); border-radius: var(--radius); }
-.e-figure figcaption { font-size: .85rem; color: var(--text-muted); margin-top: .5rem; max-width: var(--e-measure); }
-.e-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--gap); margin: 1.4rem 0; }
-.e-cards .b-card { border-top: 3px solid var(--blend-cyan); }
-.e-cards h3 { margin: 0 0 .4rem; font-size: 1.1rem; }
-.e-cards p { margin: 0; font-size: .95rem; }
-.e-prose ol.e-steps, .e-steps { counter-reset: s; list-style: none; padding: 0; margin: 1.4rem 0; display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-.e-steps li { counter-increment: s; background: var(--blend-white); border: 1px solid var(--hairline); border-radius: var(--radius); padding: 1rem; }
-.e-steps li::before { content: counter(s, decimal-leading-zero); display: block; color: var(--blend-link); font-size: .8rem; letter-spacing: .14em; margin-bottom: .4rem; }
-.e-hero .e-pill { color: var(--blend-cyan-soft); border-color: var(--blend-cyan-soft); }
-.e-pill { display: inline-block; padding: .15rem .7rem; border-radius: 999px; border: 1px solid var(--blend-teal); color: var(--blend-teal); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; }
-.e-cta { background: var(--blend-navy); color: var(--blend-white); padding: clamp(2rem, 5vw, 3.5rem) clamp(1rem, 4vw, 2.5rem); text-align: center; }
-.e-cta h2 { color: var(--blend-white); margin: 0 0 .6rem; }
-.e-cta p { color: var(--blend-cyan-soft); margin: 0 auto 1.2rem; max-width: 56ch; }
-.e-footer { padding: 1.5rem clamp(1rem, 4vw, 2.5rem); color: var(--text-muted); font-size: .8rem; border-top: 1px solid var(--hairline); display: flex; gap: 1rem; justify-content: space-between; flex-wrap: wrap; }
-@media (max-width: 600px) { .e-topbar nav { display: none; } }
+.e-figure figcaption { font-size: var(--t-small); color: var(--text-muted); margin-top: var(--s-2); max-width: var(--e-measure); }
+
+/* Reasons / offers: open columns under a navy rule, not boxed cards. */
+.e-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: var(--s-6) var(--s-6); margin: var(--s-6) 0; }
+.e-cards > div { border-top: 1px solid var(--heading); padding-top: var(--s-4); min-width: 0; }
+.e-cards h3 { margin: 0 0 var(--s-2); max-width: none; }
+.e-cards p { margin: 0; line-height: 1.6; max-width: 32ch; }
+/* Proof: the core figure row (hairline-parted), sized up for a Persuade page. */
+.e-prose .b-kpis { margin-top: var(--s-6); margin-bottom: var(--s-5); }
+.e-prose .b-kpi .v { font-size: clamp(2rem, 1.4rem + 2.4vw, 2.986rem); }
+.e-prose .b-kpi .l { font-size: var(--t-body); max-width: 22ch; }
+.e-prose .b-kpi .c { font-size: var(--t-small); }
+/* One column system: figures and steps sit on the same three columns as the reasons above them. */
+@media (min-width: 40.01rem) {
+  .e-prose .b-kpis:not(:has(> .b-card)) { grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: var(--s-5) var(--s-6); margin-left: 0; clip-path: none; }
+  .e-prose .b-kpis > .b-kpi:not(.b-card) { padding: 0; box-shadow: none; position: relative; }
+  .e-prose .b-kpis > .b-kpi:not(.b-card) + .b-kpi::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(var(--s-6) / -2); width: 1px; background: var(--hairline); }
+}
+/* Steps: numbered rows, because the order is the content. */
+.e-prose ol.e-steps, .e-steps { counter-reset: s; list-style: none; padding: 0; margin: var(--s-6) 0; display: grid; grid-template-columns: minmax(0, 1fr);
+  border-bottom: 1px solid var(--hairline); }
+.e-steps li { counter-increment: s; display: grid; grid-template-columns: var(--s-7) calc((100% - 2 * var(--s-6)) / 3 - var(--s-7) - var(--s-6)) minmax(0, 1fr); gap: var(--s-2) var(--s-6); align-items: baseline;
+  padding: var(--s-4) 0; border-top: 1px solid var(--hairline); break-inside: avoid; }
+.e-steps li::before { content: counter(s); font-size: var(--t-h2); line-height: 1; color: var(--heading); font-variant-numeric: tabular-nums; }
+.e-steps li strong { font-weight: var(--fw); color: var(--heading); font-size: var(--t-lead); line-height: 1.3; }
+.e-steps li span { min-width: 0; max-width: var(--e-measure); }
+@media (max-width: 40rem) { .e-steps li { grid-template-columns: var(--s-6) minmax(0, 1fr); } .e-steps li span { grid-column: 2; } }
+
+/* Closing band: the action, on the same left line as everything else. */
+.e-cta { --focus: var(--blend-cyan); background: var(--blend-navy); color: var(--blend-white); padding: clamp(var(--s-7), 6vw, var(--s-8)) var(--e-pad);
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s-5) var(--s-7); align-items: center; }
+.e-cta h2 { color: var(--blend-white); margin: 0 0 var(--s-2); }
+.e-cta p { color: var(--blend-cyan-soft); margin: 0; max-width: 44ch; }
+@media (max-width: 40rem) { .e-cta { grid-template-columns: minmax(0, 1fr); } .e-cta .b-btn { justify-self: start; } }
+.e-footer { padding: var(--s-5) var(--e-pad); color: var(--text-muted); font-size: var(--t-small); border-top: 1px solid var(--hairline); display: flex; gap: var(--s-4); justify-content: space-between; flex-wrap: wrap; }
+.e-footer a { color: inherit; }
+/* phone: the section nav stays (three short words fit beside the logo) */
+@media (max-width: 40rem) { .e-topbar { gap: var(--s-2) var(--s-4); } .e-topbar nav { gap: var(--s-4); } .e-topbar nav a { padding: var(--s-3) 0; } }

@@ -45,5 +45,40 @@
   --radius: 12px;
   --radius-lg: 14px;
   --gap: 1rem;
-  --measure: 68ch;
+  --measure: 48ch;              /* about 72 characters: the 0 of PP Telegraf is 1.5x its average letter, so 68ch was 104 */
+
+  /* ---- Design-system tokens (layout, not brand). See references/design-principles.md ---- */
+  /* Spacing: one scale on a 4px base. No spacing value outside it. */
+  --s-1: .25rem; --s-2: .5rem; --s-3: .75rem; --s-4: 1rem; --s-5: 1.5rem;
+  --s-6: 2rem; --s-7: 3rem; --s-8: 4rem; --s-9: 6rem;
+  /* Widths: every page uses one of these, so the left line is the same from header to footer. */
+  --w-page: 72rem;              /* documents, portals, landings */
+  --w-wide: 80rem;              /* dashboards, API reference, sidebar layouts */
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  /* Type roles, ratio 1.2 from a 16px body. Weight stays 400: hierarchy is size, space and tone. */
+  --t-micro: .75rem;            /* 12px floor: chips, table meta */
+  --t-small: .875rem;           /* captions, labels, secondary */
+  --t-body: 1rem;
+  --t-lead: 1.2rem;             /* standfirst, card title, h3 */
+  --t-h2: 1.728rem;
+  --t-h1: 2.488rem;
+  --t-figure: 2.074rem;         /* KPI value: never larger than the h1 */
+  --t-display: clamp(2.2rem, 1.3rem + 3.6vw, 3.6rem);  /* persuade pages only (landing, one-pager, hero) */
+  /* Motion: three durations, one curve. Only transform, opacity and colour move. */
+  --dur-1: 120ms;               /* press, feedback */
+  --dur-2: 220ms;               /* hover, menu, indicator */
+  --dur-3: 420ms;               /* panel, progress */
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  /* Controls */
+  --tap: 2.75rem;               /* 44px hit target */
+  --radius-sm: 6px;             /* inner radius = outer radius - padding */
+  --focus: var(--accent);       /* navy surfaces set --focus: var(--blend-cyan) */
+  /* Tinted wells, derived from the state tokens (no new hex). State colours are fills and borders,
+     never small text on light: warn is 4.1:1 on white, bad 4.5:1 on paper. */
+  --tint-note: color-mix(in srgb, var(--blend-cyan-soft) 30%, var(--surface));
+  --tint-key: color-mix(in srgb, var(--blend-navy) 7%, var(--surface));
+  --tint-ok: color-mix(in srgb, var(--state-ok) 9%, var(--surface));
+  --tint-warn: color-mix(in srgb, var(--state-warn) 16%, var(--surface));
+  --tint-bad: color-mix(in srgb, var(--state-bad) 13%, var(--surface));
+  --tint-info: color-mix(in srgb, var(--state-info) 8%, var(--surface));
 }

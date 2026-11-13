@@ -222,3 +222,17 @@ exit=1
 - ai-native-program-hub: FAIL, as the canon stands. No Blend logo SVG (core 4 and P4), tab strip without `role="tab"`/panels (P3), many off-palette hex, folder weight over 5 MB from child files, and core 2 WARN (PP Telegraf declared but not embedded). Not loosened.
 - aiesofferinghub (deviation): the `#003059`/`#00ECEC` palette and a 166 KB inline image are caught (P4, P5) plus a relative link to a missing file (P1). The wrapper no longer has a timeout: the core validator now finishes on this 2 MB page in well under a second (the run took 0.26 s), so the old 60 s workaround was removed after being tested.
 - Negative test: a `.blend360.app` URL is rejected by the builder (exit 1) and by P1 on a built page; a missing slug fails P2; `#003059` fails P5.
+
+## Design pass 2026-11-13
+
+The runs above predate the design pass and show 10 core checks. The core validator now has check 11 "craft"
+(warnings only) and the examples were regenerated. Results on the regenerated examples:
+
+| Target | Exit | FAIL | WARN | Warnings |
+|---|---|---|---|---|
+| `tabs/` | 0 | 0 | 0 | none |
+| `anchors/` | 0 | 0 | 0 | none |
+| `dark/` | 0 | 0 | 0 | none |
+| `sidebar/` | 0 | 0 | 0 | none |
+
+The canonical shares were not re-run; expect check 11 to warn on them (side stripes, uppercase labels, text under 12px).

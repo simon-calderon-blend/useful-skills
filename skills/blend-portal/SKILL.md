@@ -58,14 +58,26 @@ builder does not generate that form; validate_portal.py does scan `.json` and `.
 
 ## Components (assets/portal.css, assets/portal.js)
 
-`p-hero` (navy, cyan text allowed there), `p-tools` (search, `p-fchip` filters, live count), `p-group` + `p-sec-head`
-(numbered, counter), `p-card` (+ `p-badge`, `b-chip` status, `p-tags`, `p-meta`, `p-actions`), `p-table` with
+`p-hero` (compact navy banner with the page's one eyebrow; summary counts as one quiet line), `p-tools` (search,
+`p-fchip` filters, live count), `p-group` + `p-sec-head` (count, no numbering), `p-card` (the title is the link and
+covers the card; + `p-badge` type, `b-chip` status, `p-tags`, `p-meta`, `p-actions` for secondary links), `p-table` with
 `p-toggle`/`p-detail` rows, `p-subnav`, `p-tab`, `p-shell`/`p-side`/`p-stage`. Core classes used: `b-header`, `b-hero`,
 `b-card`, `b-chip`, `b-btn`, `b-table`, `b-footer`. Only tokens, no hex in `portal.css`. Dark mode is optional (decided 2026-11-10): only with `--dark`, which adds the core light/dark toggle. PP Telegraf comes embedded from the core.
 
+## Design checklist (before delivery)
+
+A portal is an Operate page. Run the core [delivery checklist](../blend-web-core/references/delivery-checklist.md), then:
+
+- [ ] The first screen shows the search or the first group, not only the hero; `stats` are omitted unless they help someone choose.
+- [ ] Each item is opened by its title. No filled button per card; `actions` are verb-plus-object links ("Read the guide").
+- [ ] Descriptions say what the reader gets in one or two lines of similar length; type and status are words, never colour alone.
+- [ ] Groups with 7 or more items, or items people compare, use `"layout": "table"`; a group with one item joins another group.
+- [ ] Filter to nothing: the empty message says how to get results back.
+- [ ] Tabs, filters and row toggles work with the keyboard; with JavaScript off every item is still listed.
+
 ## Validation
 
-`validate_portal.py` runs the core `validate.py --kind portal` (10 checks) and adds P1 links (share.blend360.com or
+`validate_portal.py` runs the core `validate.py --kind portal` (11 checks) and adds P1 links (share.blend360.com or
 existing relative; `.blend360.app` and http FAIL, other hosts WARN), P2 slugs exist, P3 tabs ARIA, P4 logo present and
 no base64 image over 100 KB, P5 no `#003059`/`#00ECEC`/`#0d5666`, P6 search labelled and iframes titled.
 Baseline on the example and on spark and ai-native-program-hub: [references/validation-baseline.md](references/validation-baseline.md).

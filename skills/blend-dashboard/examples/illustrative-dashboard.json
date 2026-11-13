@@ -10,36 +10,30 @@
  "kpis": [
   {
    "id": "orders",
-   "label": "Total orders",
+   "label": "Orders",
    "agg": "sum",
-   "field": "orders"
+   "field": "orders",
+   "note": "Units, 2026"
   },
   {
    "id": "rev",
    "label": "Revenue",
    "agg": "sum",
    "field": "revenue_usd_k",
-   "decimals": 1,
+   "decimals": 0,
    "prefix": "$",
-   "suffix": "k"
+   "suffix": "k",
+   "note": "USD thousands, 2026"
   },
   {
    "id": "avg",
-   "label": "Average order batch",
+   "label": "Average revenue per record",
    "agg": "avg",
-   "field": "orders",
-   "decimals": 1
-  },
-  {
-   "id": "rows",
-   "label": "Records",
-   "agg": "count"
-  },
-  {
-   "id": "reg",
-   "label": "Regions",
-   "agg": "distinct",
-   "field": "region"
+   "field": "revenue_usd_k",
+   "decimals": 1,
+   "prefix": "$",
+   "suffix": "k",
+   "note": "One record is a month, region and plan"
   }
  ],
  "columns": [
@@ -81,7 +75,7 @@
   {
    "id": "rev-month",
    "heading": "Revenue by month",
-   "caption": "USD thousands, all regions",
+   "caption": "USD thousands, 2026",
    "type": "line",
    "x": "month",
    "y": {
@@ -95,7 +89,7 @@
   {
    "id": "orders-region",
    "heading": "Orders by region",
-   "caption": "Total orders",
+   "caption": "Units, 2026",
    "type": "hbar",
    "x": "region",
    "y": {
@@ -109,7 +103,7 @@
   {
    "id": "rev-plan-region",
    "heading": "Revenue by plan and region",
-   "caption": "USD thousands",
+   "caption": "USD thousands, 2026",
    "type": "bar",
    "x": "plan",
    "y": {
@@ -794,5 +788,8 @@
    "orders": 386,
    "revenue_usd_k": 79.0
   }
- ]
+ ],
+ "headings": {
+  "table": "Every record behind the figures"
+ }
 }

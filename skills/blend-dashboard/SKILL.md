@@ -9,15 +9,16 @@ Builds on `blend-web-core` (tokens, components, logo, `validate.py`); nothing fr
 
 ## What it produces
 
-One `index.html`, no build step: Blend header and logo, title with "Updated" date, KPI tiles, filter chips
-and search, up to a handful of SVG charts (bar, hbar, line), a sticky sortable table with "Show more" and
-**Export CSV**, a footer with source. Data lives in `const DATA = {meta, columns, rows, spec}`. Every chart has a
+One `index.html`, no build step: Blend header and logo, title with "Updated" date, a KPI row parted by hairlines,
+filter chips and search directly over what they scope, up to a handful of SVG charts (bar, hbar, line; with an odd
+count the first one leads at full width), a sticky sortable table with "Show more" and **Export CSV**, a source note. Data lives in `const DATA = {meta, columns, rows, spec}`. Every chart has a
 "Show as table" toggle. KPIs, charts and table all follow the active filters.
 
 ## Inputs to ask the user
 
 Title, subtitle, cut-off date, source line; the data (CSV with header, or JSON list of objects); the KPIs
-(`agg` = count, sum, avg, min, max, distinct, plus `field`, `decimals`, `prefix`, `suffix`); which categorical
+(`agg` = count, sum, avg, min, max, distinct, plus `field`, `decimals`, `prefix`, `suffix`, and `note`: the
+qualifier under the label); `headings` for the chart and table sections (what they show); which categorical
 columns become chips; which charts (type, `x`, `y` agg and field, optional `series` column); `mode`
 (`dashboard`, or `table` for a plain tabular dataset); language; dark yes or no (default no); real or Illustrative.
 
@@ -46,6 +47,18 @@ Data over about 1 MB: keep the page small and ask the user before moving rows to
   `prefers-color-scheme` and `[data-theme]`. The page has its own `d-theme` button, so the core adds no second one. PP Telegraf is embedded by default.
 - CSV export prefixes cells starting `= + - @` with `'` (formula injection). No PII: drop names, e-mails, IDs.
 - ADRES/client dashboards are internal: use them for structure only, never their data.
+
+## Design checklist (before delivery)
+
+A dashboard is an Operate page. Run the core [delivery checklist](../blend-web-core/references/delivery-checklist.md), then:
+
+- [ ] 2 to 4 KPIs that someone acts on, each with a `note` (unit, period or scope). No KPI that only counts rows or categories.
+- [ ] Chart form follows the data: trend = line, ranking = hbar, 2 to 5 series = grouped bar, more than 7 categories = the table.
+- [ ] The most important chart is first (it leads at full width when the count is odd); no card is alone on the last row.
+- [ ] `headings.charts` and `headings.table` say what is shown; chart headings name the measure and the cut, captions the unit.
+- [ ] Filter everything away: KPIs, charts and table each say how to get data back.
+- [ ] One filled button (Export CSV); chips, toggles and sortable headers respond to hover, focus and keyboard.
+- [ ] At 390 px the table scrolls inside its wrapper and the page does not.
 
 ## Reference shares
 

@@ -38,6 +38,15 @@
       $(".v", el).textContent = fmt(v, +el.dataset.decimals || 0, el.dataset.prefix, el.dataset.suffix);
     });
     var c = $("#d-count"); if (c) c.textContent = rows.length + " of " + ROWS.length + " rows";
+    /* live scope: the figures and charts always say what they currently cover */
+    var sc = $("#d-scope"); if (sc) {
+      var parts = []; document.querySelectorAll(".d-chips").forEach(function (g) {
+        var on = [].slice.call(g.querySelectorAll('[aria-pressed="true"]')).map(function (b) { return b.textContent; });
+        parts.push(g.getAttribute("aria-label") + ": " + (on.length ? on.join(", ") : "all"));
+      });
+      if (state.q) parts.push('search "' + state.q + '"');
+      sc.textContent = "Showing " + parts.join(" · ");
+    }
   }
   /* Table */
   function sorted(rows) {
@@ -61,7 +70,7 @@
       th.setAttribute("aria-sort", th.dataset.key === state.sortKey ? (state.sortDir > 0 ? "ascending" : "descending") : "none");
     });
     $("tbody", tb).innerHTML = part.map(function (r) { return "<tr>" + COLS.map(function (c) { return cell(c, r[c.key]); }).join("") + "</tr>"; }).join("") ||
-      '<tr><td colspan="' + COLS.length + '" class="d-empty">No rows match the filters.</td></tr>';
+      '<tr><td colspan="' + COLS.length + '" class="d-empty">No rows match the filters. Turn a chip off or shorten the search to see rows again.</td></tr>';
     var more = $("#d-more"); more.hidden = rows.length <= n;
     more.textContent = "Show " + Math.min(PAGE, rows.length - n) + " more";
   }
@@ -102,29 +111,41 @@
     });
     return { xs: xs, sers: sers, data: data };
   }
-  function niceMax(m) { if (m <= 0) return 1; var p = Math.pow(10, Math.floor(Math.log10(m))), f = m / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p; }
+  function niceMax(m) { if (m <= 0) return 1; var p = Math.pow(10, Math.floor(Math.log10(m))), f = m / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 4 ? 4 : f <= 6 ? 6 : f <= 8 ? 8 : 10) * p; }
   function drawChart(ch, rows, card) {
     var box = $(".plot", card), leg = $(".d-legend", card), tbl = $(".alt", card);
     box.innerHTML = ""; leg.innerHTML = "";
     var A = aggregate(ch, rows);
-    if (!A.xs.length) { box.innerHTML = '<div class="d-empty">No data for the current filters.</div>'; tbl.innerHTML = ""; return; }
+    if (!A.xs.length) { box.innerHTML = '<div class="d-empty">Nothing to plot for the current filters. Turn a chip off or shorten the search.</div>'; tbl.innerHTML = ""; return; }
     var multi = A.sers.length > 1, dec = ch.decimals || 0;
     var color = function (i) { return multi ? "var(--s" + (i + 1) + ")" : "var(--chart-one)"; };
     if (multi) leg.innerHTML = A.sers.map(function (s, i) { return '<span><i style="background:' + color(i) + '"></i>' + esc(s) + "</span>"; }).join("");
     var all = [].concat.apply([], A.data), max = niceMax(Math.max.apply(null, all)), horiz = ch.type === "hbar";
-    var W = 640, H = horiz ? Math.max(180, 34 * A.xs.length + 30) : 300;
-    var m = horiz ? { l: 110, r: 50, t: 8, b: 24 } : { l: 52, r: 24, t: 14, b: 34 };
+    if (horiz && !multi) {   /* a ranking reads top-down: largest first */
+      var ord = A.xs.map(function (_, i) { return i; }).sort(function (a, b) { return A.data[0][b] - A.data[0][a]; });
+      A.xs = ord.map(function (i) { return A.xs[i]; }); A.data[0] = ord.map(function (i) { return A.data[0][i]; });
+    }
+    /* one viewBox unit = one CSS pixel, so axis text is 12px at every width (redrawn on resize) */
+    var W = Math.max(280, Math.round(box.clientWidth || tbl.clientWidth || 640)), narrow = W < 480;
+    var H = horiz ? Math.max(300, 40 * A.xs.length + 32) : 300;
+    var longest = Math.max.apply(null, A.xs.map(function (x) { return String(x).length; }));
+    var direct = horiz && !multi;   /* every bar carries its value, so no value axis or gridlines */
+    var m = horiz ? { l: Math.min(160, Math.max(40, longest * 7 + 14)), r: 56, t: 8, b: direct ? 8 : 24 } : { l: narrow ? 44 : 52, r: ch.type === "line" ? 48 : (narrow ? 12 : 24), t: 14, b: 34 };
     var pw = W - m.l - m.r, ph = H - m.t - m.b;
     var svg = el("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": ch.heading + (ch.unit ? " (" + ch.unit + ")" : "") });
     var ticks = [0, .25, .5, .75, 1];
-    ticks.forEach(function (t) {
+    if (!direct) ticks.forEach(function (t) {
       var v = max * t, lab = fmt(v, dec);
       if (horiz) { var x = m.l + pw * t; svg.appendChild(el("line", { x1: x, x2: x, y1: m.t, y2: m.t + ph, class: "grid" })); svg.appendChild(el("text", { x: x, y: H - 6, "text-anchor": "middle" }, lab)); }
       else { var y = m.t + ph - ph * t; svg.appendChild(el("line", { x1: m.l, x2: m.l + pw, y1: y, y2: y, class: "grid" })); svg.appendChild(el("text", { x: m.l - 6, y: y + 4, "text-anchor": "end" }, lab)); }
     });
     var n = A.xs.length, band = (horiz ? ph : pw) / n, k = A.sers.length, gap = band * .22, bw = (band - gap) / k;
-    var maxLab = horiz ? 16 : Math.max(4, Math.floor(band / 6.5));
-    function short(s) { s = String(s); return s.length > maxLab ? s.slice(0, maxLab - 1) + "…" : s; }
+    if (horiz && bw > 28) { bw = 28; gap = band - bw * k; }   /* bars never thicker than 28px; the band keeps them evenly spread */
+    var maxLab = horiz ? 22 : Math.max(4, Math.floor(band / 6.5));
+    var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    var sameYear = A.xs.every(function (x) { return /^\d{4}-\d{2}$/.test(String(x)) && String(x).slice(0, 4) === String(A.xs[0]).slice(0, 4); });
+    function short(s) { s = String(s); if (sameYear) return MON[+s.slice(5, 7) - 1] || s;   /* 2026-03 -> Mar when the year is the same throughout */
+      return s.length > maxLab ? s.slice(0, maxLab - 1) + "…" : s; }
     var every = !horiz && band < 54 ? Math.ceil(54 / band) : 1;
     A.xs.forEach(function (x, i) {
       if (i % every === 0) {
@@ -137,7 +158,7 @@
         var pts = d.map(function (v, i) { return [m.l + band * i + band / 2, m.t + ph - ph * v / max]; });
         svg.appendChild(el("polyline", { points: pts.map(function (p) { return p.join(","); }).join(" "), fill: "none", stroke: color(si), "stroke-width": 2, "stroke-linejoin": "round" }));
         pts.forEach(function (p, i) { var c = el("circle", { cx: p[0], cy: p[1], r: 3, fill: color(si) }); c.appendChild(el("title", {}, A.sers[si] + " / " + A.xs[i] + ": " + fmt(d[i], dec))); svg.appendChild(c); });
-        if (k <= 4) { var lp = pts[pts.length - 1]; svg.appendChild(el("text", { x: Math.min(lp[0], W - m.r), y: lp[1] - 8, "text-anchor": "end" }, fmt(d[d.length - 1], dec))); }
+        if (k <= 4) { var lp = pts[pts.length - 1]; svg.appendChild(el("text", { x: lp[0] + 8, y: lp[1] + 4, "text-anchor": "start", style: "fill:var(--text)" }, fmt(d[d.length - 1], dec))); }
       });
     } else {
       A.data.forEach(function (d, si) {
@@ -196,4 +217,12 @@
   });
   try { var t0 = localStorage.getItem("blend-dash-theme"); if (t0 && tt) document.documentElement.dataset.theme = t0; } catch (e) {}
   update();
+  /* redraw the charts when their width changes (rotation, window resize), never on every pixel */
+  if ("ResizeObserver" in window && $(".d-charts")) {
+    var lastW = $(".d-charts").clientWidth, raf = 0;
+    new ResizeObserver(function () {
+      var w = $(".d-charts").clientWidth; if (Math.abs(w - lastW) < 8) return; lastW = w;
+      cancelAnimationFrame(raf); raf = requestAnimationFrame(function () { renderCharts(filtered()); });
+    }).observe($(".d-charts"));
+  }
 })();

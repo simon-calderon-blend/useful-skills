@@ -41,11 +41,25 @@ python3 scripts/validate_api.py out/
   (plus `defaultModelsExpandDepth:1`, `defaultModelExpandDepth:3`, `displayOperationId:true`). Do not change them.
 - No topbar (not loaded, and hidden in CSS). `.swagger-ui .info .title` is `#053057`.
 - Never `unpkg`, `@5` or `@latest`. To upgrade run `scripts/fetch_swagger.sh 5.x.y` (exact version, needs network and npm).
-- Banner: `current` is a navy band (cyan label on navy is allowed), `proposed` is an amber band
-  ("Proposed contract, not deployed"), as in `adr-claim-settlement-api`.
-- Method chips: [references/method-chips.md](references/method-chips.md).
+- Banner: `current` is a navy band (cyan label on navy is allowed), `proposed` is an amber-tinted band whose label is a
+  worded chip with a dot ("Proposed contract, not deployed"), as in `adr-claim-settlement-api`. No side stripe.
+- Method chips: [references/method-chips.md](references/method-chips.md). The chip carries the method (word + fill); operation blocks
+  keep a plain hairline border, with no coloured left edge, and chip text is weight 400.
 - Dark is opt-in (decided 2026-11-10; `--dark`: `tokens-dark.css` + core toggle + `assets/blend-swagger-dark.css`), both `prefers-color-scheme` and `[data-theme]`.
 - PP Telegraf is embedded in every page via `blend_web.font_face()` (core); no Google Fonts link.
+
+## Design checklist (before delivery)
+
+An API reference is an Operate page: Swagger's structure stays as readers know it. Run the core
+[delivery checklist](../blend-web-core/references/delivery-checklist.md), then:
+
+- [ ] Header, banner and reference share one left line; the status banner is the first thing under the header.
+- [ ] `info.description` opens with what the API is for and who may call it, then tables and one curl example.
+- [ ] Every operation has a `summary` that is a verb plus object ("Create an order") and an `operationId`.
+- [ ] Tags group operations by resource, 7 or fewer operations per tag; tag descriptions are one line.
+- [ ] Method is read from the chip, status from the banner words; nothing relies on colour alone.
+- [ ] Comparator: both panes show the same sections in the same order; the proposed pane is marked in words.
+- [ ] At 390 px paths wrap inside the block and the page does not scroll sideways.
 
 ## Reuses from blend-web-core
 

@@ -43,6 +43,8 @@ def build(body, title, lang="es", description="", dark=False, extra_css="", font
     fontlink = ('<link rel="preconnect" href="https://fonts.googleapis.com">\n'
                 '<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">\n'
                 if font != "embed" else "")
+    skip = ('<a class="b-skip" href="#main">%s</a>\n' % ("Saltar al contenido" if lang.startswith("es") else "Skip to content")
+            if re.search(r'\bid="main"', body) else "")
     script = f"<script>\n{(A / 'theme-toggle.js').read_text()}</script>\n" if toggle else ""
     return f"""<!doctype html>
 <html lang="{lang}">
@@ -56,7 +58,7 @@ def build(body, title, lang="es", description="", dark=False, extra_css="", font
 </style>
 </head>
 <body>
-{header}
+{skip}{header}
 {body}
 </body>
 </html>

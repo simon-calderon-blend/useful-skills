@@ -1,15 +1,12 @@
-/* Only included with --dark: score bars, inline code, key callout and the info chip use fixed light-theme colors otherwise. */
+/* Only included with --dark: score bars and inline code use fixed light-theme colours otherwise.
+   Tints, callouts and chips follow the tokens (color-mix into --surface), so they need nothing here. */
 :root[data-theme="dark"] .r-score-row .bar { background: var(--hairline); }
 :root[data-theme="dark"] .r-score-row .bar i { background: var(--blend-cyan); }
-:root[data-theme="dark"] :not(pre) > code, :root[data-theme="dark"] .b-callout.key { background: var(--hairline); color: var(--text); }
-:root[data-theme="dark"] .b-callout.key { border-color: var(--blend-cyan); }
-:root[data-theme="dark"] .b-chip.info { color: var(--accent); }
+:root[data-theme="dark"] :not(pre) > code { background: var(--hairline); color: var(--text); }
+:root[data-theme="dark"] .r-evidence { background: var(--hairline); }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .r-score-row .bar { background: var(--hairline); }
   :root:not([data-theme="light"]) .r-score-row .bar i { background: var(--blend-cyan); }
-  :root:not([data-theme="light"]) :not(pre) > code, :root:not([data-theme="light"]) .b-callout.key { background: var(--hairline); color: var(--text); }
-  :root:not([data-theme="light"]) .b-callout.key { border-color: var(--blend-cyan); }
-  :root:not([data-theme="light"]) .b-chip.info { color: var(--accent); }
+  :root:not([data-theme="light"]) :not(pre) > code { background: var(--hairline); color: var(--text); }
+  :root:not([data-theme="light"]) .r-evidence { background: var(--hairline); }
 }
-:root[data-theme="dark"] .b-table tbody tr:nth-child(even) td { background: rgba(255, 255, 255, .05); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .b-table tbody tr:nth-child(even) td { background: rgba(255, 255, 255, .05); } }

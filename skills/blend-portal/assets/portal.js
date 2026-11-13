@@ -41,6 +41,7 @@
     var s = $('#p-status');
     if (s) s.textContent = shown + ' of ' + total + ' resources' + (filtering() ? ' match' : '');
     var clr = $('#p-clear'); if (clr) clr.hidden = !filtering();
+    var all = $('#p-allnone'); if (all) all.hidden = !(shown === 0 && filtering());   /* never a blank page under the filters */
   }
   var q = $('#p-q');
   if (q) q.addEventListener('input', function () { state.q = q.value.trim().toLowerCase(); apply(); });
@@ -53,12 +54,12 @@
       apply();
     });
   });
-  var clear = $('#p-clear');
-  if (clear) clear.addEventListener('click', function () {
+  function clearAll() {
     state = { q: '', type: {}, status: {} }; if (q) q.value = '';
     $$('[data-filter]').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
-    apply();
-  });
+    apply(); if (q) q.focus();
+  }
+  $$('#p-clear, [data-clear]').forEach(function (b) { b.addEventListener('click', clearAll); });
 
   /* ---- expandable rows ---- */
   root.addEventListener('click', function (e) {

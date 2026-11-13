@@ -16,7 +16,7 @@
   :root:not([data-theme="light"]) .b-api-band.proposed strong { color: var(--blend-white); }
   :root:not([data-theme="light"]) .swagger-ui .markdown code, :root:not([data-theme="light"]) .swagger-ui .renderedMarkdown code { background: rgba(255, 255, 255, .08); color: var(--blend-cyan-soft); }
   :root:not([data-theme="light"]) .swagger-ui .opblock.opblock-get { background: rgba(0, 237, 237, .05); }
-  :root:not([data-theme="light"]) .swagger-ui .opblock.opblock-post { border-color: var(--hairline); border-left-color: var(--blend-cyan-soft); background: rgba(162, 243, 243, .07); }
+  :root:not([data-theme="light"]) .swagger-ui .opblock.opblock-post { border-color: var(--hairline); background: rgba(162, 243, 243, .07); }
   :root:not([data-theme="light"]) .swagger-ui .opblock.opblock-post .opblock-summary-method { background: transparent; color: var(--blend-cyan-soft); border: 1px solid var(--blend-cyan-soft); }
   :root:not([data-theme="light"]) .swagger-ui .opblock.opblock-put, :root:not([data-theme="light"]) .swagger-ui .opblock.opblock-patch { background: rgba(14, 107, 168, .14); }
   :root:not([data-theme="light"]) .swagger-ui .opblock.opblock-delete { background: rgba(181, 41, 15, .14); }
@@ -38,7 +38,7 @@
 :root[data-theme="dark"] .b-api-band.proposed strong { color: var(--blend-white); }
 :root[data-theme="dark"] .swagger-ui .markdown code, :root[data-theme="dark"] .swagger-ui .renderedMarkdown code { background: rgba(255, 255, 255, .08); color: var(--blend-cyan-soft); }
 :root[data-theme="dark"] .swagger-ui .opblock.opblock-get { background: rgba(0, 237, 237, .05); }
-:root[data-theme="dark"] .swagger-ui .opblock.opblock-post { border-color: var(--hairline); border-left-color: var(--blend-cyan-soft); background: rgba(162, 243, 243, .07); }
+:root[data-theme="dark"] .swagger-ui .opblock.opblock-post { border-color: var(--hairline); background: rgba(162, 243, 243, .07); }
 :root[data-theme="dark"] .swagger-ui .opblock.opblock-post .opblock-summary-method { background: transparent; color: var(--blend-cyan-soft); border: 1px solid var(--blend-cyan-soft); }
 :root[data-theme="dark"] .swagger-ui .opblock.opblock-put, :root[data-theme="dark"] .swagger-ui .opblock.opblock-patch { background: rgba(14, 107, 168, .14); }
 :root[data-theme="dark"] .swagger-ui .opblock.opblock-delete { background: rgba(181, 41, 15, .14); }

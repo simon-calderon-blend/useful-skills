@@ -1,11 +1,10 @@
-{"kind":"one-pager","lang":"en","title":"Synthetic Studio for Example Client","eyebrow":"Illustrative one-pager","dek":"A two-page example of the commercial layout with co-branding. All content is illustrative.","meta":"Prepared for Example Client · Illustrative","illustrative":true,"nav":false,
+{"kind":"one-pager","lang":"en","title":"Synthetic Studio for Example Client","eyebrow":"Illustrative one-pager","dek":"A synthetic panel, grounded in your own research data, that answers a concept question in hours instead of weeks.","meta":"Prepared for Example Client","illustrative":true,"nav":false,
  "client":{"name":"Example Client","logo":"assets/client-logo-placeholder.svg","alt":"Example Client logo (placeholder)","confidential":true},
- "cta":{"label":"Book a working session","href":"https://www.blend360.com","title":"Start with a two-week working session","text":"Illustrative offer: agree scope, data access and success measures."},
+ "cta":{"label":"Book a working session","href":"https://www.blend360.com","title":"Start with a two-week working session","text":"We agree the question, the data access and the success measures before any build."},
  "sheets":[
  [{"label":"Offer","title":"What you get","blocks":[
-   {"p":"Illustrative copy. A synthetic panel that answers questions in hours instead of weeks."},
-   {"kpis":[["10x","Illustrative speed-up"],["3","Illustrative pilots"],["2 wks","Illustrative time to first result"]]},
-   {"cards":[["Panel","Illustrative synthetic respondents grounded in your data."],["Studio","Illustrative workspace to design and run studies."],["Report","Illustrative evidence-linked readouts."]]}]}],
+   {"kpis":[["10x","Faster than a fielded study","hours, not weeks"],["3","Pilot studies included","one per brand team"],["2 wks","To the first readout","from data access"]]},
+   {"cards":[["Panel","Synthetic respondents grounded in your survey and CRM data, refreshed each quarter."],["Studio","A workspace where your researchers design a study, run it and compare segments."],["Readout","Every finding links to the responses behind it, so it can be challenged."]]}]}],
  [{"label":"Engagement","title":"How we work together","blocks":[
-   {"steps":[["Frame","Illustrative: agree the question."],["Build","Illustrative: ground the panel."],["Run","Illustrative: field the study."],["Decide","Illustrative: review the readout."]]},
+   {"steps":[["Frame","Agree the business question and what a useful answer looks like."],["Build","Ground the panel in your data and validate it against a past study."],["Run","Field the three pilot studies with your brand teams."],["Decide","Review the readouts and choose whether to extend."]]},
    {"callout":"<strong>Illustrative.</strong> Figures and names on this page are examples, not client data."}]}]]}

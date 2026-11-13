@@ -7,6 +7,7 @@ portal, api, demo (default: generic, 5 MB).
 Exit code 1 on any FAIL (or any WARN with --strict). Stdlib only.
 """
 import argparse, json, re, sys
+from html.parser import HTMLParser
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -44,6 +45,79 @@ def contrast(a, b):
 class R:
     def __init__(self): self.rows = []
     def add(self, n, name, status, msg=""): self.rows.append((n, name, status, msg))
+
+
+class Outline(HTMLParser):
+    """Heading levels in order, and whether a card is opened inside another card."""
+    VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
+
+    def __init__(self):
+        super().__init__(); self.stack = []; self.levels = []; self.nested = 0
+
+    def handle_starttag(self, tag, attrs):
+        cls = (dict(attrs).get("class") or "").split()
+        card = "b-card" in cls
+        if card and any(self.stack_cards()):
+            self.nested += 1
+        if re.fullmatch(r"h[1-6]", tag):
+            self.levels.append(int(tag[1]))
+        if tag not in self.VOID:
+            self.stack.append((tag, card))
+
+    def stack_cards(self):
+        return [c for _, c in self.stack if c]
+
+    def handle_endtag(self, tag):
+        for i in range(len(self.stack) - 1, -1, -1):
+            if self.stack[i][0] == tag:
+                del self.stack[i:]; break
+
+
+def craft(t, html, css_text):
+    """Check 11: design-craft heuristics from references/anti-patterns.md. Warnings only."""
+    w = []
+    rules = re.findall(r"([^{}]{1,300})\{([^{}]{0,2000})\}", css_text)
+    if re.search(r"transition(?:-property)?\s*:[^;}]*\ball\b", css_text):
+        w.append("transition: all")
+    lay = sorted({m for _, b in rules for d in re.findall(r"transition(?:-property)?\s*:([^;}]*)", b)
+                  if "!important" not in d for m in re.findall(r"\b(width|height|margin|padding|top|left)\b", d)})
+    if lay:
+        w.append("animates layout property: " + ", ".join(lay))
+    stripe = sorted({sel.strip().split(",")[0][:28] for sel, b in rules
+                     if re.search(r"card|callout|finding|alert|note", sel, re.I)
+                     and re.search(r"border-(?:left|right|inline-start)(?:-width)?\s*:\s*(?:[2-9]|\d\d)px", b)})
+    if stripe:
+        w.append("side-stripe border on " + "; ".join(stripe[:3]))
+    if re.search(r"background-clip\s*:\s*text|backdrop-filter\s*:", css_text):
+        w.append("gradient text or backdrop-filter")
+    tiny = sorted({v for _, b in rules for v in re.findall(r"font(?:-size)?\s*:[^;}]*?(?<![\d.])(\d*\.?\d+(?:px|rem))", b)
+                   if (v.endswith("px") and float(v[:-2]) < 12) or (v.endswith("rem") and float(v[:-3]) < .75)})
+    if tiny:
+        w.append("text below 12px: " + ", ".join(tiny[:4]))
+    caps = {sel.strip() for sel, b in rules if re.search(r"text-transform\s*:\s*uppercase", b)}  # a folder repeats the core CSS per page
+    if len(caps) > 2:
+        w.append(f"{len(caps)} uppercase label styles (one eyebrow per page; use .b-label)")
+    if re.search(r"<(?:button|a)\b", html, re.I):
+        miss = [s for s in (":hover", ":focus-visible") if s not in css_text]
+        if miss:
+            w.append("no " + " / ".join(miss) + " rule")
+    if re.search(r"\b(?:transition|animation)\s*:", css_text) and "prefers-reduced-motion" not in css_text:
+        w.append("motion without a prefers-reduced-motion rule")
+    o = Outline()
+    try:
+        o.feed(re.sub(r"<(script|style)\b.*?</\1>", "", html, flags=re.S | re.I))
+    except Exception:
+        pass
+    skips = sum(1 for a, b in zip(o.levels, o.levels[1:]) if b - a > 1)
+    if skips:
+        w.append(f"{skips} skipped heading level(s)")
+    if o.nested:
+        w.append(f"{o.nested} card(s) inside a card")
+    vague = sorted({m.strip().lower() for m in re.findall(
+        r"<(?:a|button)\b[^>]*>\s*(Learn more|Read more|Click here|Open|Submit|Ver m[aá]s|Leer m[aá]s|Abrir|Enviar|Haz clic aqu[ií])\s*</(?:a|button)>", html, re.I)})
+    if vague:
+        w.append("vague control label: " + ", ".join(vague))
+    return w
 
 
 def strip_data(t):
@@ -237,6 +311,12 @@ def main():
         r.add(10, "secrets/PII", "WARN", f"{len(emails)} e-mail address(es) in the page; confirm they may be public")
     else:
         r.add(10, "secrets/PII", "PASS", "no secrets, tokens, ARNs or e-mails detected (regex only; review content for client data)")
+
+    # 11 craft (warnings only)
+    own_css = "\n".join(re.findall(r"<style[^>]*>(.*?)</style>", t, re.S | re.I) +   # vendored CSS (Swagger UI) is not ours to judge
+                        [strip_data(f.read_text(errors="ignore")) for f in (p.rglob("*.css") if p.is_dir() else []) if "vendor" not in f.parts])
+    cw = craft(t, strip_data(html), own_css)
+    r.add(11, "craft", "WARN" if cw else "PASS", "; ".join(cw) if cw else "no generic-design tells detected (heuristic; see references/anti-patterns.md)")
 
     if a.json:
         print(json.dumps([dict(n=n, check=c, status=s, msg=m) for n, c, s, m in r.rows], indent=1))
